@@ -16,10 +16,16 @@ def test_header_elements_present(page):
     """Header shows title and control buttons."""
     page.goto("/")
     assert "RTFM" in page.text_content("header h1")
-    assert page.locator("button", has_text="Sources").is_visible()
-    assert page.get_by_role("button", name="Ingest", exact=True).is_visible()
     assert page.locator("button", has_text="Theme").is_visible()
     assert page.locator("#health").is_visible()
+
+
+def test_sidebar_visible_by_default(page):
+    """Sources sidebar is visible on desktop."""
+    page.goto("/")
+    sidebar = page.locator("#sidebar")
+    assert sidebar.is_visible()
+    assert page.locator(".sidebar-header").is_visible()
 
 
 def test_send_question_gets_response(page):
@@ -58,7 +64,6 @@ def test_empty_input_no_request(page):
 
     # Welcome should still be there
     assert page.locator(".welcome").is_visible()
-    # No messages should appear
     assert page.locator(".msg").count() == 0
 
 
@@ -85,7 +90,6 @@ def test_shift_enter_adds_newline(page):
     value = page.input_value("#question")
     assert "line one" in value
     assert "line two" in value
-    # Should NOT have sent
     assert page.locator(".msg").count() == 0
 
 
@@ -96,8 +100,5 @@ def test_send_button_disabled_during_streaming(page):
     page.fill("#question", "What is Git?")
     page.click("#send")
 
-    # Button should be disabled during response
     page.wait_for_selector("#send[disabled]", timeout=5000)
-
-    # Wait for response to complete, then button re-enables
     page.wait_for_selector("#send:not([disabled])", timeout=60000)

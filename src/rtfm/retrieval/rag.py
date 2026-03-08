@@ -326,6 +326,33 @@ def ask_stream(
                        "source_files": [r.source_file for r in results]})
 
 
+def _get_source_chunks(source: str) -> list[dict]:
+    """Retrieve all chunks for a given source from Redis."""
+    from rtfm.redis_client import get_redis
+
+    r = get_redis()
+    chunks = []
+    cursor = 0
+    while True:
+        cursor, keys = r.scan(cursor, match="doc:*", count=200)
+        for key in keys:
+            fields = r.hmget(key, "source_file", "section", "text", "chunk_index")
+            if fields[0] == source:
+                chunks.append({
+                    "source_file": fields[0] or "",
+                    "section": fields[1] or "",
+                    "text": fields[2] or "",
+                    "chunk_index": int(fields[3]) if fields[3] else 0,
+                })
+        if cursor == 0:
+            break
+
+    chunks.sort(key=lambda c: c["chunk_index"])
+    return chunks
+
+
+
+
 def _record_metrics(latency_ms: float, cached: bool, tokens: int) -> None:
     """Record query metrics in Redis."""
     try:

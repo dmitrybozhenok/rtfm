@@ -25,7 +25,7 @@ from rtfm.memory.session import (
 )
 from rtfm.observability.logging import get_logger, setup_logging
 from rtfm.observability.metrics import metrics
-from rtfm.retrieval.rag import ask, ask_stream
+from rtfm.retrieval.rag import ask, ask_stream, _get_source_chunks
 
 # Initialize structured logging on import
 setup_logging(log_level=settings.log_level, log_format=settings.log_format)
@@ -331,6 +331,45 @@ async def clear_documents_endpoint():
 
     logger.info("Documents cleared", extra={"chunks_created": deleted})
     return {"status": "ok", "deleted_chunks": deleted}
+
+
+@app.get("/sources/{source:path}/chunks")
+async def source_chunks_endpoint(source: str):
+    """Return all chunks for a specific source (for source viewer)."""
+    chunks = _get_source_chunks(source)
+    if not chunks:
+        return JSONResponse(status_code=404, content={"error": f"No chunks found for source: {source}"})
+    return chunks
+
+
+
+
+@app.delete("/sources/{source:path}")
+async def delete_source_endpoint(source: str):
+    """Delete all chunks for a specific source."""
+    from rtfm.redis_client import get_redis
+
+    r = get_redis()
+    cursor = 0
+    deleted = 0
+    while True:
+        cursor, keys = r.scan(cursor, match="doc:*", count=200)
+        for key in keys:
+            src = r.hget(key, "source_file")
+            if src == source:
+                r.delete(key)
+                deleted += 1
+        if cursor == 0:
+            break
+
+    # Flush cache since it may reference deleted chunks
+    try:
+        flush_cache()
+    except Exception:
+        pass
+
+    logger.info("Source deleted", extra={"path": source, "chunks_created": deleted})
+    return {"status": "ok", "source": source, "deleted_chunks": deleted}
 
 
 @app.get("/sources")

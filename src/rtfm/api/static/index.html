@@ -38,17 +38,18 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: var(--bg); color: var(--text);
   height: 100vh; display: flex; flex-direction: column;
+  overflow: hidden;
 }
 
 /* Header */
 header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px; border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  background: var(--surface); flex-shrink: 0; z-index: 20;
 }
-header h1 { font-size: 1.2rem; font-weight: 700; }
+header h1 { font-size: 1.1rem; font-weight: 700; }
 header h1 span { color: var(--accent); }
-.header-controls { display: flex; gap: 8px; align-items: center; }
+.header-controls { display: flex; gap: 6px; align-items: center; }
 .health-dot {
   width: 8px; height: 8px; border-radius: 50%;
   background: var(--text-dim); display: inline-block;
@@ -59,118 +60,148 @@ header h1 span { color: var(--accent); }
 .btn-sm {
   background: var(--surface2); border: 1px solid var(--border);
   color: var(--text); cursor: pointer; border-radius: 6px;
-  padding: 4px 10px; font-size: 0.8rem;
+  padding: 4px 10px; font-size: 0.78rem;
 }
 .btn-sm:hover { border-color: var(--accent); }
-.btn-sm.active { border-color: var(--accent); background: var(--accent); color: #fff; }
-.btn-danger { color: var(--error); }
+
+/* Main layout */
+.main-layout {
+  display: flex; flex: 1; overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px; min-width: 280px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  transition: margin-left 0.2s;
+}
+.sidebar.collapsed { margin-left: -280px; }
+.sidebar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; border-bottom: 1px solid var(--border);
+  font-size: 0.82rem; font-weight: 600;
+}
+.sidebar-header .count { color: var(--text-dim); font-weight: 400; }
+
+/* Add source area */
+.add-source {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+}
+.add-row { display: flex; gap: 6px; margin-bottom: 6px; }
+.add-row:last-child { margin-bottom: 0; }
+.add-row input[type="text"] {
+  flex: 1; padding: 5px 8px; border-radius: 5px;
+  border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text); font-size: 0.8rem;
+}
+.add-row input[type="text"]:focus { outline: none; border-color: var(--accent); }
+.add-row input[type="file"] { font-size: 0.75rem; color: var(--text-dim); max-width: 140px; }
+.btn-add {
+  padding: 5px 10px; border-radius: 5px; border: none;
+  background: var(--accent); color: #fff; cursor: pointer;
+  font-size: 0.78rem; white-space: nowrap;
+}
+.btn-add:disabled { opacity: 0.5; cursor: not-allowed; }
+.add-row label { font-size: 0.75rem; color: var(--text-dim); display: flex; align-items: center; gap: 3px; }
+.add-msg { font-size: 0.75rem; margin-top: 4px; }
+.add-msg.ok { color: var(--success); }
+.add-msg.err { color: var(--error); }
+.add-msg.busy { color: var(--warn); }
+
+/* Source list */
+.source-list {
+  flex: 1; overflow-y: auto; padding: 6px;
+}
+.source-item {
+  padding: 8px 10px; border-radius: 6px; margin-bottom: 2px;
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  font-size: 0.82rem; position: relative;
+}
+.source-item:hover { background: var(--surface2); }
+.source-item.active { background: var(--surface2); border-left: 2px solid var(--accent); }
+.source-icon { font-size: 0.9rem; flex-shrink: 0; }
+.source-info { flex: 1; overflow: hidden; }
+.source-name {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 0.82rem;
+}
+.source-meta { font-size: 0.7rem; color: var(--text-dim); }
+.source-actions {
+  display: none; gap: 2px; position: absolute; right: 6px;
+}
+.source-item:hover .source-actions { display: flex; }
+.source-actions button {
+  background: none; border: none; color: var(--text-dim);
+  cursor: pointer; font-size: 0.75rem; padding: 2px 4px; border-radius: 3px;
+}
+.source-actions button:hover { color: var(--text); background: var(--border); }
+
+/* Sidebar footer */
+.sidebar-footer {
+  padding: 8px 14px; border-top: 1px solid var(--border);
+  font-size: 0.75rem; display: flex; justify-content: space-between; align-items: center;
+}
+.sidebar-footer .total { color: var(--text-dim); }
+.btn-danger { color: var(--error); background: none; border: 1px solid var(--border); }
 .btn-danger:hover { border-color: var(--error); }
 
-/* Panel (shared for ingest + sources) */
-.panel {
-  display: none; padding: 12px 20px;
-  background: var(--surface); border-bottom: 1px solid var(--border);
-}
-.panel.show { display: block; }
-.panel-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
-
-/* Ingest panel */
-.ingest-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-.ingest-row:last-child { margin-bottom: 0; }
-.ingest-row input[type="text"] {
-  flex: 1; padding: 6px 10px; border-radius: 6px;
-  border: 1px solid var(--border); background: var(--surface2);
-  color: var(--text); font-size: 0.85rem;
-}
-.ingest-row input[type="text"]:focus { outline: none; border-color: var(--accent); }
-.ingest-row input[type="file"] { font-size: 0.8rem; color: var(--text-dim); }
-.btn-ingest {
-  padding: 6px 14px; border-radius: 6px; border: none;
-  background: var(--accent); color: #fff; cursor: pointer;
-  font-size: 0.85rem; white-space: nowrap;
-}
-.btn-ingest:disabled { opacity: 0.5; cursor: not-allowed; }
-.ingest-row label { font-size: 0.8rem; color: var(--text-dim); display: flex; align-items: center; gap: 4px; }
-.ingest-msg { font-size: 0.8rem; margin-top: 4px; }
-.ingest-msg.ok { color: var(--success); }
-.ingest-msg.err { color: var(--error); }
-.ingest-msg.busy { color: var(--warn); }
-
-/* Sources panel */
-.sources-list { font-size: 0.82rem; }
-.source-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 6px 10px; border-radius: 6px; margin-bottom: 4px;
-  background: var(--surface2);
-}
-.source-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.source-badge {
-  font-size: 0.7rem; padding: 1px 6px; border-radius: 4px;
-  background: var(--border); color: var(--text-dim); margin-left: 8px;
-  white-space: nowrap;
-}
-.source-badge.web { background: #1a3a5c; color: var(--accent); }
-.source-badge.file { background: #2a3a2a; color: var(--success); }
-.sources-empty { color: var(--text-dim); font-style: italic; }
-.sources-footer {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);
-  font-size: 0.8rem;
-}
-.sources-total { color: var(--text-dim); }
-
 /* Chat area */
-#chat {
-  flex: 1; overflow-y: auto; padding: 20px;
-  display: flex; flex-direction: column; gap: 16px;
+.chat-area {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
 }
-.msg { max-width: 780px; width: 100%; margin: 0 auto; display: flex; gap: 12px; }
+#chat {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.msg { max-width: 780px; width: 100%; margin: 0 auto; display: flex; gap: 10px; }
 .msg.user { justify-content: flex-end; }
 .bubble {
-  padding: 12px 16px; border-radius: 12px;
-  line-height: 1.55; font-size: 0.92rem;
+  padding: 10px 14px; border-radius: 12px;
+  line-height: 1.55; font-size: 0.9rem;
   max-width: 85%; word-wrap: break-word;
 }
 .msg.user .bubble { background: var(--user-bg); border-bottom-right-radius: 4px; }
 .msg.assistant .bubble { background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 .bubble pre {
-  background: var(--bg); padding: 10px 12px; border-radius: 6px;
-  overflow-x: auto; margin: 8px 0; font-size: 0.85rem;
+  background: var(--bg); padding: 8px 10px; border-radius: 6px;
+  overflow-x: auto; margin: 6px 0; font-size: 0.83rem;
 }
 .bubble code { font-family: "Cascadia Code", "Fira Code", monospace; font-size: 0.88em; }
-.bubble p { margin: 6px 0; }
+.bubble p { margin: 5px 0; }
 .bubble p:first-child { margin-top: 0; }
 .bubble p:last-child { margin-bottom: 0; }
 
-/* Chat sources */
 .chat-sources {
-  margin-top: 8px; padding-top: 8px;
-  border-top: 1px solid var(--border); font-size: 0.78rem;
+  margin-top: 6px; padding-top: 6px;
+  border-top: 1px solid var(--border); font-size: 0.76rem;
 }
 .chat-sources summary { cursor: pointer; color: var(--text-dim); }
-.chat-sources ul { margin: 4px 0 0 16px; color: var(--text-dim); }
+.chat-sources ul { margin: 3px 0 0 16px; color: var(--text-dim); }
 .chat-sources li { margin: 2px 0; }
-.meta { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
+.meta { font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; }
 
 /* Input area */
 .input-area {
-  padding: 12px 20px; border-top: 1px solid var(--border);
-  background: var(--surface);
+  padding: 10px 16px; border-top: 1px solid var(--border);
+  background: var(--surface); flex-shrink: 0;
 }
 .input-wrap {
   max-width: 780px; margin: 0 auto; display: flex; gap: 8px;
 }
 #question {
-  flex: 1; padding: 10px 14px; border-radius: 10px;
+  flex: 1; padding: 9px 12px; border-radius: 10px;
   border: 1px solid var(--border); background: var(--surface2);
-  color: var(--text); font-size: 0.92rem; font-family: inherit;
-  resize: none; min-height: 44px; max-height: 120px;
+  color: var(--text); font-size: 0.9rem; font-family: inherit;
+  resize: none; min-height: 42px; max-height: 120px;
 }
 #question:focus { outline: none; border-color: var(--accent); }
 #send {
-  padding: 10px 18px; border-radius: 10px; border: none;
+  padding: 9px 16px; border-radius: 10px; border: none;
   background: var(--accent); color: #fff; cursor: pointer;
-  font-size: 0.92rem; font-weight: 600; align-self: flex-end;
+  font-size: 0.9rem; font-weight: 600; align-self: flex-end;
 }
 #send:hover { background: var(--accent-hover); }
 #send:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -178,73 +209,150 @@ header h1 span { color: var(--accent); }
 /* Welcome */
 .welcome {
   text-align: center; color: var(--text-dim); margin: auto;
-  max-width: 500px; padding: 40px 20px;
+  max-width: 480px; padding: 40px 20px;
 }
-.welcome h2 { color: var(--text); margin-bottom: 8px; font-size: 1.3rem; }
-.welcome p { font-size: 0.9rem; line-height: 1.5; }
+.welcome h2 { color: var(--text); margin-bottom: 8px; font-size: 1.2rem; }
+.welcome p { font-size: 0.88rem; line-height: 1.5; }
+
+/* Source viewer (bottom drawer) */
+.viewer {
+  border-top: 1px solid var(--border);
+  background: var(--surface); max-height: 0;
+  overflow: hidden; transition: max-height 0.25s ease;
+  flex-shrink: 0;
+}
+.viewer.open { max-height: 40vh; overflow-y: auto; }
+.viewer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; border-bottom: 1px solid var(--border);
+  font-size: 0.82rem; font-weight: 600;
+  position: sticky; top: 0; background: var(--surface); z-index: 5;
+}
+.viewer-header button {
+  background: none; border: none; color: var(--text-dim);
+  cursor: pointer; font-size: 1rem;
+}
+.viewer-content { padding: 12px 16px; }
+.viewer-chunk {
+  margin-bottom: 12px; padding: 10px 12px;
+  background: var(--surface2); border-radius: 6px;
+  font-size: 0.84rem; line-height: 1.5;
+}
+.viewer-chunk-header {
+  font-size: 0.75rem; color: var(--accent);
+  margin-bottom: 4px; font-weight: 600;
+}
+.viewer-loading { color: var(--text-dim); font-style: italic; font-size: 0.84rem; padding: 20px; }
+
+/* Mobile hamburger */
+.hamburger {
+  display: none; background: none; border: none; color: var(--text);
+  cursor: pointer; font-size: 1.3rem; padding: 0 6px;
+}
 
 /* Scrollbar */
-#chat::-webkit-scrollbar { width: 6px; }
-#chat::-webkit-scrollbar-track { background: transparent; }
-#chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+#chat::-webkit-scrollbar, .source-list::-webkit-scrollbar, .viewer::-webkit-scrollbar { width: 5px; }
+#chat::-webkit-scrollbar-track, .source-list::-webkit-scrollbar-track, .viewer::-webkit-scrollbar-track { background: transparent; }
+#chat::-webkit-scrollbar-thumb, .source-list::-webkit-scrollbar-thumb, .viewer::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-@media (max-width: 600px) {
+/* Drag overlay */
+.drag-overlay {
+  display: none; position: absolute; inset: 0;
+  background: rgba(122,162,247,0.1);
+  border: 2px dashed var(--accent); border-radius: 8px;
+  z-index: 10; align-items: center; justify-content: center;
+  font-size: 0.9rem; color: var(--accent);
+  pointer-events: none;
+}
+.sidebar.dragover .drag-overlay { display: flex; }
+
+@media (max-width: 700px) {
+  .hamburger { display: block; }
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    z-index: 30; margin-left: -280px;
+  }
+  .sidebar.open { margin-left: 0; }
+  .sidebar.collapsed { margin-left: -280px; }
+  .mobile-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); z-index: 25;
+  }
+  .mobile-overlay.show { display: block; }
   .bubble { max-width: 95%; }
-  header h1 { font-size: 1rem; }
-  .ingest-row { flex-wrap: wrap; }
+  header h1 { font-size: 0.95rem; }
 }
 </style>
 </head>
 <body>
 
 <header>
-  <h1><span>RTFM</span> for me</h1>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
+    <h1><span>RTFM</span> for me</h1>
+  </div>
   <div class="header-controls">
     <span class="health-dot" id="health" title="Checking..."></span>
-    <button class="btn-sm" onclick="togglePanel('sources')">Sources</button>
-    <button class="btn-sm" onclick="togglePanel('ingest')">Ingest</button>
     <button class="btn-sm" onclick="toggleTheme()">Theme</button>
   </div>
 </header>
 
-<!-- Ingest Panel -->
-<div class="panel" id="ingestPanel">
-  <div class="panel-title">Ingest Documents</div>
-  <div class="ingest-row">
-    <input type="text" id="ingestUrl" placeholder="Paste a URL to ingest...">
-    <label><input type="checkbox" id="ingestRecursive"> Recursive</label>
-    <button class="btn-ingest" onclick="doIngestUrl()" id="btnIngestUrl">Ingest URL</button>
-  </div>
-  <div class="ingest-row">
-    <input type="file" id="ingestFile" accept=".pdf,.txt,.md" multiple>
-    <button class="btn-ingest" onclick="doIngestFile()" id="btnIngestFile">Upload</button>
-  </div>
-  <div class="ingest-msg" id="ingestMsg"></div>
-</div>
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
 
-<!-- Sources Panel -->
-<div class="panel" id="sourcesPanel">
-  <div class="panel-title">Ingested Sources</div>
-  <div class="sources-list" id="sourcesList">
-    <div class="sources-empty">Loading...</div>
-  </div>
-  <div class="sources-footer">
-    <span class="sources-total" id="sourcesTotal"></span>
-    <button class="btn-sm btn-danger" onclick="clearDocuments()">Clear All Documents</button>
-  </div>
-</div>
+<div class="main-layout">
+  <!-- Sources Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="drag-overlay">Drop files to ingest</div>
 
-<div id="chat">
-  <div class="welcome">
-    <h2>Ask me anything about your docs</h2>
-    <p>Ingest documentation first, then ask questions. Answers are grounded in your ingested sources with citations.</p>
-  </div>
-</div>
+    <div class="sidebar-header">
+      <span>Sources <span class="count" id="sourceCount"></span></span>
+    </div>
 
-<div class="input-area">
-  <div class="input-wrap">
-    <textarea id="question" rows="1" placeholder="Ask a question..." autofocus></textarea>
-    <button id="send" onclick="sendQuestion()">Send</button>
+    <div class="add-source" id="addSource">
+      <div class="add-row">
+        <input type="text" id="ingestUrl" placeholder="Paste URL...">
+        <label><input type="checkbox" id="ingestRecursive"> Rec</label>
+        <button class="btn-add" onclick="doIngestUrl()" id="btnIngestUrl">Add</button>
+      </div>
+      <div class="add-row">
+        <input type="file" id="ingestFile" accept=".pdf,.txt,.md" multiple>
+        <button class="btn-add" onclick="doIngestFile()" id="btnIngestFile">Upload</button>
+      </div>
+      <div class="add-msg" id="ingestMsg"></div>
+    </div>
+
+    <div class="source-list" id="sourcesList"></div>
+
+    <div class="sidebar-footer">
+      <span class="total" id="sourcesTotal"></span>
+      <button class="btn-sm btn-danger" onclick="clearDocuments()">Clear All</button>
+    </div>
+  </aside>
+
+  <!-- Chat + Viewer -->
+  <div class="chat-area">
+    <div id="chat">
+      <div class="welcome">
+        <h2>Ask me anything about your docs</h2>
+        <p>Add sources in the sidebar, then ask questions. Answers are grounded in your ingested documents with citations.</p>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea id="question" rows="1" placeholder="Ask a question..." autofocus></textarea>
+        <button id="send" onclick="sendQuestion()">Send</button>
+      </div>
+    </div>
+
+    <!-- Source Viewer Drawer -->
+    <div class="viewer" id="viewer">
+      <div class="viewer-header">
+        <span id="viewerTitle">Source Viewer</span>
+        <button onclick="closeViewer()">&times;</button>
+      </div>
+      <div class="viewer-content" id="viewerContent"></div>
+    </div>
   </div>
 </div>
 
@@ -253,6 +361,7 @@ const API = window.location.origin;
 let sessionId = localStorage.getItem('rtfm_session') || crypto.randomUUID();
 localStorage.setItem('rtfm_session', sessionId);
 let busy = false;
+let activeSource = null;
 
 // Theme
 function toggleTheme() {
@@ -267,21 +376,15 @@ function toggleTheme() {
   }
 })();
 
-// Panels
-function togglePanel(name) {
-  const panels = ['ingest', 'sources'];
-  for (const p of panels) {
-    const el = document.getElementById(p + 'Panel');
-    if (p === name) {
-      const showing = el.classList.toggle('show');
-      if (showing && p === 'sources') loadSources();
-    } else {
-      el.classList.remove('show');
-    }
-  }
+// Mobile sidebar
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('mobileOverlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
 }
 
-// Health check
+// Health
 async function checkHealth() {
   const dot = document.getElementById('health');
   try {
@@ -300,40 +403,114 @@ checkHealth();
 async function loadSources() {
   const list = document.getElementById('sourcesList');
   const total = document.getElementById('sourcesTotal');
+  const count = document.getElementById('sourceCount');
   try {
     const r = await fetch(API + '/sources');
     const sources = await r.json();
     if (sources.length === 0) {
-      list.innerHTML = '<div class="sources-empty">No documents ingested yet</div>';
+      list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:0.82rem;font-style:italic;">No sources yet. Add a URL or upload files above.</div>';
       total.textContent = '';
+      count.textContent = '';
       return;
     }
     let totalChunks = 0;
     let html = '';
     for (const s of sources) {
       totalChunks += s.chunks;
-      const typeClass = s.type === 'web' ? 'web' : 'file';
-      html += `<div class="source-item">
-        <span class="source-name" title="${escapeHtml(s.source)}">${escapeHtml(s.source)}</span>
-        <span class="source-badge ${typeClass}">${s.type}</span>
-        <span class="source-badge">${s.chunks} chunks</span>
+      const icon = s.type === 'web' ? '&#127760;' : '&#128196;';
+      const name = s.source.length > 40 ? '...' + s.source.slice(-37) : s.source;
+      const isActive = activeSource === s.source ? ' active' : '';
+      html += `<div class="source-item${isActive}" onclick="selectSource('${escapeAttr(s.source)}')" title="${escapeHtml(s.source)}">
+        <span class="source-icon">${icon}</span>
+        <div class="source-info">
+          <div class="source-name">${escapeHtml(name)}</div>
+          <div class="source-meta">${s.type} &middot; ${s.chunks} chunks &middot; ${s.sections.length} sections</div>
+        </div>
+        <div class="source-actions">
+          <button onclick="event.stopPropagation();deleteSource('${escapeAttr(s.source)}')" title="Delete">&times;</button>
+        </div>
       </div>`;
     }
     list.innerHTML = html;
-    total.textContent = `${sources.length} sources, ${totalChunks} total chunks`;
+    total.textContent = `${totalChunks} chunks`;
+    count.textContent = `(${sources.length})`;
   } catch(e) {
-    list.innerHTML = `<div class="sources-empty" style="color:var(--error)">Failed to load sources</div>`;
+    list.innerHTML = `<div style="padding:12px;color:var(--error);font-size:0.8rem;">Failed to load sources</div>`;
+  }
+}
+loadSources();
+
+// Source selection
+async function selectSource(source) {
+  activeSource = source;
+  loadSources();
+  openViewer(source);
+}
+
+// Source viewer
+async function openViewer(source) {
+  const viewer = document.getElementById('viewer');
+  const title = document.getElementById('viewerTitle');
+  const content = document.getElementById('viewerContent');
+
+  title.textContent = source.length > 60 ? '...' + source.slice(-57) : source;
+  content.innerHTML = '<div class="viewer-loading">Loading chunks...</div>';
+  viewer.classList.add('open');
+
+  try {
+    const r = await fetch(API + '/sources/' + encodeURIComponent(source) + '/chunks');
+    const chunks = await r.json();
+    if (chunks.error) {
+      content.innerHTML = `<div class="viewer-loading">${escapeHtml(chunks.error)}</div>`;
+      return;
+    }
+    let html = '';
+    for (const c of chunks) {
+      const sectionLabel = c.section ? c.section : `Chunk ${c.chunk_index}`;
+      html += `<div class="viewer-chunk">
+        <div class="viewer-chunk-header">${escapeHtml(sectionLabel)}</div>
+        <div>${escapeHtml(c.text).replace(/\n/g, '<br>')}</div>
+      </div>`;
+    }
+    content.innerHTML = html || '<div class="viewer-loading">No content</div>';
+  } catch(e) {
+    content.innerHTML = `<div class="viewer-loading" style="color:var(--error)">Error: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+function closeViewer() {
+  document.getElementById('viewer').classList.remove('open');
+  activeSource = null;
+  loadSources();
+}
+
+// Source actions
+
+
+async function deleteSource(source) {
+  if (!confirm(`Delete "${source}" and all its chunks?`)) return;
+  try {
+    const r = await fetch(API + '/sources/' + encodeURIComponent(source), { method: 'DELETE' });
+    const d = await r.json();
+    if (d.status === 'ok') {
+      showIngestMsg(`Deleted ${d.deleted_chunks} chunks`, 'ok');
+      if (activeSource === source) closeViewer();
+      loadSources();
+    }
+  } catch(e) {
+    showIngestMsg('Error: ' + e.message, 'err');
   }
 }
 
 async function clearDocuments() {
-  if (!confirm('Delete all ingested documents? This cannot be undone.')) return;
+  if (!confirm('Delete ALL ingested documents? This cannot be undone.')) return;
   try {
     const r = await fetch(API + '/documents/clear', { method: 'POST' });
     const d = await r.json();
     if (d.status === 'ok') {
-      loadSources();
       showIngestMsg(`Cleared ${d.deleted_chunks} chunks`, 'ok');
+      closeViewer();
+      loadSources();
     }
   } catch(e) {
     showIngestMsg('Error: ' + e.message, 'err');
@@ -344,7 +521,8 @@ async function clearDocuments() {
 function showIngestMsg(text, type) {
   const msg = document.getElementById('ingestMsg');
   msg.textContent = text;
-  msg.className = 'ingest-msg ' + (type || '');
+  msg.className = 'add-msg ' + (type || '');
+  if (type === 'ok') setTimeout(() => { msg.textContent = ''; msg.className = 'add-msg'; }, 4000);
 }
 
 async function doIngestUrl() {
@@ -352,7 +530,7 @@ async function doIngestUrl() {
   if (!url) return;
   const btn = document.getElementById('btnIngestUrl');
   btn.disabled = true;
-  showIngestMsg('Ingesting URL...', 'busy');
+  showIngestMsg('Ingesting...', 'busy');
   try {
     const body = new FormData();
     body.append('url', url);
@@ -360,7 +538,7 @@ async function doIngestUrl() {
     const r = await fetch(API + '/ingest/url', { method: 'POST', body });
     const d = await r.json();
     if (d.status === 'ok') {
-      showIngestMsg(`Done! ${d.pages || d.files || 0} pages, ${d.chunks} chunks ingested`, 'ok');
+      showIngestMsg(`${d.pages || 0} pages, ${d.chunks} chunks`, 'ok');
       document.getElementById('ingestUrl').value = '';
       loadSources();
     } else {
@@ -402,12 +580,39 @@ async function doIngestFile() {
   if (errors.length) {
     showIngestMsg(`${totalFiles} files, ${totalChunks} chunks. Errors: ${errors.join('; ')}`, errors.length === files.length ? 'err' : 'ok');
   } else {
-    showIngestMsg(`Done! ${totalFiles} files, ${totalChunks} chunks ingested`, 'ok');
+    showIngestMsg(`${totalFiles} files, ${totalChunks} chunks`, 'ok');
   }
   input.value = '';
   btn.disabled = false;
   loadSources();
 }
+
+// Drag and drop on sidebar
+(function() {
+  const sb = document.getElementById('sidebar');
+  let dragCounter = 0;
+  sb.addEventListener('dragenter', e => { e.preventDefault(); dragCounter++; sb.classList.add('dragover'); });
+  sb.addEventListener('dragleave', e => { e.preventDefault(); dragCounter--; if (dragCounter <= 0) { sb.classList.remove('dragover'); dragCounter = 0; } });
+  sb.addEventListener('dragover', e => e.preventDefault());
+  sb.addEventListener('drop', async e => {
+    e.preventDefault(); sb.classList.remove('dragover'); dragCounter = 0;
+    const files = e.dataTransfer.files;
+    if (!files.length) return;
+    showIngestMsg(`Uploading ${files.length} dropped file(s)...`, 'busy');
+    let totalFiles = 0, totalChunks = 0;
+    for (const file of files) {
+      try {
+        const body = new FormData();
+        body.append('file', file);
+        const r = await fetch(API + '/ingest', { method: 'POST', body });
+        const d = await r.json();
+        if (d.status === 'ok') { totalFiles += (d.files || 1); totalChunks += (d.chunks || 0); }
+      } catch(e) {}
+    }
+    showIngestMsg(`${totalFiles} files, ${totalChunks} chunks`, 'ok');
+    loadSources();
+  });
+})();
 
 // Chat
 function addMessage(role, content, sources, meta) {
@@ -429,7 +634,7 @@ function addMessage(role, content, sources, meta) {
       if (s.url) {
         html += `<li><a href="${escapeHtml(s.url)}" target="_blank" style="color:var(--accent)">${escapeHtml(label)}</a>${escapeHtml(section)}</li>`;
       } else {
-        html += `<li>${escapeHtml(label)}${escapeHtml(section)}</li>`;
+        html += `<li><a href="#" onclick="event.preventDefault();selectSource('${escapeAttr(s.file)}')" style="color:var(--accent)">${escapeHtml(label)}</a>${escapeHtml(section)}</li>`;
       }
     }
     html += '</ul></details></div>';
@@ -469,6 +674,11 @@ async function sendQuestion() {
     body.append('question', q);
     body.append('session_id', sessionId);
     body.append('stream', 'true');
+
+    // Filter by active source if selected
+    if (activeSource) {
+      body.append('source_filter', activeSource);
+    }
 
     const response = await fetch(API + '/chat', { method: 'POST', body });
 
@@ -538,33 +748,27 @@ document.getElementById('question').addEventListener('input', function() {
 function renderMarkdown(text) {
   if (!text) return '';
 
-  // Extract code blocks first to protect them
   const codeBlocks = [];
   let s = text.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
     codeBlocks.push(`<pre><code>${escapeHtml(code.trim())}</code></pre>`);
     return `\x00CB${codeBlocks.length - 1}\x00`;
   });
 
-  // Extract inline code
   const inlines = [];
   s = s.replace(/`([^`]+)`/g, (_, code) => {
     inlines.push(`<code>${escapeHtml(code)}</code>`);
     return `\x00IC${inlines.length - 1}\x00`;
   });
 
-  // Escape the rest
   s = escapeHtml(s);
 
-  // Bold and italic
   s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
 
-  // Line breaks
   s = s.replace(/\n\n+/g, '</p><p>');
   s = s.replace(/\n/g, '<br>');
   s = '<p>' + s + '</p>';
 
-  // Restore protected blocks
   s = s.replace(/\x00CB(\d+)\x00/g, (_, i) => codeBlocks[i]);
   s = s.replace(/\x00IC(\d+)\x00/g, (_, i) => inlines[i]);
 
@@ -575,6 +779,10 @@ function escapeHtml(str) {
   const d = document.createElement('div');
   d.textContent = str;
   return d.innerHTML;
+}
+
+function escapeAttr(str) {
+  return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 </script>
 </body>
