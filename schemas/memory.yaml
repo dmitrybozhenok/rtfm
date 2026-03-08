@@ -1,0 +1,21 @@
+index:
+  name: rtfm-memory
+  prefix: memory
+  storage_type: hash
+
+fields:
+  - name: content
+    type: text
+  - name: session_id
+    type: tag
+  - name: topic
+    type: tag
+  - name: created_at
+    type: numeric
+  - name: embedding
+    type: vector
+    attrs:
+      algorithm: hnsw
+      dims: 384
+      distance_metric: cosine
+      type: float32

@@ -1,0 +1,21 @@
+index:
+  name: rtfm-docs
+  prefix: doc
+  storage_type: hash
+
+fields:
+  - name: text
+    type: text
+  - name: source_file
+    type: tag
+  - name: section
+    type: tag
+  - name: chunk_index
+    type: numeric
+  - name: embedding
+    type: vector
+    attrs:
+      algorithm: hnsw
+      dims: 384
+      distance_metric: cosine
+      type: float32
