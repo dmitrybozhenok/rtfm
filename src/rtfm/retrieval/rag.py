@@ -72,8 +72,12 @@ def ask(
     section_filter: str | None = None,
     source_url_filter: str | None = None,
     source_type_filter: str | None = None,
+    model_override: str | None = None,
 ) -> dict:
     """Full RAG pipeline: cache check → search → LLM → cache store.
+
+    Args:
+        model_override: Use this model instead of settings.llm_model for the LLM call.
 
     Returns dict with: answer, sources, cached, latency_ms, tokens_used
     """
@@ -121,8 +125,9 @@ def ask(
 
     # Call LLM via Ollama (OpenAI-compatible API)
     client = _get_client()
+    llm_model = model_override or settings.llm_model
     response = client.chat.completions.create(
-        model=settings.llm_model,
+        model=llm_model,
         messages=messages,
         temperature=0,
         max_tokens=1024,

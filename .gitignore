@@ -8,3 +8,4 @@ build/
 .pytest_cache/
 docs/AI Engineering.pdf
 .claude/settings.local.json
+evals/.judge_cache/
