@@ -175,6 +175,91 @@ def chat(
         )
 
 
+@app.command(name="list-sources")
+def list_sources():
+    """List all ingested document sources with chunk counts."""
+    from rtfm.redis_client import get_redis
+
+    r = get_redis()
+
+    # Scan all doc: keys and collect source info
+    sources: dict[str, dict] = {}
+    cursor = 0
+    while True:
+        cursor, keys = r.scan(cursor, match="doc:*", count=200)
+        for key in keys:
+            fields = r.hmget(key, "source_file", "section")
+            source_file = fields[0] or "unknown"
+            section = fields[1] or ""
+
+            if source_file not in sources:
+                sources[source_file] = {"chunks": 0, "sections": set()}
+            sources[source_file]["chunks"] += 1
+            if section:
+                sources[source_file]["sections"].add(section)
+        if cursor == 0:
+            break
+
+    if not sources:
+        console.print("[yellow]No documents ingested yet.[/yellow]")
+        raise typer.Exit()
+
+    # Group by type
+    web_sources = {k: v for k, v in sources.items() if k.startswith(("http://", "https://"))}
+    file_sources = {k: v for k, v in sources.items() if not k.startswith(("http://", "https://"))}
+
+    total_chunks = sum(v["chunks"] for v in sources.values())
+    console.print(f"\n[bold]Ingested Sources:[/bold] {len(sources)} sources, {total_chunks} total chunks\n")
+
+    if file_sources:
+        console.print("[bold cyan]Files:[/bold cyan]")
+        for src, info in sorted(file_sources.items()):
+            sections_str = ", ".join(sorted(info["sections"])) if info["sections"] else "—"
+            console.print(f"  {src}  [dim]({info['chunks']} chunks)[/dim]")
+            console.print(f"    Sections: [dim]{sections_str}[/dim]")
+
+    if web_sources:
+        if file_sources:
+            console.print()
+        console.print("[bold cyan]Web:[/bold cyan]")
+        for src, info in sorted(web_sources.items()):
+            sections_str = ", ".join(sorted(info["sections"])) if info["sections"] else "—"
+            console.print(f"  {src}  [dim]({info['chunks']} chunks)[/dim]")
+            console.print(f"    Sections: [dim]{sections_str}[/dim]")
+
+
+@app.command()
+def search(
+    query: str = typer.Argument(..., help="Search query"),
+    top_k: int = typer.Option(5, "--top-k", "-k", help="Number of results to return"),
+    source: str | None = typer.Option(None, "--source", "-s", help="Filter by source file"),
+    no_rerank: bool = typer.Option(False, "--no-rerank", help="Disable reranking"),
+):
+    """Search documents without invoking the LLM."""
+    from rtfm.retrieval.search import search_documents
+
+    with console.status("Searching..."):
+        results = search_documents(
+            query,
+            top_k=top_k,
+            source_filter=source,
+            hybrid=not no_rerank,
+        )
+
+    if not results:
+        console.print("[yellow]No results found.[/yellow]")
+        raise typer.Exit()
+
+    console.print(f"\n[bold]Search Results[/bold] ({len(results)} hits)\n")
+    for i, r in enumerate(results, 1):
+        section_str = f" ({r.section})" if r.section else ""
+        preview = r.text[:200].replace("\n", " ")
+        if len(r.text) > 200:
+            preview += "..."
+        console.print(f"[bold]{i}.[/bold] [cyan]{r.source_file}[/cyan]{section_str} [dim](score: {r.score:.4f})[/dim]")
+        console.print(f"   {preview}\n")
+
+
 @app.command(name="clear-cache")
 def clear_cache():
     """Flush the semantic cache."""
