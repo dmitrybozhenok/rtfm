@@ -83,6 +83,24 @@ def ask(
     """
     start = time.time()
 
+    # Input guardrails (opt-in)
+    if settings.guardrails_enabled:
+        try:
+            from rtfm.guardrails.input import validate_query
+
+            is_valid, reason = validate_query(question, settings)
+            if not is_valid:
+                latency = (time.time() - start) * 1000
+                return {
+                    "answer": reason,
+                    "sources": [],
+                    "cached": False,
+                    "latency_ms": round(latency, 1),
+                    "tokens_used": 0,
+                }
+        except Exception:
+            pass  # Graceful degradation
+
     # Check semantic cache
     cached_answer = None
     cached_sources: list[dict] = []
@@ -135,6 +153,15 @@ def ask(
 
     answer = response.choices[0].message.content
     tokens = (response.usage.prompt_tokens + response.usage.completion_tokens) if response.usage else 0
+
+    # Output guardrails (opt-in)
+    if settings.guardrails_enabled:
+        try:
+            from rtfm.guardrails.output import filter_output
+
+            answer = filter_output(answer, settings)
+        except Exception:
+            pass  # Graceful degradation
 
     sources = [
         {"file": r.source_file, "section": r.section, "score": r.score, "url": r.source_url}

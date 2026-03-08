@@ -25,5 +25,12 @@ class Settings(BaseSettings):
     cache_ttl: int = 3600  # seconds
     session_ttl: int = 86400  # 24 hours
 
+    # Guardrails (opt-in)
+    guardrails_enabled: bool = False
+    max_query_length: int = 1000
+    pii_redaction: bool = True
+    max_response_length: int = 2000
+    offtopic_threshold: float = 0.15
+
 
 settings = Settings()
