@@ -49,6 +49,10 @@ def _html_to_markdown(element: Tag) -> str:
     text = "\n".join(lines)
     # Normalize excessive whitespace
     text = re.sub(r"\n{3,}", "\n\n", text)
+    # Fix broken dotted/hyphenated identifiers (e.g. "foo .bar .baz" → "foo.bar.baz")
+    def _collapse_identifier(m: re.Match) -> str:
+        return re.sub(r" ([.\-])", r"\1", m.group(0))
+    text = re.sub(r"\w(?:\s[.\-]\w+){2,}", _collapse_identifier, text)
     return text.strip()
 
 

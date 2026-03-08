@@ -21,6 +21,12 @@ def _clean_pdf_text(text: str) -> str:
     text = "\n".join(cleaned)
     # Normalize excessive whitespace: 3+ newlines → 2
     text = re.sub(r"\n{3,}", "\n\n", text)
+    # Fix broken dotted/hyphenated identifiers from PDF extraction:
+    # "unique .chat .user -message .created" → "unique.chat.user-message.created"
+    # Triggered when 2+ space-separated dot/hyphen segments appear (avoids false positives)
+    def _collapse_identifier(m: re.Match) -> str:
+        return re.sub(r" ([.\-])", r"\1", m.group(0))
+    text = re.sub(r"\w(?:\s[.\-]\w+){2,}", _collapse_identifier, text)
     return text
 
 

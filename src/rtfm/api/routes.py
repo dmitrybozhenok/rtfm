@@ -1,11 +1,13 @@
 """FastAPI endpoints for RTFM."""
 
+import json
+import tempfile
 import uuid
 from pathlib import Path
 from typing import Annotated
 
 from fastapi import FastAPI, File, Form, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from sse_starlette.sse import EventSourceResponse
 
 from rtfm.cache.semantic_cache import flush_cache, get_cache_metrics
@@ -21,13 +23,21 @@ from rtfm.retrieval.rag import ask, ask_stream
 
 app = FastAPI(title="RTFM", version="0.1.0")
 
+_STATIC_DIR = Path(__file__).parent / "static"
+
+
+@app.get("/")
+async def index():
+    """Serve the chat UI."""
+    return FileResponse(_STATIC_DIR / "index.html")
+
 
 @app.post("/ingest")
 async def ingest_endpoint(
     file: Annotated[UploadFile, File()],
 ):
     """Ingest an uploaded file."""
-    tmp_dir = Path("/tmp/rtfm_uploads")
+    tmp_dir = Path(tempfile.gettempdir()) / "rtfm_uploads"
     tmp_dir.mkdir(exist_ok=True)
     tmp_path = tmp_dir / file.filename
 
@@ -107,7 +117,7 @@ async def chat_endpoint(
                 section_filter=section_filter,
             ):
                 full_answer += chunk
-                yield {"data": chunk}
+                yield {"data": json.dumps({"token": chunk})}
 
             # Save to session after streaming completes
             add_message(session_id, "user", question)
@@ -215,6 +225,37 @@ async def health_endpoint():
         "ollama": ollama_ok,
         "memory_server": memory_ok,
     }
+
+
+@app.post("/documents/clear")
+async def clear_documents_endpoint():
+    """Delete all ingested documents and flush cache."""
+    from rtfm.redis_client import get_redis
+
+    r = get_redis()
+    cursor = 0
+    deleted = 0
+    while True:
+        cursor, keys = r.scan(cursor, match="doc:*", count=200)
+        if keys:
+            deleted += len(keys)
+            r.delete(*keys)
+        if cursor == 0:
+            break
+
+    # Also drop the search index so it's recreated on next ingest
+    try:
+        r.ft("rtfm-docs").dropindex()
+    except Exception:
+        pass
+
+    # Flush cache since it references deleted docs
+    try:
+        flush_cache()
+    except Exception:
+        pass
+
+    return {"status": "ok", "deleted_chunks": deleted}
 
 
 @app.get("/sources")
