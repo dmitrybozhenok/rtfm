@@ -9,3 +9,4 @@ build/
 docs/AI Engineering.pdf
 .claude/settings.local.json
 evals/.judge_cache/
+evals/ai_engineering_benchmark.json

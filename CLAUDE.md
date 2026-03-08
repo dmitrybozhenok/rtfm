@@ -39,10 +39,8 @@ python -m rtfm ask "How do I install RTFM?"
 - `uvicorn rtfm.api.routes:app` — start API server
 
 ## Evals
-- `python evals/run_benchmark.py` — run benchmark (all sources)
-- `python evals/run_benchmark.py --source-type file` — PDF-only eval
-- `python evals/run_benchmark.py --source-type web` — web-only eval
-- `python evals/run_benchmark.py --compare` — A/B comparison (PDF vs Web)
+- `python evals/run_benchmark.py` — run benchmark (default: Pro Git)
+- `python evals/run_benchmark.py --source progit.pdf` — filter by source file
 - `python evals/run_benchmark.py --llm-judge` — enable LLM-as-judge scoring
 - `python evals/run_benchmark.py --llm-judge --judge-model qwen2.5:1.5b` — specify judge model
 - `python evals/run_benchmark.py --models qwen2.5:1.5b,qwen2.5:3b` — multi-model comparison
