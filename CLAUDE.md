@@ -3,7 +3,7 @@
 ## Quick Start
 ```bash
 docker compose up redis -d
-ollama pull qwen2.5:7b
+ollama pull qwen2.5:1.5b
 pip install -e .
 python -m rtfm ingest ./docs/
 python -m rtfm ask "How do I install RTFM?"
@@ -11,7 +11,7 @@ python -m rtfm ask "How do I install RTFM?"
 
 ## Architecture
 - **Stack:** Python + FastAPI, Ollama (local LLM), Redis Stack, Typer CLI
-- **LLM:** Ollama with `qwen2.5:7b` via OpenAI-compatible API (localhost:11434)
+- **LLM:** Ollama with `qwen2.5:1.5b` via OpenAI-compatible API (localhost:11434)
 - **RAG pipeline:** `rag.py` is the central orchestrator tying together search, cache, session, memory, and LLM
 - **Embedding model:** `all-MiniLM-L6-v2` (384 dims, local) — used for ingestion, search, and caching
 - **Reranker:** `cross-encoder/ms-marco-MiniLM-L-6-v2` (local cross-encoder for hybrid search)
@@ -44,8 +44,8 @@ python -m rtfm ask "How do I install RTFM?"
 - `python evals/run_benchmark.py --source-type web` — web-only eval
 - `python evals/run_benchmark.py --compare` — A/B comparison (PDF vs Web)
 - `python evals/run_benchmark.py --llm-judge` — enable LLM-as-judge scoring
-- `python evals/run_benchmark.py --llm-judge --judge-model qwen2.5:7b` — specify judge model
-- `python evals/run_benchmark.py --models qwen2.5:7b,qwen2.5:3b` — multi-model comparison
+- `python evals/run_benchmark.py --llm-judge --judge-model qwen2.5:1.5b` — specify judge model
+- `python evals/run_benchmark.py --models qwen2.5:1.5b,qwen2.5:3b` — multi-model comparison
 - `python evals/compare_models.py evals/model_comparison.json` — analyze saved comparison results
 - `pytest tests/e2e/ -m e2e` — run end-to-end browser tests (requires running server)
 - `pytest tests/e2e/ -m e2e --headed` — run with visible browser

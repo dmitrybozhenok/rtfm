@@ -2,7 +2,7 @@
 
 ## 1. Product Overview
 
-**RTFM For Me** is a self-hosted, privacy-first AI documentation assistant that ingests documents (PDF, Markdown, text, and web pages), stores them as vector embeddings, and answers natural language questions grounded exclusively in the ingested content. It uses Retrieval-Augmented Generation (RAG) with local LLMs via Ollama, ensuring no data leaves the user's infrastructure.
+**RTFM For Me** is a self-hosted, privacy-first AI documentation assistant that ingests documents (PDF, Markdown, and text files), stores them as vector embeddings, and answers natural language questions grounded exclusively in the ingested content. It uses Retrieval-Augmented Generation (RAG) with local LLMs via Ollama, ensuring no data leaves the user's infrastructure.
 
 ### 1.1 Vision
 
@@ -19,7 +19,8 @@ Enable teams and individuals to build a private knowledge base from their docume
 
 - **Fully local**: All processing (embedding, search, LLM inference) runs on-premise
 - **Grounded answers**: Responses cite specific sources; the system refuses when context is insufficient
-- **Multi-format ingestion**: PDF, Markdown, plain text, and full website crawling
+- **Multi-format ingestion**: PDF, Markdown, and plain text files
+- **Optional authentication**: Opt-in HTTP Basic Auth for API protection
 - **Production-ready**: Docker deployment, health monitoring, structured logging, Prometheus metrics
 - **Extensible evaluation**: Built-in benchmark framework with multiple scoring dimensions
 
@@ -64,7 +65,7 @@ Enable teams and individuals to build a private knowledge base from their docume
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
 | **Backend** | Python 3.11+ / FastAPI | REST API, SSE streaming, middleware |
-| **LLM** | Ollama (qwen2.5:7b default) | Answer generation via OpenAI-compatible API |
+| **LLM** | Ollama (qwen2.5:1.5b default) | Answer generation via OpenAI-compatible API |
 | **Embeddings** | nomic-ai/nomic-embed-text-v1.5 (768d) | Document and query embedding (local) |
 | **Reranker** | cross-encoder/ms-marco-MiniLM-L-6-v2 | Cross-encoder relevance scoring |
 | **Database** | Redis Stack | Vector search, full-text search, caching, sessions |
@@ -77,11 +78,11 @@ Enable teams and individuals to build a private knowledge base from their docume
 ### 2.3 Data Flow
 
 ```
-Document → Load → Chunk (500 tokens, 150 overlap) → Embed (768d) → Store in Redis
-                                                                         |
-Question → Guardrails → Cache Check → Hybrid Search → Rerank → LLM → Answer
-                              |                                    |
-                         (cache hit)                          (cache store)
+File (PDF/MD/TXT) → Load → Chunk (500 tokens, 150 overlap) → Embed (768d) → Store in Redis
+                                                                                    |
+Question → [Auth] → Guardrails → Cache Check → Hybrid Search → Rerank → LLM → Answer
+                                       |                                    |
+                                  (cache hit)                          (cache store)
 ```
 
 ---
@@ -94,14 +95,10 @@ Question → Guardrails → Cache Check → Hybrid Search → Rerank → LLM →
 |----|-------------|--------|
 | ING-01 | Ingest PDF files with markdown-preserving extraction | Done |
 | ING-02 | Ingest Markdown (.md) and plain text (.txt) files | Done |
-| ING-03 | Ingest from URLs (single page, HTML-to-markdown conversion) | Done |
-| ING-04 | Recursive website crawling with rate limiting (configurable delay) | Done |
-| ING-05 | Drag-and-drop file upload in web UI | Done |
-| ING-06 | Idempotent re-ingestion (deterministic chunk IDs via SHA256) | Done |
-| ING-07 | Auto-flush semantic cache on re-ingestion | Done |
-| ING-08 | PDF artifact cleanup (page numbers, headers/footers, broken identifiers) | Done |
-| ING-09 | HTML noise removal (nav, footer, sidebar, cookie banners, ads) | Done |
-| ING-10 | Preserve code blocks, tables, headings, lists during HTML-to-markdown | Done |
+| ING-03 | Drag-and-drop file upload in web UI | Done |
+| ING-04 | Idempotent re-ingestion (deterministic chunk IDs via SHA256) | Done |
+| ING-05 | Auto-flush semantic cache on re-ingestion | Done |
+| ING-06 | PDF artifact cleanup (page numbers, headers/footers, broken identifiers) | Done |
 
 **Chunking Strategy:**
 - Paragraph-aware splitting at ~500 tokens (~2000 chars)
@@ -112,8 +109,6 @@ Question → Guardrails → Cache Check → Hybrid Search → Rerank → LLM →
 **Storage Schema (Redis Hash per chunk):**
 - `text`: Full chunk content (full-text indexed)
 - `source_file`: Filename tag
-- `source_url`: URL tag (empty for file sources)
-- `source_type`: "file" or "web" tag
 - `section`: Section heading tag
 - `chunk_index`: Sequential number
 - `embedding`: 768-dim HNSW cosine vector
@@ -127,7 +122,7 @@ Question → Guardrails → Cache Check → Hybrid Search → Rerank → LLM →
 | RAG-03 | Source citation in answers using [Source N] labels | Done |
 | RAG-04 | Refusal when context is insufficient ("I don't have enough information...") | Done |
 | RAG-05 | Streaming responses via Server-Sent Events (SSE) | Done |
-| RAG-06 | Source/section/URL/type filtering on search | Done |
+| RAG-06 | Source/section filtering on search | Done |
 | RAG-07 | Temperature 0 for deterministic outputs | Done |
 | RAG-08 | 1024 max token output limit | Done |
 
@@ -178,25 +173,24 @@ Question → Guardrails → Cache Check → Hybrid Search → Rerank → LLM →
 | UI-03 | Source sidebar with chunk counts, sections, type badges | Done |
 | UI-04 | Source viewer: browse chunks/sections of any ingested document | Done |
 | UI-05 | Per-source delete with confirmation dialog | Done |
-| UI-06 | URL ingestion with recursive crawl option | Done |
-| UI-07 | File upload (PDF, TXT, MD) with multi-file support | Done |
-| UI-08 | Drag-and-drop file ingestion onto sidebar | Done |
-| UI-09 | Dark/light theme toggle with localStorage persistence | Done |
-| UI-10 | Health status indicator (green/yellow/red dot) | Done |
-| UI-11 | Mobile responsive layout with hamburger menu | Done |
-| UI-12 | Source-filtered queries (click source to scope chat) | Done |
-| UI-13 | Clickable source citations in chat messages | Done |
-| UI-14 | XSS protection (HTML escaping, safe attribute encoding) | Done |
+| UI-06 | File upload (PDF, TXT, MD) with multi-file support | Done |
+| UI-07 | Drag-and-drop file ingestion onto sidebar | Done |
+| UI-08 | Dark/light theme toggle with localStorage persistence | Done |
+| UI-09 | Health status indicator (green/yellow/red dot) | Done |
+| UI-10 | Mobile responsive layout with hamburger menu | Done |
+| UI-11 | Source-filtered queries (click source to scope chat) | Done |
+| UI-12 | Clickable source citations in chat messages | Done |
+| UI-13 | XSS protection (HTML escaping, safe attribute encoding) | Done |
 
 ### 3.6 CLI
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| CLI-01 | `rtfm ingest <path_or_url>` with --recursive and --delay flags | Done |
+| CLI-01 | `rtfm ingest <path>` ingest from file or directory | Done |
 | CLI-02 | `rtfm ask "<question>"` with --source and --section filters | Done |
 | CLI-03 | `rtfm chat` interactive REPL with /quit, /clear, /sources commands | Done |
 | CLI-04 | `rtfm search "<query>"` with --top-k and --no-rerank options | Done |
-| CLI-05 | `rtfm list-sources` grouped by file/web | Done |
+| CLI-05 | `rtfm list-sources` list all ingested sources | Done |
 | CLI-06 | `rtfm clear-cache` flush semantic cache | Done |
 
 ### 3.7 Guardrails (Opt-in)
@@ -222,7 +216,6 @@ Question → Guardrails → Cache Check → Hybrid Search → Rerank → LLM →
 | GET | `/` | Serve web chat UI |
 | POST | `/ingest` | Upload and ingest file (multipart) |
 | POST | `/ingest/path` | Ingest from local filesystem path |
-| POST | `/ingest/url` | Ingest from URL (with recursive option) |
 | POST | `/ask` | Single question (no session) |
 | POST | `/chat` | Chat with session history + optional SSE streaming |
 | GET | `/health` | System health check (Redis, Ollama, Memory Server) |
@@ -300,11 +293,13 @@ Question → Guardrails → Cache Check → Hybrid Search → Rerank → LLM →
 ### 5.4 Security
 
 - All processing is local (no external API calls)
+- Opt-in HTTP Basic Auth for API protection (`AUTH_ENABLED=true`)
 - Optional PII redaction in outputs
 - Prompt injection detection (14 patterns)
 - HTML escaping in web UI (XSS prevention)
 - Non-root Docker container
-- No credential storage in code
+- Constant-time credential comparison (timing-attack resistant)
+- `/health` endpoint exempt from auth for monitoring
 
 ---
 
@@ -321,6 +316,7 @@ Question → Guardrails → Cache Check → Hybrid Search → Rerank → LLM →
 - Per-category breakdown
 - Worst-N question reporting
 - Regression tracking via history.jsonl
+- Optional source file filtering (`--source`)
 
 **Composite Score Formula:**
 - Without judge: `0.40 * keyword + 0.60 * semantic`
@@ -357,7 +353,7 @@ Question → Guardrails → Cache Check → Hybrid Search → Rerank → LLM →
 
 | Model | Pass Rate | Keyword | Semantic Sim | Composite | Avg Latency |
 |-------|-----------|---------|-------------|-----------|-------------|
-| qwen2.5:3b | 100% | 82.2% | 0.906 | 0.873 | 4,468ms |
+| qwen2.5:1.5b | 100% | 82.2% | 0.906 | 0.873 | 4,468ms |
 | qwen2.5:7b | 97% | 80.0% | 0.893 | 0.858 | ~7,500ms |
 
 ---
@@ -366,9 +362,9 @@ Question → Guardrails → Cache Check → Hybrid Search → Rerank → LLM →
 
 ### 7.1 End-to-End Tests (Playwright)
 
-27 browser tests across 6 test files:
+Browser tests across 6 test files:
 - **Chat flow** (8): welcome, header, sidebar, streaming response, empty input, keyboard shortcuts, button states
-- **Ingestion** (3): UI elements, empty URL handling, recursive checkbox
+- **Ingestion** (1): file upload UI elements
 - **Sources** (5): sidebar listing, viewer open/close, clear button, action buttons
 - **Source actions** (1): delete button visibility
 - **Markdown rendering** (4): inline code, code blocks, bold, italic
@@ -380,7 +376,6 @@ Question → Guardrails → Cache Check → Hybrid Search → Rerank → LLM →
 - RAG pipeline logic and error handling
 - Vector/BM25 search
 - Document chunking and loading
-- Web scraping and ingestion
 - Session management and long-term memory
 - Guardrails (17 injection patterns, 5 PII types)
 - Cache operations
@@ -398,7 +393,7 @@ All settings configurable via environment variables or `.env` file:
 | `REDIS_URL` | `redis://localhost:6379` | Redis connection string |
 | `MEMORY_SERVER_URL` | `http://localhost:9200` | Agent Memory Server URL |
 | `OLLAMA_BASE_URL` | `http://localhost:11434/v1` | Ollama API endpoint |
-| `LLM_MODEL` | `qwen2.5:7b` | LLM model for answer generation |
+| `LLM_MODEL` | `qwen2.5:1.5b` | LLM model for answer generation |
 | `EMBEDDING_MODEL` | `nomic-ai/nomic-embed-text-v1.5` | Embedding model |
 | `EMBEDDING_DIMS` | `768` | Embedding vector dimensions |
 | `CHUNK_SIZE` | `500` | Chunk size in tokens |
@@ -415,6 +410,9 @@ All settings configurable via environment variables or `.env` file:
 | `MAX_QUERY_LENGTH` | `1000` | Max query length (guardrails) |
 | `PII_REDACTION` | `true` | Enable PII redaction (guardrails) |
 | `OFFTOPIC_THRESHOLD` | `0.15` | Off-topic detection threshold |
+| `AUTH_ENABLED` | `false` | Enable HTTP Basic Auth |
+| `AUTH_USERNAME` | `admin` | Basic Auth username |
+| `AUTH_PASSWORD` | `changeme` | Basic Auth password |
 
 ---
 
@@ -424,7 +422,7 @@ All settings configurable via environment variables or `.env` file:
 
 ```bash
 docker compose up redis -d
-ollama pull qwen2.5:7b
+ollama pull qwen2.5:1.5b
 pip install -e .
 python -m rtfm ingest ./docs/
 python -m rtfm ask "How do I get started?"
@@ -456,14 +454,14 @@ docker compose --profile tracing up -d  # With Jaeger tracing
 - **Single-worker deployment**: Not horizontally scaled (single uvicorn worker)
 - **Source-level summarization removed**: Chunk sampling for large documents (900+ chunks) produces low-quality summaries; removed pending better approach (e.g., map-reduce summarization)
 - **FAQ generation removed**: Same sampling issue; produces shallow questions from TOC/preface rather than substantive content
-- **No authentication**: API is open; intended for private network deployment
 - **No rate limiting**: Relies on network-level access control
 - **Memory server optional**: Long-term memory degrades gracefully but loses cross-session context
 
 ### 10.2 Potential Future Enhancements
 
+- **Web ingestion**: HTML-to-markdown ingestion from URLs with recursive crawling (previously supported, removed for simplification)
 - **Map-reduce summarization**: Summarize chunks in batches, then summarize summaries for full-document coverage
-- **Authentication & RBAC**: API key or SSO integration for multi-tenant deployment
+- **RBAC**: Role-based access control for multi-tenant deployment (Basic Auth currently available)
 - **Horizontal scaling**: Multiple workers with shared Redis state
 - **GPU acceleration**: Ollama GPU passthrough for faster inference
 - **Retrieval quality eval**: Score search results independently from LLM answer quality
