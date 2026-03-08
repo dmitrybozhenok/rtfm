@@ -31,5 +31,11 @@ dev = [
 [project.scripts]
 rtfm = "rtfm.cli.app:app"
 
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests that load ML models or call LLMs (deselect with '-m \"not slow\"')",
+    "integration: marks tests that require Redis or other services",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/rtfm"]
