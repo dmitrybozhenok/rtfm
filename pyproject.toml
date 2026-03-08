@@ -33,6 +33,8 @@ tracing = [
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.24.0",
+    "playwright>=1.40.0",
+    "pytest-playwright>=0.7.0",
 ]
 
 [project.scripts]
@@ -42,6 +44,7 @@ rtfm = "rtfm.cli.app:app"
 markers = [
     "slow: marks tests that load ML models or call LLMs (deselect with '-m \"not slow\"')",
     "integration: marks tests that require Redis or other services",
+    "e2e: marks end-to-end browser tests requiring a running server",
 ]
 
 [tool.hatch.build.targets.wheel]

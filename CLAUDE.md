@@ -47,6 +47,8 @@ python -m rtfm ask "How do I install RTFM?"
 - `python evals/run_benchmark.py --llm-judge --judge-model qwen2.5:7b` — specify judge model
 - `python evals/run_benchmark.py --models qwen2.5:7b,qwen2.5:3b` — multi-model comparison
 - `python evals/compare_models.py evals/model_comparison.json` — analyze saved comparison results
+- `pytest tests/e2e/ -m e2e` — run end-to-end browser tests (requires running server)
+- `pytest tests/e2e/ -m e2e --headed` — run with visible browser
 
 ## Key Design Decisions
 - Same embedding model must be used everywhere (configured in `config.py`)
