@@ -153,3 +153,92 @@ async def clear_session_endpoint(session_id: str):
     """Clear a session's conversation history."""
     clear_session(session_id)
     return {"status": "ok", "message": f"Session {session_id} cleared"}
+
+
+@app.get("/health")
+async def health_endpoint():
+    """Check health of all subsystems."""
+    import httpx
+
+    from rtfm.config import settings
+    from rtfm.redis_client import get_redis
+
+    # Check Redis
+    redis_ok = False
+    try:
+        r = get_redis()
+        redis_ok = r.ping()
+    except Exception:
+        pass
+
+    # Check Ollama
+    ollama_ok = False
+    try:
+        ollama_url = settings.ollama_base_url.rstrip("/v1").rstrip("/")
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            resp = await client.get(f"{ollama_url}/api/tags")
+            ollama_ok = resp.status_code == 200
+    except Exception:
+        pass
+
+    # Check Memory Server
+    memory_ok = False
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            resp = await client.get(f"{settings.memory_server_url}/health")
+            memory_ok = resp.status_code == 200
+    except Exception:
+        pass
+
+    # Determine overall status
+    if redis_ok and ollama_ok:
+        status = "healthy"
+    elif redis_ok:
+        status = "degraded"
+    else:
+        status = "unhealthy"
+
+    return {
+        "status": status,
+        "redis": redis_ok,
+        "ollama": ollama_ok,
+        "memory_server": memory_ok,
+    }
+
+
+@app.get("/sources")
+async def sources_endpoint():
+    """List all ingested document sources with chunk counts."""
+    from rtfm.redis_client import get_redis
+
+    r = get_redis()
+
+    sources: dict[str, dict] = {}
+    cursor = 0
+    while True:
+        cursor, keys = r.scan(cursor, match="doc:*", count=200)
+        for key in keys:
+            fields = r.hmget(key, "source_file", "section")
+            source_file = fields[0] or "unknown"
+            section = fields[1] or ""
+
+            if source_file not in sources:
+                sources[source_file] = {"chunks": 0, "sections": set()}
+            sources[source_file]["chunks"] += 1
+            if section:
+                sources[source_file]["sections"].add(section)
+        if cursor == 0:
+            break
+
+    # Convert sets to sorted lists for JSON serialization
+    result = []
+    for src, info in sorted(sources.items()):
+        source_type = "web" if src.startswith(("http://", "https://")) else "file"
+        result.append({
+            "source": src,
+            "type": source_type,
+            "chunks": info["chunks"],
+            "sections": sorted(info["sections"]),
+        })
+
+    return result
