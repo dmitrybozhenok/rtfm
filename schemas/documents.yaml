@@ -20,6 +20,6 @@ fields:
     type: vector
     attrs:
       algorithm: hnsw
-      dims: 384
+      dims: 768
       distance_metric: cosine
       type: float32

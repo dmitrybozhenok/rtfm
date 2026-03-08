@@ -10,8 +10,9 @@ class Settings(BaseSettings):
     memory_server_url: str = "http://localhost:9200"
 
     ollama_base_url: str = "http://localhost:11434/v1"
-    llm_model: str = "qwen2.5:7b"
-    embedding_model: str = "all-MiniLM-L6-v2"
+    llm_model: str = "qwen2.5:3b"
+    embedding_model: str = "nomic-ai/nomic-embed-text-v1.5"
+    embedding_dims: int = 768
 
     chunk_size: int = 500
     chunk_overlap: int = 150

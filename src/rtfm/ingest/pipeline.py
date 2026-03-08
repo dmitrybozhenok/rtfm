@@ -24,10 +24,22 @@ def _chunk_id(source_file: str, chunk_index: int) -> str:
 
 
 def ensure_index() -> SearchIndex:
-    """Create or connect to the Redis vector index."""
+    """Create or connect to the Redis vector index.
+
+    If the existing index has a different vector dimension than the schema
+    (e.g. after an embedding model change), the index is dropped and recreated.
+    """
     index = SearchIndex.from_yaml(str(SCHEMA_PATH))
     index.connect(settings.redis_url)
-    index.create(overwrite=False)
+    try:
+        index.create(overwrite=False)
+    except Exception:
+        # Index may exist with incompatible schema — recreate it
+        try:
+            index.delete(drop=True)
+        except Exception:
+            pass
+        index.create(overwrite=True)
     return index
 
 

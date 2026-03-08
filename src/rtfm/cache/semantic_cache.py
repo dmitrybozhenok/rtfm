@@ -10,14 +10,28 @@ _cache: SemanticCache | None = None
 
 
 def get_cache() -> SemanticCache:
-    """Return a shared SemanticCache instance."""
+    """Return a shared SemanticCache instance.
+
+    Uses HFTextVectorizer configured with the same embedding model as the
+    rest of the pipeline to ensure consistent semantic matching.
+    """
     global _cache
     if _cache is None:
+        from redisvl.utils.vectorize import HFTextVectorizer
+
+        kwargs = {}
+        if settings.embedding_model in {
+            "nomic-ai/nomic-embed-text-v1.5",
+        }:
+            kwargs["trust_remote_code"] = True
+        vectorizer = HFTextVectorizer(model=settings.embedding_model, **kwargs)
         _cache = SemanticCache(
             name="rtfm-cache",
             redis_url=settings.redis_url,
             distance_threshold=settings.cache_distance_threshold,
             ttl=settings.cache_ttl,
+            vectorizer=vectorizer,
+            overwrite=True,
         )
     return _cache
 
