@@ -37,6 +37,11 @@ class Settings(BaseSettings):
     tracing_enabled: bool = False
     tracing_exporter_url: str = ""  # OTLP gRPC endpoint, e.g. "http://localhost:4317"
 
+    # Authentication (opt-in)
+    auth_enabled: bool = False
+    auth_username: str = "admin"
+    auth_password: str = "changeme"
+
     # Guardrails (opt-in)
     guardrails_enabled: bool = False
     max_query_length: int = 1000

@@ -1,6 +1,7 @@
 """FastAPI endpoints for RTFM."""
 
 import json
+import secrets
 import tempfile
 import time
 import uuid
@@ -9,8 +10,9 @@ from typing import Annotated
 
 _START_TIME = time.time()
 
-from fastapi import FastAPI, File, Form, Request, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sse_starlette.sse import EventSourceResponse
 
 from rtfm.cache.semantic_cache import flush_cache, get_cache_metrics
@@ -32,8 +34,52 @@ setup_logging(log_level=settings.log_level, log_format=settings.log_format)
 logger = get_logger("api")
 
 app = FastAPI(title="RTFM", version="0.1.0")
+security = HTTPBasic(auto_error=False)
 
 _STATIC_DIR = Path(__file__).parent / "static"
+
+
+def _check_auth(credentials: HTTPBasicCredentials | None) -> bool:
+    """Validate HTTP Basic credentials against config. Returns True if OK."""
+    if not settings.auth_enabled:
+        return True
+    if credentials is None:
+        return False
+    correct_user = secrets.compare_digest(credentials.username, settings.auth_username)
+    correct_pass = secrets.compare_digest(credentials.password, settings.auth_password)
+    return correct_user and correct_pass
+
+
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    """Enforce HTTP Basic Auth when auth_enabled is True."""
+    if settings.auth_enabled and request.url.path != "/health":
+        auth = request.headers.get("authorization")
+        if not auth or not auth.lower().startswith("basic "):
+            return JSONResponse(
+                status_code=401,
+                content={"detail": "Authentication required"},
+                headers={"WWW-Authenticate": "Basic realm=\"RTFM\""},
+            )
+        import base64
+        try:
+            decoded = base64.b64decode(auth.split(" ", 1)[1]).decode("utf-8")
+            username, password = decoded.split(":", 1)
+        except Exception:
+            return JSONResponse(
+                status_code=401,
+                content={"detail": "Invalid credentials"},
+                headers={"WWW-Authenticate": "Basic realm=\"RTFM\""},
+            )
+        correct_user = secrets.compare_digest(username, settings.auth_username)
+        correct_pass = secrets.compare_digest(password, settings.auth_password)
+        if not correct_user or not correct_pass:
+            return JSONResponse(
+                status_code=401,
+                content={"detail": "Invalid credentials"},
+                headers={"WWW-Authenticate": "Basic realm=\"RTFM\""},
+            )
+    return await call_next(request)
 
 
 @app.middleware("http")
