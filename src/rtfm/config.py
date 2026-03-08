@@ -26,6 +26,12 @@ class Settings(BaseSettings):
     cache_ttl: int = 3600  # seconds
     session_ttl: int = 86400  # 24 hours
 
+    # Server
+    host: str = "0.0.0.0"
+    port: int = 8000
+    workers: int = 1
+    log_level: str = "info"
+
     # Guardrails (opt-in)
     guardrails_enabled: bool = False
     max_query_length: int = 1000

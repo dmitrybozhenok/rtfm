@@ -2,9 +2,12 @@
 
 import json
 import tempfile
+import time
 import uuid
 from pathlib import Path
 from typing import Annotated
+
+_START_TIME = time.time()
 
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
@@ -211,6 +214,17 @@ async def health_endpoint():
     except Exception:
         pass
 
+    # Check index existence
+    index_ok = False
+    doc_count = 0
+    if redis_ok:
+        try:
+            info = r.ft("rtfm-docs").info()
+            index_ok = True
+            doc_count = int(info.get("num_docs", 0))
+        except Exception:
+            pass
+
     # Determine overall status
     if redis_ok and ollama_ok:
         status = "healthy"
@@ -219,11 +233,17 @@ async def health_endpoint():
     else:
         status = "unhealthy"
 
+    uptime_s = int(time.time() - _START_TIME)
+
     return {
         "status": status,
+        "version": "0.1.0",
+        "uptime_seconds": uptime_s,
         "redis": redis_ok,
         "ollama": ollama_ok,
         "memory_server": memory_ok,
+        "index_exists": index_ok,
+        "doc_count": doc_count,
     }
 
 
