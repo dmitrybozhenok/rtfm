@@ -1,7 +1,6 @@
 """Ingestion pipeline: load → chunk → embed → store in Redis."""
 
 import hashlib
-import time
 from pathlib import Path
 
 import numpy as np
@@ -54,16 +53,11 @@ def _store_chunks(chunks, metadata, r_bin) -> int:
     texts = [c.text for c in chunks]
     embeddings = embed_texts(texts)
 
-    source_url = metadata.get("source_url", "")
-    source_type = "web" if source_url else "file"
-
     for chunk, embedding in zip(chunks, embeddings):
         key = f"doc:{_chunk_id(metadata['source_file'], chunk.chunk_index)}"
         doc = {
             "text": chunk.text,
             "source_file": metadata["source_file"],
-            "source_url": source_url,
-            "source_type": source_type,
             "section": chunk.section,
             "chunk_index": chunk.chunk_index,
             "embedding": embedding.tobytes(),
@@ -100,53 +94,6 @@ def ingest_path(path: Path) -> dict:
     logger.info("Path ingestion complete",
                 extra={"files_processed": len(files), "chunks_created": total_chunks})
     return {"files": len(files), "chunks": total_chunks}
-
-
-def ingest_url(url: str, recursive: bool = False, delay: float = 1.0) -> dict:
-    """Ingest content from a URL. Returns stats.
-
-    If recursive=True, crawls all linked pages under the same base URL.
-    """
-    from rtfm.ingest.web_loader import discover_urls, load_url
-
-    if recursive:
-        urls = discover_urls(url, delay=delay)
-        # Include the base URL itself if it has content
-        urls = [url] + urls
-    else:
-        urls = [url]
-
-    ensure_index()
-    r = get_redis()
-    r_bin = get_redis_binary()
-    total_chunks = 0
-    pages_ingested = 0
-
-    for i, page_url in enumerate(urls):
-        try:
-            text, metadata = load_url(page_url)
-            if not text.strip():
-                continue
-
-            chunks = chunk_text(text, metadata)
-            total_chunks += _store_chunks(chunks, metadata, r_bin)
-            pages_ingested += 1
-
-            # Rate limit between requests (skip delay for last page)
-            if recursive and i < len(urls) - 1:
-                time.sleep(delay)
-
-        except Exception as e:
-            logger.warning("Failed to ingest URL", extra={"url": page_url, "error": str(e)})
-            continue
-
-    # Flush semantic cache on re-ingestion
-    try:
-        _flush_cache_on_ingest(r)
-    except Exception:
-        pass
-
-    return {"pages": pages_ingested, "chunks": total_chunks}
 
 
 def _flush_cache_on_ingest(r) -> None:

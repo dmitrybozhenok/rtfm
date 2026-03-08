@@ -8,10 +8,6 @@ fields:
     type: text
   - name: source_file
     type: tag
-  - name: source_url
-    type: tag
-  - name: source_type
-    type: tag
   - name: section
     type: tag
   - name: chunk_index

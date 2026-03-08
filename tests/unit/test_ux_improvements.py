@@ -24,8 +24,8 @@ client = TestClient(fastapi_app)
 
 class TestListSourcesCLI:
     @patch("rtfm.redis_client.get_redis")
-    def test_list_sources_shows_files_and_web(self, mock_get_redis):
-        """Sources are grouped by type (file vs web) with chunk counts."""
+    def test_list_sources_shows_sources(self, mock_get_redis):
+        """Sources are listed with chunk counts."""
         mock_redis = MagicMock()
         mock_get_redis.return_value = mock_redis
 
@@ -37,7 +37,7 @@ class TestListSourcesCLI:
         mock_redis.hmget.side_effect = [
             ["guide.pdf", "Installation"],
             ["guide.pdf", "Usage"],
-            ["https://example.com/docs", "API Reference"],
+            ["readme.md", "Overview"],
         ]
 
         result = runner.invoke(cli_app, ["list-sources"])
@@ -45,10 +45,8 @@ class TestListSourcesCLI:
         assert result.exit_code == 0
         assert "guide.pdf" in result.output
         assert "2 chunks" in result.output
-        assert "https://example.com/docs" in result.output
+        assert "readme.md" in result.output
         assert "1 chunks" in result.output
-        assert "Files:" in result.output
-        assert "Web:" in result.output
 
     @patch("rtfm.redis_client.get_redis")
     def test_list_sources_empty(self, mock_get_redis):
@@ -280,7 +278,7 @@ class TestHealthEndpoint:
 class TestSourcesEndpoint:
     @patch("rtfm.redis_client.get_redis")
     def test_sources_returns_json_list(self, mock_get_redis):
-        """Sources endpoint returns structured JSON with type, chunks, sections."""
+        """Sources endpoint returns structured JSON with chunks and sections."""
         mock_redis = MagicMock()
         mock_get_redis.return_value = mock_redis
 
@@ -291,7 +289,7 @@ class TestSourcesEndpoint:
         mock_redis.hmget.side_effect = [
             ["guide.pdf", "Installation"],
             ["guide.pdf", "Usage"],
-            ["https://example.com", "API"],
+            ["readme.md", "Overview"],
         ]
 
         resp = client.get("/sources")
@@ -300,17 +298,14 @@ class TestSourcesEndpoint:
         data = resp.json()
         assert len(data) == 2
 
-        # Results are sorted by source name
         file_src = next(s for s in data if s["source"] == "guide.pdf")
-        assert file_src["type"] == "file"
         assert file_src["chunks"] == 2
         assert "Installation" in file_src["sections"]
         assert "Usage" in file_src["sections"]
 
-        web_src = next(s for s in data if s["source"] == "https://example.com")
-        assert web_src["type"] == "web"
-        assert web_src["chunks"] == 1
-        assert "API" in web_src["sections"]
+        other_src = next(s for s in data if s["source"] == "readme.md")
+        assert other_src["chunks"] == 1
+        assert "Overview" in other_src["sections"]
 
     @patch("rtfm.redis_client.get_redis")
     def test_sources_empty(self, mock_get_redis):
@@ -341,4 +336,3 @@ class TestSourcesEndpoint:
         assert len(data) == 1
         assert data[0]["source"] == "unknown"
         assert data[0]["sections"] == []
-        assert data[0]["type"] == "file"

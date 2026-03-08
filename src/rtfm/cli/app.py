@@ -14,33 +14,21 @@ console = Console()
 
 @app.command()
 def ingest(
-    path_or_url: str = typer.Argument(..., help="Path to file/directory or URL to ingest"),
-    recursive: bool = typer.Option(False, "--recursive", "-r", help="Crawl linked pages (URLs only)"),
-    delay: float = typer.Option(1.0, "--delay", help="Delay between requests in seconds (URLs only)"),
+    path: str = typer.Argument(..., help="Path to file or directory to ingest"),
 ):
-    """Ingest documents from a file path or URL into the vector store."""
-    if path_or_url.startswith(("http://", "https://")):
-        from rtfm.ingest.pipeline import ingest_url
+    """Ingest documents from a file path into the vector store."""
+    from rtfm.ingest.pipeline import ingest_path
 
-        mode = "recursively " if recursive else ""
-        console.print(f"Ingesting {mode}from [bold]{path_or_url}[/bold]...")
-        stats = ingest_url(path_or_url, recursive=recursive, delay=delay)
-        console.print(
-            f"[green]Done![/green] Ingested {stats['pages']} pages, {stats['chunks']} chunks."
-        )
-    else:
-        from rtfm.ingest.pipeline import ingest_path
+    p = Path(path)
+    if not p.exists():
+        console.print(f"[red]Error:[/red] Path not found: {p}")
+        raise typer.Exit(1)
 
-        path = Path(path_or_url)
-        if not path.exists():
-            console.print(f"[red]Error:[/red] Path not found: {path}")
-            raise typer.Exit(1)
-
-        console.print(f"Ingesting documents from [bold]{path}[/bold]...")
-        stats = ingest_path(path)
-        console.print(
-            f"[green]Done![/green] Ingested {stats['files']} files, {stats['chunks']} chunks."
-        )
+    console.print(f"Ingesting documents from [bold]{p}[/bold]...")
+    stats = ingest_path(p)
+    console.print(
+        f"[green]Done![/green] Ingested {stats['files']} files, {stats['chunks']} chunks."
+    )
 
 
 @app.command()
@@ -204,28 +192,13 @@ def list_sources():
         console.print("[yellow]No documents ingested yet.[/yellow]")
         raise typer.Exit()
 
-    # Group by type
-    web_sources = {k: v for k, v in sources.items() if k.startswith(("http://", "https://"))}
-    file_sources = {k: v for k, v in sources.items() if not k.startswith(("http://", "https://"))}
-
     total_chunks = sum(v["chunks"] for v in sources.values())
     console.print(f"\n[bold]Ingested Sources:[/bold] {len(sources)} sources, {total_chunks} total chunks\n")
 
-    if file_sources:
-        console.print("[bold cyan]Files:[/bold cyan]")
-        for src, info in sorted(file_sources.items()):
-            sections_str = ", ".join(sorted(info["sections"])) if info["sections"] else "—"
-            console.print(f"  {src}  [dim]({info['chunks']} chunks)[/dim]")
-            console.print(f"    Sections: [dim]{sections_str}[/dim]")
-
-    if web_sources:
-        if file_sources:
-            console.print()
-        console.print("[bold cyan]Web:[/bold cyan]")
-        for src, info in sorted(web_sources.items()):
-            sections_str = ", ".join(sorted(info["sections"])) if info["sections"] else "—"
-            console.print(f"  {src}  [dim]({info['chunks']} chunks)[/dim]")
-            console.print(f"    Sections: [dim]{sections_str}[/dim]")
+    for src, info in sorted(sources.items()):
+        sections_str = ", ".join(sorted(info["sections"])) if info["sections"] else "—"
+        console.print(f"  {src}  [dim]({info['chunks']} chunks)[/dim]")
+        console.print(f"    Sections: [dim]{sections_str}[/dim]")
 
 
 @app.command()

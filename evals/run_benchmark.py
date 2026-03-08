@@ -3,12 +3,10 @@
 Usage:
     python evals/run_benchmark.py                        # run all (no source filter)
     python evals/run_benchmark.py --limit 5              # run first 5
-    python evals/run_benchmark.py --source progit.pdf    # filter by source file (PDF)
-    python evals/run_benchmark.py --source-url git-scm.com  # filter by source URL (web)
+    python evals/run_benchmark.py --source progit.pdf    # filter by source file
     python evals/run_benchmark.py --output results.json  # save full results
     python evals/run_benchmark.py --no-cache             # clear cache before run
     python evals/run_benchmark.py --worst 5              # show worst N questions
-    python evals/run_benchmark.py --compare              # A/B compare PDF vs web sources
     python evals/run_benchmark.py --llm-judge            # enable LLM-as-judge scoring
     python evals/run_benchmark.py --llm-judge --judge-model qwen2.5:7b  # specify judge model
     python evals/run_benchmark.py --models qwen2.5:7b,qwen2.5:3b       # multi-model comparison
@@ -140,8 +138,6 @@ def conciseness_ratio(expected: str, generated: str) -> float:
 def run_benchmark(
     qa_pairs: list[dict],
     source_filter: str | None = None,
-    source_url_filter: str | None = None,
-    source_type_filter: str | None = None,
     limit: int | None = None,
     no_cache: bool = False,
     label: str = "",
@@ -153,9 +149,7 @@ def run_benchmark(
 
     Args:
         source_filter: Filter chunks by source_file tag (e.g. "progit.pdf")
-        source_url_filter: Filter chunks by source_url tag (e.g. "git-scm.com")
-        source_type_filter: Filter by source_type tag ("file" or "web")
-        label: Optional label for this run (e.g. "PDF", "Web")
+        label: Optional label for this run
         llm_judge: Enable LLM-as-judge scoring (slower, more accurate)
         judge_model: Model to use for judging (default: same as RAG model)
         model_override: Override the LLM model for answer generation
@@ -195,8 +189,6 @@ def run_benchmark(
         result = ask(
             question,
             source_filter=source_filter,
-            source_url_filter=source_url_filter,
-            source_type_filter=source_type_filter,
             model_override=model_override,
         )
         elapsed = time.time() - start
@@ -557,16 +549,10 @@ def main():
     parser.add_argument("--file", default=str(BENCHMARK_FILE), help="Q&A JSON file")
     parser.add_argument("--limit", type=int, help="Max questions to run")
     parser.add_argument("--source", help="Filter by source file (e.g. progit.pdf)")
-    parser.add_argument("--source-url", help="Filter by source URL (e.g. git-scm.com)")
     parser.add_argument("--output", help="Save full results to JSON file")
     parser.add_argument("--no-cache", action="store_true", help="Flush semantic cache before run")
     parser.add_argument("--worst", type=int, default=5, help="Show N worst questions (default: 5)")
     parser.add_argument("--no-history", action="store_true", help="Don't append to history.jsonl")
-    parser.add_argument("--source-type", choices=["file", "web"], help="Filter by source type (file or web)")
-    parser.add_argument(
-        "--compare", action="store_true",
-        help="A/B comparison: run benchmark twice (file vs web source_type) and compare results.",
-    )
     parser.add_argument(
         "--llm-judge", action="store_true",
         help="Enable LLM-as-judge scoring for factual correctness (slower).",
@@ -608,8 +594,6 @@ def main():
             benchmark = run_benchmark(
                 qa_pairs,
                 source_filter=args.source,
-                source_url_filter=getattr(args, "source_url", None),
-                source_type_filter=args.source_type,
                 limit=args.limit,
                 no_cache=True,  # Always flush cache between models
                 label=model,
@@ -643,64 +627,13 @@ def main():
             )
             print(f"\nFull multi-model results saved to {out_path}")
 
-    elif args.compare:
-        # A/B comparison: file (PDF) vs web
-        benchmark_a = run_benchmark(
-            qa_pairs,
-            source_type_filter="file",
-            limit=args.limit,
-            no_cache=args.no_cache,
-            label="PDF (file)",
-            llm_judge=args.llm_judge,
-            judge_model=args.judge_model,
-        )
-        print_summary(benchmark_a["summary"], worst_n=0, results=benchmark_a["results"])
-
-        benchmark_b = run_benchmark(
-            qa_pairs,
-            source_type_filter="web",
-            limit=args.limit,
-            no_cache=args.no_cache,
-            label="Web",
-            llm_judge=args.llm_judge,
-            judge_model=args.judge_model,
-        )
-        print_summary(benchmark_b["summary"], worst_n=0, results=benchmark_b["results"])
-
-        # Side-by-side comparison
-        print_comparison(
-            benchmark_a["summary"], benchmark_b["summary"],
-            benchmark_a["results"], benchmark_b["results"],
-        )
-
-        if not args.no_history:
-            save_history(benchmark_a["summary"])
-            save_history(benchmark_b["summary"])
-
-        if args.output:
-            out_path = Path(args.output)
-            combined = {"pdf": benchmark_a, "web": benchmark_b}
-            out_path.write_text(
-                json.dumps(combined, indent=2, ensure_ascii=False),
-                encoding="utf-8",
-            )
-            print(f"\nFull comparison results saved to {out_path}")
-
     else:
         # Single run mode
-        label = ""
-        if args.source:
-            label = f"source={args.source}"
-        elif args.source_url:
-            label = f"source_url={args.source_url}"
-        elif args.source_type:
-            label = f"type={args.source_type}"
+        label = f"source={args.source}" if args.source else ""
 
         benchmark = run_benchmark(
             qa_pairs,
             source_filter=args.source,
-            source_url_filter=args.source_url,
-            source_type_filter=args.source_type,
             limit=args.limit,
             no_cache=args.no_cache,
             label=label,

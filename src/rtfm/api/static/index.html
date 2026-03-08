@@ -310,11 +310,6 @@ header h1 span { color: var(--accent); }
 
     <div class="add-source" id="addSource">
       <div class="add-row">
-        <input type="text" id="ingestUrl" placeholder="Paste URL...">
-        <label><input type="checkbox" id="ingestRecursive"> Rec</label>
-        <button class="btn-add" onclick="doIngestUrl()" id="btnIngestUrl">Add</button>
-      </div>
-      <div class="add-row">
         <input type="file" id="ingestFile" accept=".pdf,.txt,.md" multiple>
         <button class="btn-add" onclick="doIngestFile()" id="btnIngestFile">Upload</button>
       </div>
@@ -408,7 +403,7 @@ async function loadSources() {
     const r = await fetch(API + '/sources');
     const sources = await r.json();
     if (sources.length === 0) {
-      list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:0.82rem;font-style:italic;">No sources yet. Add a URL or upload files above.</div>';
+      list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:0.82rem;font-style:italic;">No sources yet. Upload files above.</div>';
       total.textContent = '';
       count.textContent = '';
       return;
@@ -417,14 +412,14 @@ async function loadSources() {
     let html = '';
     for (const s of sources) {
       totalChunks += s.chunks;
-      const icon = s.type === 'web' ? '&#127760;' : '&#128196;';
+      const icon = '&#128196;';
       const name = s.source.length > 40 ? '...' + s.source.slice(-37) : s.source;
       const isActive = activeSource === s.source ? ' active' : '';
       html += `<div class="source-item${isActive}" onclick="selectSource('${escapeAttr(s.source)}')" title="${escapeHtml(s.source)}">
         <span class="source-icon">${icon}</span>
         <div class="source-info">
           <div class="source-name">${escapeHtml(name)}</div>
-          <div class="source-meta">${s.type} &middot; ${s.chunks} chunks &middot; ${s.sections.length} sections</div>
+          <div class="source-meta">${s.chunks} chunks &middot; ${s.sections.length} sections</div>
         </div>
         <div class="source-actions">
           <button onclick="event.stopPropagation();deleteSource('${escapeAttr(s.source)}')" title="Delete">&times;</button>
@@ -525,32 +520,6 @@ function showIngestMsg(text, type) {
   if (type === 'ok') setTimeout(() => { msg.textContent = ''; msg.className = 'add-msg'; }, 4000);
 }
 
-async function doIngestUrl() {
-  const url = document.getElementById('ingestUrl').value.trim();
-  if (!url) return;
-  const btn = document.getElementById('btnIngestUrl');
-  btn.disabled = true;
-  showIngestMsg('Ingesting...', 'busy');
-  try {
-    const body = new FormData();
-    body.append('url', url);
-    body.append('recursive', document.getElementById('ingestRecursive').checked);
-    const r = await fetch(API + '/ingest/url', { method: 'POST', body });
-    const d = await r.json();
-    if (d.status === 'ok') {
-      showIngestMsg(`${d.pages || 0} pages, ${d.chunks} chunks`, 'ok');
-      document.getElementById('ingestUrl').value = '';
-      loadSources();
-    } else {
-      showIngestMsg(d.error || 'Failed', 'err');
-    }
-  } catch(e) {
-    showIngestMsg('Error: ' + e.message, 'err');
-  } finally {
-    btn.disabled = false;
-  }
-}
-
 async function doIngestFile() {
   const input = document.getElementById('ingestFile');
   const files = input.files;
@@ -629,13 +598,9 @@ function addMessage(role, content, sources, meta) {
   if (sources && sources.length > 0) {
     html += '<div class="chat-sources"><details><summary>Sources (' + sources.length + ')</summary><ul>';
     for (const s of sources) {
-      const label = s.url || s.file || 'unknown';
+      const label = s.file || 'unknown';
       const section = s.section ? ` \u2014 ${s.section}` : '';
-      if (s.url) {
-        html += `<li><a href="${escapeHtml(s.url)}" target="_blank" style="color:var(--accent)">${escapeHtml(label)}</a>${escapeHtml(section)}</li>`;
-      } else {
-        html += `<li><a href="#" onclick="event.preventDefault();selectSource('${escapeAttr(s.file)}')" style="color:var(--accent)">${escapeHtml(label)}</a>${escapeHtml(section)}</li>`;
-      }
+      html += `<li><a href="#" onclick="event.preventDefault();selectSource('${escapeAttr(s.file)}')" style="color:var(--accent)">${escapeHtml(label)}</a>${escapeHtml(section)}</li>`;
     }
     html += '</ul></details></div>';
   }

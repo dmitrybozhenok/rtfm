@@ -75,8 +75,6 @@ def ask(
     long_term_memories: str = "",
     source_filter: str | None = None,
     section_filter: str | None = None,
-    source_url_filter: str | None = None,
-    source_type_filter: str | None = None,
     model_override: str | None = None,
 ) -> dict:
     """Full RAG pipeline: cache check → search → LLM → cache store.
@@ -148,8 +146,6 @@ def ask(
                 question,
                 source_filter=source_filter,
                 section_filter=section_filter,
-                source_url_filter=source_url_filter,
-                source_type_filter=source_type_filter,
             )
             search_span.set_attribute("results_count", len(results))
             search_ms = search_span.duration_ms
@@ -194,7 +190,7 @@ def ask(
                 pass  # Graceful degradation
 
         sources = [
-            {"file": r.source_file, "section": r.section, "score": r.score, "url": r.source_url}
+            {"file": r.source_file, "section": r.section, "score": r.score}
             for r in results
         ]
 
@@ -237,8 +233,6 @@ def ask_stream(
     long_term_memories: str = "",
     source_filter: str | None = None,
     section_filter: str | None = None,
-    source_url_filter: str | None = None,
-    source_type_filter: str | None = None,
 ):
     """Streaming RAG pipeline. Yields text chunks."""
     start = time.time()
@@ -265,8 +259,6 @@ def ask_stream(
             question,
             source_filter=source_filter,
             section_filter=section_filter,
-            source_url_filter=source_url_filter,
-            source_type_filter=source_type_filter,
         )
         search_span.set_attribute("results_count", len(results))
         search_ms = search_span.duration_ms
@@ -305,7 +297,7 @@ def ask_stream(
 
     # Cache the full answer (with sources)
     sources = [
-        {"file": r.source_file, "section": r.section, "score": r.score, "url": r.source_url}
+        {"file": r.source_file, "section": r.section, "score": r.score}
         for r in results
     ]
     try:

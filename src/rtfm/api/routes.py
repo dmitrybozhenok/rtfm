@@ -17,7 +17,7 @@ from sse_starlette.sse import EventSourceResponse
 
 from rtfm.cache.semantic_cache import flush_cache, get_cache_metrics
 from rtfm.config import settings
-from rtfm.ingest.pipeline import ingest_path, ingest_url
+from rtfm.ingest.pipeline import ingest_path
 from rtfm.memory.longterm import format_memories, search_memory, store_memory
 from rtfm.memory.session import (
     add_message,
@@ -142,21 +142,6 @@ async def ingest_path_endpoint(path: str = Form(...)):
                  extra={"files_processed": stats.get("files", 0),
                         "chunks_created": stats.get("chunks", 0),
                         "path": path})
-    return {"status": "ok", **stats}
-
-
-@app.post("/ingest/url")
-async def ingest_url_endpoint(
-    url: str = Form(...),
-    recursive: bool = Form(False),
-    delay: float = Form(1.0),
-):
-    """Ingest content from a URL."""
-    stats = ingest_url(url, recursive=recursive, delay=delay)
-    metrics.ingestion_chunks.inc(stats.get("chunks", 0))
-    logger.info("URL ingested",
-                 extra={"url": url, "chunks_created": stats.get("chunks", 0),
-                        "files_processed": stats.get("pages", 0)})
     return {"status": "ok", **stats}
 
 
@@ -445,10 +430,8 @@ async def sources_endpoint():
     # Convert sets to sorted lists for JSON serialization
     result = []
     for src, info in sorted(sources.items()):
-        source_type = "web" if src.startswith(("http://", "https://")) else "file"
         result.append({
             "source": src,
-            "type": source_type,
             "chunks": info["chunks"],
             "sections": sorted(info["sections"]),
         })

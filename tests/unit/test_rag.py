@@ -193,7 +193,6 @@ class TestAsk:
 
         mock_search.assert_called_once_with(
             "Q?", source_filter="readme.md", section_filter="Install",
-            source_url_filter=None, source_type_filter=None,
         )
 
     def test_session_history_passed_to_llm(self, mock_cache, mock_search, mock_llm, mock_metrics):
