@@ -24,9 +24,10 @@ python -m rtfm ask "How do I install RTFM?"
 - `src/rtfm/cache/` — semantic caching via RedisVL
 - `src/rtfm/memory/` — session history and long-term memory
 - `src/rtfm/api/` — FastAPI endpoints
+- `src/rtfm/guardrails/` — input validation, PII redaction, output filtering
 - `src/rtfm/cli/` — Typer CLI
 - `schemas/` — RedisVL index schemas (YAML)
-- `evals/` — benchmark framework (Pro Git Q&A, PDF vs Web comparison)
+- `evals/` — benchmark framework (Pro Git Q&A, PDF vs Web comparison, LLM judge, multi-model)
 
 ## Commands
 - `python -m rtfm ingest <path>` — ingest documents from file/directory
@@ -53,3 +54,4 @@ python -m rtfm ask "How do I install RTFM?"
 - Graceful degradation: cache/memory failures don't break core RAG
 - Token budget: truncate oldest session messages first, then reduce top_k
 - Web ingestion: HTML→markdown conversion preserving headings, code, tables; rate-limited crawling
+- Guardrails: opt-in (`GUARDRAILS_ENABLED=true`), prompt injection detection, PII redaction, off-topic blocking
