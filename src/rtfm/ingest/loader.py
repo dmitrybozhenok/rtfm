@@ -1,6 +1,27 @@
 """File loaders for different document types."""
 
+import re
 from pathlib import Path
+
+
+def _clean_pdf_text(text: str) -> str:
+    """Post-process PDF-extracted text to remove artifacts."""
+    lines = text.split("\n")
+    cleaned = []
+    for line in lines:
+        stripped = line.strip()
+        # Skip lines that are just page numbers (standalone digits)
+        if re.fullmatch(r"\d+", stripped):
+            continue
+        # Skip common header/footer patterns like "Page 3 of 10"
+        if re.fullmatch(r"[Pp]age\s+\d+(\s+of\s+\d+)?", stripped):
+            continue
+        cleaned.append(line)
+
+    text = "\n".join(cleaned)
+    # Normalize excessive whitespace: 3+ newlines → 2
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text
 
 
 def load_file(path: Path) -> tuple[str, dict]:
@@ -16,7 +37,8 @@ def load_file(path: Path) -> tuple[str, dict]:
     elif suffix == ".pdf":
         import pymupdf4llm
 
-        text = pymupdf4llm.to_markdown(str(path))
+        text = pymupdf4llm.to_markdown(str(path), page_chunks=False)
+        text = _clean_pdf_text(text)
     else:
         raise ValueError(f"Unsupported file type: {suffix}")
 

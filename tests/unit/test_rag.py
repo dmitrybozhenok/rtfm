@@ -51,7 +51,7 @@ def _mock_llm_stream(chunks):
 @pytest.fixture()
 def mock_cache():
     """Mock check_cache and store_cache at the import source."""
-    with patch("rtfm.cache.semantic_cache.check_cache", return_value=None) as m_check, \
+    with patch("rtfm.cache.semantic_cache.check_cache", return_value=(None, [])) as m_check, \
          patch("rtfm.cache.semantic_cache.store_cache") as m_store:
         yield m_check, m_store
 
@@ -89,13 +89,13 @@ class TestFormatContext:
     def test_single_result_with_section(self):
         results = [SearchResult("hello", "file.md", "Intro", 0.1)]
         ctx = _format_context(results)
-        assert "[Source 1: file.md (section: Intro)]" in ctx
+        assert "[Source 1: file.md (section: Intro) (relevance: 0.10)]" in ctx
         assert "hello" in ctx
 
     def test_single_result_no_section(self):
         results = [SearchResult("hello", "file.md", "", 0.1)]
         ctx = _format_context(results)
-        assert "[Source 1: file.md]" in ctx
+        assert "[Source 1: file.md (relevance: 0.10)]" in ctx
         assert "(section:" not in ctx
 
     def test_multiple_results_separated(self):
@@ -164,14 +164,14 @@ class TestAsk:
         assert isinstance(result["latency_ms"], float)
 
     def test_cache_hit_returns_early(self, mock_search, mock_metrics):
-        with patch("rtfm.cache.semantic_cache.check_cache", return_value="Cached answer"), \
+        with patch("rtfm.cache.semantic_cache.check_cache", return_value=("Cached answer", [{"file": "cached.md", "section": "", "score": 0.9}])), \
              patch("rtfm.cache.semantic_cache.store_cache"):
             result = ask("cached question")
 
         assert result["answer"] == "Cached answer"
         assert result["cached"] is True
         assert result["tokens_used"] == 0
-        assert result["sources"] == []
+        assert result["sources"] == [{"file": "cached.md", "section": "", "score": 0.9}]
 
     def test_cache_exception_degrades_gracefully(self, mock_search, mock_llm, mock_metrics):
         """If cache check fails, pipeline continues without caching."""
@@ -269,7 +269,7 @@ class TestAskStream:
         assert chunks == ["Hello", " world", "!"]
 
     def test_cache_hit_yields_cached_answer(self):
-        with patch("rtfm.cache.semantic_cache.check_cache", return_value="Cached!"), \
+        with patch("rtfm.cache.semantic_cache.check_cache", return_value=("Cached!", [])), \
              patch("rtfm.cache.semantic_cache.store_cache"):
             chunks = list(ask_stream("cached Q"))
 
@@ -281,11 +281,11 @@ class TestAskStream:
             ["part1", "part2"]
         )
 
-        with patch("rtfm.cache.semantic_cache.check_cache", return_value=None), \
+        with patch("rtfm.cache.semantic_cache.check_cache", return_value=(None, [])), \
              patch("rtfm.cache.semantic_cache.store_cache") as mock_store:
             list(ask_stream("Q?"))  # Consume generator
 
-        mock_store.assert_called_once_with("Q?", "part1part2")
+        mock_store.assert_called_once_with("Q?", "part1part2", sources=[])
 
 
 # ── _record_metrics tests ────────────────────────────────────

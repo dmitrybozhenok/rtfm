@@ -47,9 +47,13 @@ def chunk_text(
 
         # If adding this paragraph would exceed chunk_size, finalize current chunk
         if current_text and len(current_text) + len(para) + 2 > max_chars:
+            chunk_body = current_text.strip()
+            # Prepend section heading if available and not already present
+            if current_section and not chunk_body.startswith(f"## {current_section}"):
+                chunk_body = f"## {current_section}\n\n{chunk_body}"
             chunks.append(
                 Chunk(
-                    text=current_text.strip(),
+                    text=chunk_body,
                     chunk_index=len(chunks),
                     section=current_section,
                     metadata=metadata,
@@ -65,9 +69,12 @@ def chunk_text(
 
     # Final chunk
     if current_text.strip():
+        chunk_body = current_text.strip()
+        if current_section and not chunk_body.startswith(f"## {current_section}"):
+            chunk_body = f"## {current_section}\n\n{chunk_body}"
         chunks.append(
             Chunk(
-                text=current_text.strip(),
+                text=chunk_body,
                 chunk_index=len(chunks),
                 section=current_section,
                 metadata=metadata,

@@ -11,10 +11,13 @@ SYSTEM_PROMPT = """You are RTFM, a documentation assistant. Answer the user's qu
 
 Rules:
 1. Only use information from the provided document context to answer.
-2. Cite your sources by mentioning the source file name (e.g., "According to sample.md...").
-3. If the context doesn't contain enough information to answer, say "I don't have enough information in the documentation to answer that question."
-4. Be concise and direct.
-5. If code examples are present in the context, include them in your answer when relevant.
+2. Cite your sources using [Source N] labels that match the context headers.
+3. Use exact terminology, command names, and technical terms from the documentation context.
+4. Pay close attention to qualifiers and constraints in the question (e.g., "without", "only", "before").
+5. When context contains multiple related but distinct topics, answer only about the one specifically asked.
+6. Keep answers under 3-4 sentences unless a longer explanation is necessary.
+7. Only include code examples when the question is specifically a "how-to" question.
+8. If the context doesn't contain enough information to answer, say "I don't have enough information in the documentation to answer that question." — but if you CAN answer, do NOT add disclaimers or hedging.
 
 {memory_context}"""
 
@@ -33,7 +36,7 @@ def _format_context(results: list[SearchResult]) -> str:
     for i, r in enumerate(results, 1):
         section_info = f" (section: {r.section})" if r.section else ""
         parts.append(
-            f"[Source {i}: {r.source_file}{section_info}]\n{r.text}"
+            f"[Source {i}: {r.source_file}{section_info} (relevance: {r.score:.2f})]\n{r.text}"
         )
     return "\n\n---\n\n".join(parts)
 
@@ -76,10 +79,11 @@ def ask(
 
     # Check semantic cache
     cached_answer = None
+    cached_sources: list[dict] = []
     try:
         from rtfm.cache.semantic_cache import check_cache
 
-        cached_answer = check_cache(question)
+        cached_answer, cached_sources = check_cache(question)
     except Exception:
         pass  # Graceful degradation
 
@@ -88,7 +92,7 @@ def ask(
         _record_metrics(latency, cached=True, tokens=0)
         return {
             "answer": cached_answer,
-            "sources": [],
+            "sources": cached_sources,
             "cached": True,
             "latency_ms": round(latency, 1),
             "tokens_used": 0,
@@ -116,27 +120,28 @@ def ask(
     response = client.chat.completions.create(
         model=settings.llm_model,
         messages=messages,
-        max_tokens=2048,
+        temperature=0,
+        max_tokens=1024,
     )
 
     answer = response.choices[0].message.content
     tokens = (response.usage.prompt_tokens + response.usage.completion_tokens) if response.usage else 0
 
-    # Store in semantic cache
+    sources = [
+        {"file": r.source_file, "section": r.section, "score": r.score}
+        for r in results
+    ]
+
+    # Store in semantic cache (with sources)
     try:
         from rtfm.cache.semantic_cache import store_cache
 
-        store_cache(question, answer)
+        store_cache(question, answer, sources=sources)
     except Exception:
         pass  # Graceful degradation
 
     latency = (time.time() - start) * 1000
     _record_metrics(latency, cached=False, tokens=tokens)
-
-    sources = [
-        {"file": r.source_file, "section": r.section, "score": r.score}
-        for r in results
-    ]
 
     return {
         "answer": answer,
@@ -159,7 +164,7 @@ def ask_stream(
     try:
         from rtfm.cache.semantic_cache import check_cache
 
-        cached_answer = check_cache(question)
+        cached_answer, _cached_sources = check_cache(question)
         if cached_answer is not None:
             yield cached_answer
             return
@@ -186,7 +191,8 @@ def ask_stream(
     stream = client.chat.completions.create(
         model=settings.llm_model,
         messages=messages,
-        max_tokens=2048,
+        temperature=0,
+        max_tokens=1024,
         stream=True,
     )
 
@@ -196,11 +202,15 @@ def ask_stream(
             full_answer += text
             yield text
 
-    # Cache the full answer
+    # Cache the full answer (with sources)
+    sources = [
+        {"file": r.source_file, "section": r.section, "score": r.score}
+        for r in results
+    ]
     try:
         from rtfm.cache.semantic_cache import store_cache
 
-        store_cache(question, full_answer)
+        store_cache(question, full_answer, sources=sources)
     except Exception:
         pass
 

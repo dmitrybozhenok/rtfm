@@ -44,7 +44,7 @@ class TestSearchDocuments:
     def test_returns_empty_list_for_no_results(self, mock_index):
         mock_index.query.return_value = []
 
-        results = search_documents("test query")
+        results = search_documents("test query", hybrid=False)
 
         assert results == []
 
@@ -54,7 +54,7 @@ class TestSearchDocuments:
             _raw_doc("chunk 2", "b.md", "Install", "0.20"),
         ]
 
-        results = search_documents("how to install")
+        results = search_documents("how to install", hybrid=False)
 
         assert len(results) == 2
         assert isinstance(results[0], SearchResult)
@@ -67,26 +67,26 @@ class TestSearchDocuments:
     def test_uses_default_top_k(self, mock_index):
         from rtfm.config import settings
 
-        search_documents("query")
+        search_documents("query", hybrid=False)
 
         vq = mock_index.query.call_args.args[0]
         assert vq._num_results == settings.top_k
 
     def test_custom_top_k(self, mock_index):
-        search_documents("query", top_k=3)
+        search_documents("query", top_k=3, hybrid=False)
 
         vq = mock_index.query.call_args.args[0]
         assert vq._num_results == 3
 
     def test_embeds_the_query(self, mock_embed, mock_index):
-        search_documents("how to configure redis")
+        search_documents("how to configure redis", hybrid=False)
 
         mock_embed.assert_called_once_with("how to configure redis")
 
     def test_missing_fields_default_gracefully(self, mock_index):
         mock_index.query.return_value = [{}]
 
-        results = search_documents("query")
+        results = search_documents("query", hybrid=False)
 
         assert len(results) == 1
         assert results[0].text == ""
@@ -100,40 +100,40 @@ class TestSearchDocuments:
 
 class TestSearchFilters:
     def test_no_filters_by_default(self, mock_index):
-        search_documents("query")
+        search_documents("query", hybrid=False)
 
         vq = mock_index.query.call_args.args[0]
         assert vq.params.get("filter_expression") is None or vq.filter is None
 
     def test_source_filter_applied(self, mock_index):
-        search_documents("query", source_filter="readme.md")
+        search_documents("query", source_filter="readme.md", hybrid=False)
 
         vq = mock_index.query.call_args.args[0]
         # VectorQuery stores filter_expression; verify it was set
         assert vq.filter is not None
 
     def test_section_filter_applied(self, mock_index):
-        search_documents("query", section_filter="Install")
+        search_documents("query", section_filter="Install", hybrid=False)
 
         vq = mock_index.query.call_args.args[0]
         assert vq.filter is not None
 
     def test_both_filters_combined(self, mock_index):
-        search_documents("query", source_filter="doc.md", section_filter="Setup")
+        search_documents("query", source_filter="doc.md", section_filter="Setup", hybrid=False)
 
         vq = mock_index.query.call_args.args[0]
         assert vq.filter is not None
 
     def test_none_source_filter_uses_wildcard(self, mock_index):
         """None source_filter results in wildcard (match-all) filter."""
-        search_documents("query", source_filter=None)
+        search_documents("query", source_filter=None, hybrid=False)
 
         vq = mock_index.query.call_args.args[0]
         assert str(vq._filter_expression) == "*"
 
     def test_none_section_filter_uses_wildcard(self, mock_index):
         """None section_filter results in wildcard (match-all) filter."""
-        search_documents("query", section_filter=None)
+        search_documents("query", section_filter=None, hybrid=False)
 
         vq = mock_index.query.call_args.args[0]
         assert str(vq._filter_expression) == "*"

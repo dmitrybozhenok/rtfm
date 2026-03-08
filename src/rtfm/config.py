@@ -14,10 +14,14 @@ class Settings(BaseSettings):
     embedding_model: str = "all-MiniLM-L6-v2"
 
     chunk_size: int = 500
-    chunk_overlap: int = 50
+    chunk_overlap: int = 150
     top_k: int = 5
 
-    cache_distance_threshold: float = 0.15
+    reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    reranker_top_k: int = 5
+    bm25_weight: float = 0.5
+
+    cache_distance_threshold: float = 0.10
     cache_ttl: int = 3600  # seconds
     session_ttl: int = 86400  # 24 hours
 

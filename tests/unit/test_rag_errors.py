@@ -40,7 +40,7 @@ def _mock_llm_stream(chunks):
 
 @pytest.fixture()
 def mock_cache():
-    with patch("rtfm.cache.semantic_cache.check_cache", return_value=None), \
+    with patch("rtfm.cache.semantic_cache.check_cache", return_value=(None, [])), \
          patch("rtfm.cache.semantic_cache.store_cache"):
         yield
 
@@ -138,7 +138,7 @@ class TestStreamingEdgeCases:
             mock_client.return_value.chat.completions.create.return_value = \
                 _mock_llm_stream(["answer"])
 
-            with patch("rtfm.cache.semantic_cache.check_cache", return_value=None), \
+            with patch("rtfm.cache.semantic_cache.check_cache", return_value=(None, [])), \
                  patch("rtfm.cache.semantic_cache.store_cache", side_effect=Exception("store failed")):
                 chunks = list(ask_stream("Q?"))
 

@@ -1,5 +1,7 @@
 """Semantic cache using RedisVL SemanticCache."""
 
+import json
+
 from redisvl.extensions.cache.llm import SemanticCache
 
 from rtfm.config import settings
@@ -20,19 +22,34 @@ def get_cache() -> SemanticCache:
     return _cache
 
 
-def check_cache(question: str) -> str | None:
-    """Check if a similar question has a cached answer."""
+def check_cache(question: str) -> tuple[str | None, list[dict]]:
+    """Check if a similar question has a cached answer.
+
+    Returns (answer, sources) tuple. If no hit, returns (None, []).
+    """
     cache = get_cache()
     results = cache.check(prompt=question)
     if results:
-        return results[0]["response"]
-    return None
+        answer = results[0]["response"]
+        sources: list[dict] = []
+        metadata = results[0].get("metadata", {})
+        if metadata and "sources" in metadata:
+            try:
+                sources = json.loads(metadata["sources"])
+            except (json.JSONDecodeError, TypeError):
+                sources = []
+        return answer, sources
+    return None, []
 
 
-def store_cache(question: str, answer: str) -> None:
+def store_cache(question: str, answer: str, sources: list[dict] | None = None) -> None:
     """Store a question-answer pair in the semantic cache."""
     cache = get_cache()
-    cache.store(prompt=question, response=answer)
+    cache.store(
+        prompt=question,
+        response=answer,
+        metadata={"sources": json.dumps(sources or [])},
+    )
 
 
 def flush_cache() -> None:
