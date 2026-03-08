@@ -64,7 +64,8 @@ def print_summary_table(all_runs: dict[str, dict], markdown: bool = False) -> No
             row = f"  {name:<20}"
             for m in models:
                 v = all_runs[m]["summary"].get(key, 0)
-                row += f" {v:{fmt}:>{col_w}}"
+                formatted = f"{v:{fmt}}"
+                row += f" {formatted:>{col_w}}"
             print(row)
 
 
