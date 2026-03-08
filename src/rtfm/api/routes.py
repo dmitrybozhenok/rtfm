@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from sse_starlette.sse import EventSourceResponse
 
 from rtfm.cache.semantic_cache import flush_cache, get_cache_metrics
-from rtfm.ingest.pipeline import ingest_path
+from rtfm.ingest.pipeline import ingest_path, ingest_url
 from rtfm.memory.longterm import format_memories, search_memory, store_memory
 from rtfm.memory.session import (
     add_message,
@@ -48,6 +48,17 @@ async def ingest_path_endpoint(path: str = Form(...)):
     if not p.exists():
         return JSONResponse(status_code=404, content={"error": f"Path not found: {path}"})
     stats = ingest_path(p)
+    return {"status": "ok", **stats}
+
+
+@app.post("/ingest/url")
+async def ingest_url_endpoint(
+    url: str = Form(...),
+    recursive: bool = Form(False),
+    delay: float = Form(1.0),
+):
+    """Ingest content from a URL."""
+    stats = ingest_url(url, recursive=recursive, delay=delay)
     return {"status": "ok", **stats}
 
 

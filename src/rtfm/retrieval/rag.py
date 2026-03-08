@@ -70,6 +70,8 @@ def ask(
     long_term_memories: str = "",
     source_filter: str | None = None,
     section_filter: str | None = None,
+    source_url_filter: str | None = None,
+    source_type_filter: str | None = None,
 ) -> dict:
     """Full RAG pipeline: cache check → search → LLM → cache store.
 
@@ -103,6 +105,8 @@ def ask(
         question,
         source_filter=source_filter,
         section_filter=section_filter,
+        source_url_filter=source_url_filter,
+        source_type_filter=source_type_filter,
     )
     context = _format_context(results)
 
@@ -128,7 +132,7 @@ def ask(
     tokens = (response.usage.prompt_tokens + response.usage.completion_tokens) if response.usage else 0
 
     sources = [
-        {"file": r.source_file, "section": r.section, "score": r.score}
+        {"file": r.source_file, "section": r.section, "score": r.score, "url": r.source_url}
         for r in results
     ]
 
@@ -158,6 +162,8 @@ def ask_stream(
     long_term_memories: str = "",
     source_filter: str | None = None,
     section_filter: str | None = None,
+    source_url_filter: str | None = None,
+    source_type_filter: str | None = None,
 ):
     """Streaming RAG pipeline. Yields text chunks."""
     # Check cache first
@@ -175,6 +181,8 @@ def ask_stream(
         question,
         source_filter=source_filter,
         section_filter=section_filter,
+        source_url_filter=source_url_filter,
+        source_type_filter=source_type_filter,
     )
     context = _format_context(results)
 
@@ -204,7 +212,7 @@ def ask_stream(
 
     # Cache the full answer (with sources)
     sources = [
-        {"file": r.source_file, "section": r.section, "score": r.score}
+        {"file": r.source_file, "section": r.section, "score": r.score, "url": r.source_url}
         for r in results
     ]
     try:

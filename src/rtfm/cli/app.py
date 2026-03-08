@@ -14,20 +14,33 @@ console = Console()
 
 @app.command()
 def ingest(
-    path: Path = typer.Argument(..., help="Path to file or directory to ingest"),
+    path_or_url: str = typer.Argument(..., help="Path to file/directory or URL to ingest"),
+    recursive: bool = typer.Option(False, "--recursive", "-r", help="Crawl linked pages (URLs only)"),
+    delay: float = typer.Option(1.0, "--delay", help="Delay between requests in seconds (URLs only)"),
 ):
-    """Ingest documents into the vector store."""
-    from rtfm.ingest.pipeline import ingest_path
+    """Ingest documents from a file path or URL into the vector store."""
+    if path_or_url.startswith(("http://", "https://")):
+        from rtfm.ingest.pipeline import ingest_url
 
-    if not path.exists():
-        console.print(f"[red]Error:[/red] Path not found: {path}")
-        raise typer.Exit(1)
+        mode = "recursively " if recursive else ""
+        console.print(f"Ingesting {mode}from [bold]{path_or_url}[/bold]...")
+        stats = ingest_url(path_or_url, recursive=recursive, delay=delay)
+        console.print(
+            f"[green]Done![/green] Ingested {stats['pages']} pages, {stats['chunks']} chunks."
+        )
+    else:
+        from rtfm.ingest.pipeline import ingest_path
 
-    console.print(f"Ingesting documents from [bold]{path}[/bold]...")
-    stats = ingest_path(path)
-    console.print(
-        f"[green]Done![/green] Ingested {stats['files']} files, {stats['chunks']} chunks."
-    )
+        path = Path(path_or_url)
+        if not path.exists():
+            console.print(f"[red]Error:[/red] Path not found: {path}")
+            raise typer.Exit(1)
+
+        console.print(f"Ingesting documents from [bold]{path}[/bold]...")
+        stats = ingest_path(path)
+        console.print(
+            f"[green]Done![/green] Ingested {stats['files']} files, {stats['chunks']} chunks."
+        )
 
 
 @app.command()

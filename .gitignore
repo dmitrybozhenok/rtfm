@@ -6,3 +6,5 @@ dist/
 build/
 .venv/
 .pytest_cache/
+docs/AI Engineering.pdf
+.claude/settings.local.json

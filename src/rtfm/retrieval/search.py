@@ -22,6 +22,7 @@ class SearchResult:
     source_file: str
     section: str
     score: float
+    source_url: str = ""
 
 
 # Characters that are special in RediSearch query syntax
@@ -53,7 +54,7 @@ def _bm25_search(query: str, num_results: int = 20) -> list[SearchResult]:
             "rtfm-docs",
             query_string,
             "LIMIT", "0", str(num_results),
-            "RETURN", "3", "text", "source_file", "section",
+            "RETURN", "4", "text", "source_file", "source_url", "section",
         )
     except Exception:
         return []
@@ -79,6 +80,7 @@ def _bm25_search(query: str, num_results: int = 20) -> list[SearchResult]:
                 source_file=field_dict.get("source_file", ""),
                 section=field_dict.get("section", ""),
                 score=0.0,  # BM25 score not used directly; RRF rank matters
+                source_url=field_dict.get("source_url", ""),
             )
         )
 
@@ -121,6 +123,7 @@ def _reciprocal_rank_fusion(
             source_file=doc_map[key].source_file,
             section=doc_map[key].section,
             score=scores[key],
+            source_url=doc_map[key].source_url,
         )
         for key in sorted_keys
     ]
@@ -131,12 +134,20 @@ def search_documents(
     top_k: int | None = None,
     source_filter: str | None = None,
     section_filter: str | None = None,
+    source_url_filter: str | None = None,
+    source_type_filter: str | None = None,
     hybrid: bool = True,
 ) -> list[SearchResult]:
     """Search for relevant document chunks.
 
     When hybrid=True, combines vector search + BM25 via RRF, then reranks.
     When hybrid=False, uses vector-only search (original behavior).
+
+    Filters:
+        source_filter: Exact match on source_file tag
+        source_url_filter: Exact match on source_url tag
+        source_type_filter: "file" or "web" — match on source_type tag
+        section_filter: Exact match on section tag
     """
     top_k = top_k or settings.top_k
     index = ensure_index()
@@ -145,6 +156,12 @@ def search_documents(
     filter_expression = None
     if source_filter:
         filter_expression = Tag("source_file") == source_filter
+    if source_url_filter:
+        f = Tag("source_url") == source_url_filter
+        filter_expression = f if filter_expression is None else filter_expression & f
+    if source_type_filter:
+        f = Tag("source_type") == source_type_filter
+        filter_expression = f if filter_expression is None else filter_expression & f
     if section_filter:
         f = Tag("section") == section_filter
         filter_expression = f if filter_expression is None else filter_expression & f
@@ -155,7 +172,7 @@ def search_documents(
         vq = VectorQuery(
             vector=query_embedding.tobytes(),
             vector_field_name="embedding",
-            return_fields=["text", "source_file", "section"],
+            return_fields=["text", "source_file", "source_url", "section"],
             num_results=top_k,
             filter_expression=filter_expression,
         )
@@ -167,6 +184,7 @@ def search_documents(
                 source_file=doc.get("source_file", ""),
                 section=doc.get("section", ""),
                 score=float(doc.get("vector_distance", 1.0)),
+                source_url=doc.get("source_url", ""),
             )
             for doc in raw_results
         ]
@@ -177,7 +195,7 @@ def search_documents(
     vq = VectorQuery(
         vector=query_embedding.tobytes(),
         vector_field_name="embedding",
-        return_fields=["text", "source_file", "section"],
+        return_fields=["text", "source_file", "source_url", "section"],
         num_results=20,
         filter_expression=filter_expression,
     )
@@ -187,6 +205,7 @@ def search_documents(
             source_file=doc.get("source_file", ""),
             section=doc.get("section", ""),
             score=float(doc.get("vector_distance", 1.0)),
+            source_url=doc.get("source_url", ""),
         )
         for doc in index.query(vq)
     ]

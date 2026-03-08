@@ -201,5 +201,6 @@ class TestStreamingEdgeCases:
                 ))
 
         mock_search.assert_called_once_with(
-            "Q?", source_filter="readme.md", section_filter="Install"
+            "Q?", source_filter="readme.md", section_filter="Install",
+            source_url_filter=None, source_type_filter=None,
         )

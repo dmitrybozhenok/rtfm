@@ -1,12 +1,14 @@
 """Benchmark RTFM against NotebookLM-generated Q&A pairs.
 
 Usage:
-    python evals/run_benchmark.py                        # run all
+    python evals/run_benchmark.py                        # run all (no source filter)
     python evals/run_benchmark.py --limit 5              # run first 5
-    python evals/run_benchmark.py --source progit.pdf    # filter by source
+    python evals/run_benchmark.py --source progit.pdf    # filter by source file (PDF)
+    python evals/run_benchmark.py --source-url git-scm.com  # filter by source URL (web)
     python evals/run_benchmark.py --output results.json  # save full results
     python evals/run_benchmark.py --no-cache             # clear cache before run
     python evals/run_benchmark.py --worst 5              # show worst N questions
+    python evals/run_benchmark.py --compare              # A/B compare PDF vs web sources
 
 The benchmark file (evals/progit_benchmark.json) should contain:
 [
@@ -130,10 +132,20 @@ def conciseness_ratio(expected: str, generated: str) -> float:
 def run_benchmark(
     qa_pairs: list[dict],
     source_filter: str | None = None,
+    source_url_filter: str | None = None,
+    source_type_filter: str | None = None,
     limit: int | None = None,
     no_cache: bool = False,
+    label: str = "",
 ) -> dict:
-    """Run all Q&A pairs through RTFM and score results."""
+    """Run all Q&A pairs through RTFM and score results.
+
+    Args:
+        source_filter: Filter chunks by source_file tag (e.g. "progit.pdf")
+        source_url_filter: Filter chunks by source_url tag (e.g. "git-scm.com")
+        source_type_filter: Filter by source_type tag ("file" or "web")
+        label: Optional label for this run (e.g. "PDF", "Web")
+    """
     if no_cache:
         try:
             from rtfm.cache.semantic_cache import flush_cache
@@ -152,7 +164,10 @@ def run_benchmark(
     refusals = 0
     cache_hits = 0
 
-    print(f"\nRunning benchmark: {len(qa_pairs)} questions\n{'=' * 60}")
+    header = f"Running benchmark: {len(qa_pairs)} questions"
+    if label:
+        header += f" [{label}]"
+    print(f"\n{header}\n{'=' * 60}")
 
     for i, qa in enumerate(qa_pairs, 1):
         question = qa["question"]
@@ -163,7 +178,12 @@ def run_benchmark(
         print(f"\n[{i}/{len(qa_pairs)}] {question}")
 
         start = time.time()
-        result = ask(question, source_filter=source_filter)
+        result = ask(
+            question,
+            source_filter=source_filter,
+            source_url_filter=source_url_filter,
+            source_type_filter=source_type_filter,
+        )
         elapsed = time.time() - start
 
         answer = result["answer"]
@@ -208,6 +228,7 @@ def run_benchmark(
 
     n = len(qa_pairs)
     summary = {
+        "label": label,
         "total_questions": n,
         "avg_keyword_score": round(total_keyword / n, 3) if n else 0,
         "avg_semantic_similarity": round(total_semantic / n, 3) if n else 0,
@@ -247,8 +268,10 @@ def run_benchmark(
 
 def print_summary(summary: dict, worst_n: int = 0, results: list[dict] | None = None) -> None:
     """Print a formatted summary table."""
+    label = summary.get("label", "")
+    title = f"BENCHMARK SUMMARY [{label}]" if label else "BENCHMARK SUMMARY"
     print(f"\n{'=' * 60}")
-    print("BENCHMARK SUMMARY")
+    print(title)
     print(f"{'=' * 60}")
     print(f"  Questions:          {summary['total_questions']}")
     print(f"  Pass rate (>=0.5):  {summary['pass_rate']:.0%}")
@@ -293,6 +316,57 @@ def print_summary(summary: dict, worst_n: int = 0, results: list[dict] | None = 
     print(f"{'=' * 60}")
 
 
+def print_comparison(summary_a: dict, summary_b: dict, results_a: list[dict], results_b: list[dict]) -> None:
+    """Print side-by-side comparison of two benchmark runs."""
+    label_a = summary_a.get("label", "A")
+    label_b = summary_b.get("label", "B")
+
+    print(f"\n{'=' * 70}")
+    print(f"A/B COMPARISON: {label_a} vs {label_b}")
+    print(f"{'=' * 70}")
+
+    metrics = [
+        ("Pass rate", "pass_rate", ".0%"),
+        ("Avg keyword", "avg_keyword_score", ".1%"),
+        ("Avg semantic", "avg_semantic_similarity", ".3f"),
+        ("Avg composite", "avg_composite_score", ".3f"),
+        ("Refusal rate", "refusal_rate", ".0%"),
+        ("Avg latency", "avg_latency_ms", ".0f"),
+    ]
+
+    print(f"  {'Metric':<20} {label_a:>12} {label_b:>12} {'Delta':>12}")
+    print(f"  {'-' * 20} {'-' * 12} {'-' * 12} {'-' * 12}")
+    for name, key, fmt in metrics:
+        va = summary_a[key]
+        vb = summary_b[key]
+        delta = vb - va
+        sign = "+" if delta > 0 else ""
+        va_s = f"{va:{fmt}}"
+        vb_s = f"{vb:{fmt}}"
+        d_s = f"{sign}{delta:{fmt}}"
+        print(f"  {name:<20} {va_s:>12} {vb_s:>12} {d_s:>12}")
+
+    # Per-question comparison: show questions where results differ most
+    print(f"\n{'-' * 70}")
+    print("BIGGEST DIFFERENCES (by composite score delta)")
+    print(f"{'-' * 70}")
+
+    diffs = []
+    for ra, rb in zip(results_a, results_b):
+        delta = rb["composite_score"] - ra["composite_score"]
+        diffs.append((ra["question"], ra["composite_score"], rb["composite_score"], delta))
+
+    diffs.sort(key=lambda x: abs(x[3]), reverse=True)
+    for q, score_a, score_b, delta in diffs[:10]:
+        sign = "+" if delta > 0 else ""
+        winner = label_b if delta > 0 else label_a
+        print(f"\n  {q[:80]}")
+        print(f"    {label_a}: {score_a:.3f}  {label_b}: {score_b:.3f}  "
+              f"delta: {sign}{delta:.3f}  ({winner} wins)")
+
+    print(f"\n{'=' * 70}")
+
+
 def save_history(summary: dict) -> None:
     """Append timestamped summary to history.jsonl for regression tracking."""
     entry = {
@@ -308,11 +382,17 @@ def main():
     parser = argparse.ArgumentParser(description="Run RTFM benchmark")
     parser.add_argument("--file", default=str(BENCHMARK_FILE), help="Q&A JSON file")
     parser.add_argument("--limit", type=int, help="Max questions to run")
-    parser.add_argument("--source", help="Filter by source file")
+    parser.add_argument("--source", help="Filter by source file (e.g. progit.pdf)")
+    parser.add_argument("--source-url", help="Filter by source URL (e.g. git-scm.com)")
     parser.add_argument("--output", help="Save full results to JSON file")
     parser.add_argument("--no-cache", action="store_true", help="Flush semantic cache before run")
     parser.add_argument("--worst", type=int, default=5, help="Show N worst questions (default: 5)")
     parser.add_argument("--no-history", action="store_true", help="Don't append to history.jsonl")
+    parser.add_argument("--source-type", choices=["file", "web"], help="Filter by source type (file or web)")
+    parser.add_argument(
+        "--compare", action="store_true",
+        help="A/B comparison: run benchmark twice (file vs web source_type) and compare results.",
+    )
     args = parser.parse_args()
 
     qa_path = Path(args.file)
@@ -326,24 +406,76 @@ def main():
         print(f"Add questions to {qa_path}")
         sys.exit(1)
 
-    benchmark = run_benchmark(
-        qa_pairs,
-        source_filter=args.source,
-        limit=args.limit,
-        no_cache=args.no_cache,
-    )
-    print_summary(benchmark["summary"], worst_n=args.worst, results=benchmark["results"])
-
-    if not args.no_history:
-        save_history(benchmark["summary"])
-
-    if args.output:
-        out_path = Path(args.output)
-        out_path.write_text(
-            json.dumps(benchmark, indent=2, ensure_ascii=False),
-            encoding="utf-8",
+    if args.compare:
+        # A/B comparison: file (PDF) vs web
+        benchmark_a = run_benchmark(
+            qa_pairs,
+            source_type_filter="file",
+            limit=args.limit,
+            no_cache=args.no_cache,
+            label="PDF (file)",
         )
-        print(f"\nFull results saved to {out_path}")
+        print_summary(benchmark_a["summary"], worst_n=0, results=benchmark_a["results"])
+
+        benchmark_b = run_benchmark(
+            qa_pairs,
+            source_type_filter="web",
+            limit=args.limit,
+            no_cache=args.no_cache,
+            label="Web",
+        )
+        print_summary(benchmark_b["summary"], worst_n=0, results=benchmark_b["results"])
+
+        # Side-by-side comparison
+        print_comparison(
+            benchmark_a["summary"], benchmark_b["summary"],
+            benchmark_a["results"], benchmark_b["results"],
+        )
+
+        if not args.no_history:
+            save_history(benchmark_a["summary"])
+            save_history(benchmark_b["summary"])
+
+        if args.output:
+            out_path = Path(args.output)
+            combined = {"pdf": benchmark_a, "web": benchmark_b}
+            out_path.write_text(
+                json.dumps(combined, indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            print(f"\nFull comparison results saved to {out_path}")
+
+    else:
+        # Single run mode
+        label = ""
+        if args.source:
+            label = f"source={args.source}"
+        elif args.source_url:
+            label = f"source_url={args.source_url}"
+        elif args.source_type:
+            label = f"type={args.source_type}"
+
+        benchmark = run_benchmark(
+            qa_pairs,
+            source_filter=args.source,
+            source_url_filter=args.source_url,
+            source_type_filter=args.source_type,
+            limit=args.limit,
+            no_cache=args.no_cache,
+            label=label,
+        )
+        print_summary(benchmark["summary"], worst_n=args.worst, results=benchmark["results"])
+
+        if not args.no_history:
+            save_history(benchmark["summary"])
+
+        if args.output:
+            out_path = Path(args.output)
+            out_path.write_text(
+                json.dumps(benchmark, indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            print(f"\nFull results saved to {out_path}")
 
 
 if __name__ == "__main__":
