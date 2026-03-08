@@ -11,7 +11,10 @@ from rtfm.config import settings
 from rtfm.embeddings import embed_texts
 from rtfm.ingest.chunker import chunk_text
 from rtfm.ingest.loader import discover_files, load_file
+from rtfm.observability.logging import get_logger
 from rtfm.redis_client import get_redis, get_redis_binary
+
+logger = get_logger("ingest")
 
 
 SCHEMA_PATH = Path(__file__).parent.parent.parent.parent / "schemas" / "documents.yaml"
@@ -84,7 +87,9 @@ def ingest_path(path: Path) -> dict:
     for file_path in files:
         text, metadata = load_file(file_path)
         chunks = chunk_text(text, metadata)
-        total_chunks += _store_chunks(chunks, metadata, r_bin)
+        stored = _store_chunks(chunks, metadata, r_bin)
+        total_chunks += stored
+        logger.debug("File ingested", extra={"path": str(file_path), "chunks_created": stored})
 
     # Flush semantic cache on re-ingestion to avoid stale answers
     try:
@@ -92,6 +97,8 @@ def ingest_path(path: Path) -> dict:
     except Exception:
         pass  # Cache may not exist yet
 
+    logger.info("Path ingestion complete",
+                extra={"files_processed": len(files), "chunks_created": total_chunks})
     return {"files": len(files), "chunks": total_chunks}
 
 
@@ -130,9 +137,7 @@ def ingest_url(url: str, recursive: bool = False, delay: float = 1.0) -> dict:
                 time.sleep(delay)
 
         except Exception as e:
-            # Log but continue with other pages
-            import sys
-            print(f"Warning: Failed to ingest {page_url}: {e}", file=sys.stderr)
+            logger.warning("Failed to ingest URL", extra={"url": page_url, "error": str(e)})
             continue
 
     # Flush semantic cache on re-ingestion

@@ -25,6 +25,7 @@ python -m rtfm ask "How do I install RTFM?"
 - `src/rtfm/memory/` — session history and long-term memory
 - `src/rtfm/api/` — FastAPI endpoints
 - `src/rtfm/guardrails/` — input validation, PII redaction, output filtering
+- `src/rtfm/observability/` — structured logging, OpenTelemetry tracing, Prometheus metrics
 - `src/rtfm/cli/` — Typer CLI
 - `schemas/` — RedisVL index schemas (YAML)
 - `evals/` — benchmark framework (Pro Git Q&A, PDF vs Web comparison, LLM judge, multi-model)
@@ -55,3 +56,4 @@ python -m rtfm ask "How do I install RTFM?"
 - Token budget: truncate oldest session messages first, then reduce top_k
 - Web ingestion: HTML→markdown conversion preserving headings, code, tables; rate-limited crawling
 - Guardrails: opt-in (`GUARDRAILS_ENABLED=true`), prompt injection detection, PII redaction, off-topic blocking
+- Observability: structured JSON logging (`LOG_FORMAT=json|text`), OpenTelemetry tracing (`TRACING_ENABLED=true`), Prometheus metrics at `/metrics/prometheus`

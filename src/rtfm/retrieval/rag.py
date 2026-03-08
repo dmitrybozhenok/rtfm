@@ -5,7 +5,12 @@ import time
 from openai import OpenAI
 
 from rtfm.config import settings
+from rtfm.observability.logging import get_logger
+from rtfm.observability.metrics import metrics
+from rtfm.observability.tracing import trace_span
 from rtfm.retrieval.search import SearchResult, search_documents
+
+logger = get_logger("rag")
 
 SYSTEM_PROMPT = """You are RTFM, a documentation assistant. Answer the user's question using ONLY the provided context from documentation.
 
@@ -82,110 +87,148 @@ def ask(
     Returns dict with: answer, sources, cached, latency_ms, tokens_used
     """
     start = time.time()
-
-    # Input guardrails (opt-in)
-    if settings.guardrails_enabled:
-        try:
-            from rtfm.guardrails.input import validate_query
-
-            is_valid, reason = validate_query(question, settings)
-            if not is_valid:
-                latency = (time.time() - start) * 1000
-                return {
-                    "answer": reason,
-                    "sources": [],
-                    "cached": False,
-                    "latency_ms": round(latency, 1),
-                    "tokens_used": 0,
-                }
-        except Exception:
-            pass  # Graceful degradation
-
-    # Check semantic cache
-    cached_answer = None
-    cached_sources: list[dict] = []
-    try:
-        from rtfm.cache.semantic_cache import check_cache
-
-        cached_answer, cached_sources = check_cache(question)
-    except Exception:
-        pass  # Graceful degradation
-
-    if cached_answer is not None:
-        latency = (time.time() - start) * 1000
-        _record_metrics(latency, cached=True, tokens=0)
-        return {
-            "answer": cached_answer,
-            "sources": cached_sources,
-            "cached": True,
-            "latency_ms": round(latency, 1),
-            "tokens_used": 0,
-        }
-
-    # Vector search
-    results = search_documents(
-        question,
-        source_filter=source_filter,
-        section_filter=section_filter,
-        source_url_filter=source_url_filter,
-        source_type_filter=source_type_filter,
-    )
-    context = _format_context(results)
-
-    # Build system prompt with optional long-term memory
-    memory_context = ""
-    if long_term_memories:
-        memory_context = f"\nUser context from previous sessions:\n{long_term_memories}"
-    system = SYSTEM_PROMPT.format(memory_context=memory_context)
-
-    # Build messages
-    messages = _build_messages(question, context, system, session_history)
-
-    # Call LLM via Ollama (OpenAI-compatible API)
-    client = _get_client()
     llm_model = model_override or settings.llm_model
-    response = client.chat.completions.create(
-        model=llm_model,
-        messages=messages,
-        temperature=0,
-        max_tokens=1024,
-    )
 
-    answer = response.choices[0].message.content
-    tokens = (response.usage.prompt_tokens + response.usage.completion_tokens) if response.usage else 0
+    with trace_span("rag.ask", {"question": question, "model": llm_model}) as root_span:
+        # Input guardrails (opt-in)
+        if settings.guardrails_enabled:
+            try:
+                from rtfm.guardrails.input import validate_query
 
-    # Output guardrails (opt-in)
-    if settings.guardrails_enabled:
-        try:
-            from rtfm.guardrails.output import filter_output
+                with trace_span("guardrails.input") as g_span:
+                    is_valid, reason = validate_query(question, settings)
+                if not is_valid:
+                    latency = (time.time() - start) * 1000
+                    metrics.guardrail_blocks.inc()
+                    logger.info("Query blocked by guardrails",
+                                extra={"question": question, "guardrail_action": "blocked",
+                                       "guardrail_reason": reason, "latency_ms": round(latency, 1)})
+                    return {
+                        "answer": reason,
+                        "sources": [],
+                        "cached": False,
+                        "latency_ms": round(latency, 1),
+                        "tokens_used": 0,
+                    }
+            except Exception:
+                pass  # Graceful degradation
 
-            answer = filter_output(answer, settings)
-        except Exception:
-            pass  # Graceful degradation
+        # Check semantic cache
+        cached_answer = None
+        cached_sources: list[dict] = []
+        with trace_span("cache.check") as cache_span:
+            try:
+                from rtfm.cache.semantic_cache import check_cache
 
-    sources = [
-        {"file": r.source_file, "section": r.section, "score": r.score, "url": r.source_url}
-        for r in results
-    ]
+                cached_answer, cached_sources = check_cache(question)
+                cache_span.set_attribute("cache_hit", cached_answer is not None)
+            except Exception:
+                pass  # Graceful degradation
 
-    # Store in semantic cache (with sources)
-    try:
-        from rtfm.cache.semantic_cache import store_cache
+        if cached_answer is not None:
+            latency = (time.time() - start) * 1000
+            _record_metrics(latency, cached=True, tokens=0)
+            metrics.queries_total.inc()
+            metrics.cache_hits.inc()
+            metrics.query_latency.observe(latency)
+            logger.info("Query answered from cache",
+                        extra={"question": question, "latency_ms": round(latency, 1),
+                               "cached": True, "model": llm_model})
+            return {
+                "answer": cached_answer,
+                "sources": cached_sources,
+                "cached": True,
+                "latency_ms": round(latency, 1),
+                "tokens_used": 0,
+            }
 
-        store_cache(question, answer, sources=sources)
-    except Exception:
-        pass  # Graceful degradation
+        # Vector search
+        with trace_span("search", {"query": question}) as search_span:
+            results = search_documents(
+                question,
+                source_filter=source_filter,
+                section_filter=section_filter,
+                source_url_filter=source_url_filter,
+                source_type_filter=source_type_filter,
+            )
+            search_span.set_attribute("results_count", len(results))
+            search_ms = search_span.duration_ms
+        metrics.search_latency.observe(search_ms)
+        metrics.chunks_retrieved.observe(len(results))
 
-    latency = (time.time() - start) * 1000
-    _record_metrics(latency, cached=False, tokens=tokens)
+        context = _format_context(results)
 
-    return {
-        "answer": answer,
-        "sources": sources,
-        "cached": False,
-        "latency_ms": round(latency, 1),
-        "tokens_used": tokens,
-    }
+        # Build system prompt with optional long-term memory
+        memory_context = ""
+        if long_term_memories:
+            memory_context = f"\nUser context from previous sessions:\n{long_term_memories}"
+        system = SYSTEM_PROMPT.format(memory_context=memory_context)
+
+        # Build messages
+        messages = _build_messages(question, context, system, session_history)
+
+        # Call LLM via Ollama (OpenAI-compatible API)
+        with trace_span("llm.call", {"model": llm_model}) as llm_span:
+            client = _get_client()
+            response = client.chat.completions.create(
+                model=llm_model,
+                messages=messages,
+                temperature=0,
+                max_tokens=1024,
+            )
+            llm_ms = llm_span.duration_ms
+        metrics.llm_latency.observe(llm_ms)
+
+        answer = response.choices[0].message.content
+        tokens = (response.usage.prompt_tokens + response.usage.completion_tokens) if response.usage else 0
+        metrics.tokens_per_query.observe(tokens)
+
+        # Output guardrails (opt-in)
+        if settings.guardrails_enabled:
+            try:
+                from rtfm.guardrails.output import filter_output
+
+                with trace_span("guardrails.output"):
+                    answer = filter_output(answer, settings)
+            except Exception:
+                pass  # Graceful degradation
+
+        sources = [
+            {"file": r.source_file, "section": r.section, "score": r.score, "url": r.source_url}
+            for r in results
+        ]
+
+        # Store in semantic cache (with sources)
+        with trace_span("cache.store"):
+            try:
+                from rtfm.cache.semantic_cache import store_cache
+
+                store_cache(question, answer, sources=sources)
+            except Exception:
+                pass  # Graceful degradation
+
+        latency = (time.time() - start) * 1000
+        _record_metrics(latency, cached=False, tokens=tokens)
+
+        # Record Prometheus metrics
+        metrics.queries_total.inc()
+        metrics.cache_misses.inc()
+        metrics.query_latency.observe(latency)
+
+        source_files = [r.source_file for r in results]
+        logger.info("Query processed",
+                    extra={"question": question, "latency_ms": round(latency, 1),
+                           "cached": False, "chunks_retrieved": len(results),
+                           "tokens_used": tokens, "source_files": source_files,
+                           "model": llm_model})
+
+        return {
+            "answer": answer,
+            "sources": sources,
+            "cached": False,
+            "latency_ms": round(latency, 1),
+            "tokens_used": tokens,
+        }
 
 
 def ask_stream(
@@ -198,24 +241,38 @@ def ask_stream(
     source_type_filter: str | None = None,
 ):
     """Streaming RAG pipeline. Yields text chunks."""
+    start = time.time()
+
     # Check cache first
     try:
         from rtfm.cache.semantic_cache import check_cache
 
         cached_answer, _cached_sources = check_cache(question)
         if cached_answer is not None:
+            metrics.queries_total.inc()
+            metrics.cache_hits.inc()
+            latency = (time.time() - start) * 1000
+            metrics.query_latency.observe(latency)
+            logger.info("Streaming query answered from cache",
+                        extra={"question": question, "latency_ms": round(latency, 1), "cached": True})
             yield cached_answer
             return
     except Exception:
         pass
 
-    results = search_documents(
-        question,
-        source_filter=source_filter,
-        section_filter=section_filter,
-        source_url_filter=source_url_filter,
-        source_type_filter=source_type_filter,
-    )
+    with trace_span("search", {"query": question}) as search_span:
+        results = search_documents(
+            question,
+            source_filter=source_filter,
+            section_filter=section_filter,
+            source_url_filter=source_url_filter,
+            source_type_filter=source_type_filter,
+        )
+        search_span.set_attribute("results_count", len(results))
+        search_ms = search_span.duration_ms
+    metrics.search_latency.observe(search_ms)
+    metrics.chunks_retrieved.observe(len(results))
+
     context = _format_context(results)
 
     memory_context = ""
@@ -227,6 +284,7 @@ def ask_stream(
 
     client = _get_client()
     full_answer = ""
+    llm_start = time.time()
 
     stream = client.chat.completions.create(
         model=settings.llm_model,
@@ -242,6 +300,9 @@ def ask_stream(
             full_answer += text
             yield text
 
+    llm_ms = (time.time() - llm_start) * 1000
+    metrics.llm_latency.observe(llm_ms)
+
     # Cache the full answer (with sources)
     sources = [
         {"file": r.source_file, "section": r.section, "score": r.score, "url": r.source_url}
@@ -253,6 +314,16 @@ def ask_stream(
         store_cache(question, full_answer, sources=sources)
     except Exception:
         pass
+
+    latency = (time.time() - start) * 1000
+    metrics.queries_total.inc()
+    metrics.cache_misses.inc()
+    metrics.query_latency.observe(latency)
+
+    logger.info("Streaming query processed",
+                extra={"question": question, "latency_ms": round(latency, 1),
+                       "cached": False, "chunks_retrieved": len(results),
+                       "source_files": [r.source_file for r in results]})
 
 
 def _record_metrics(latency_ms: float, cached: bool, tokens: int) -> None:

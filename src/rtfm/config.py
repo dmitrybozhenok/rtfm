@@ -31,6 +31,11 @@ class Settings(BaseSettings):
     port: int = 8000
     workers: int = 1
     log_level: str = "info"
+    log_format: str = "json"  # "json" or "text"
+
+    # Observability
+    tracing_enabled: bool = False
+    tracing_exporter_url: str = ""  # OTLP gRPC endpoint, e.g. "http://localhost:4317"
 
     # Guardrails (opt-in)
     guardrails_enabled: bool = False

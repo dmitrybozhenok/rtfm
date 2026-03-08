@@ -9,11 +9,12 @@ from typing import Annotated
 
 _START_TIME = time.time()
 
-from fastapi import FastAPI, File, Form, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi import FastAPI, File, Form, Request, UploadFile
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from sse_starlette.sse import EventSourceResponse
 
 from rtfm.cache.semantic_cache import flush_cache, get_cache_metrics
+from rtfm.config import settings
 from rtfm.ingest.pipeline import ingest_path, ingest_url
 from rtfm.memory.longterm import format_memories, search_memory, store_memory
 from rtfm.memory.session import (
@@ -22,11 +23,33 @@ from rtfm.memory.session import (
     get_history_truncated,
     summarize_if_needed,
 )
+from rtfm.observability.logging import get_logger, setup_logging
+from rtfm.observability.metrics import metrics
 from rtfm.retrieval.rag import ask, ask_stream
+
+# Initialize structured logging on import
+setup_logging(log_level=settings.log_level, log_format=settings.log_format)
+logger = get_logger("api")
 
 app = FastAPI(title="RTFM", version="0.1.0")
 
 _STATIC_DIR = Path(__file__).parent / "static"
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Log every HTTP request with method, path, status, and latency."""
+    start = time.time()
+    response = await call_next(request)
+    latency_ms = (time.time() - start) * 1000
+
+    # Skip noisy health/metrics polling
+    if request.url.path not in ("/health", "/metrics", "/metrics/prometheus"):
+        logger.info("HTTP request",
+                     extra={"method": request.method, "path": request.url.path,
+                            "status_code": response.status_code,
+                            "latency_ms": round(latency_ms, 1)})
+    return response
 
 
 @app.get("/")
@@ -49,6 +72,12 @@ async def ingest_endpoint(
 
     try:
         stats = ingest_path(tmp_path)
+        metrics.ingestion_files.inc(stats.get("files", 0))
+        metrics.ingestion_chunks.inc(stats.get("chunks", 0))
+        logger.info("File ingested",
+                     extra={"files_processed": stats.get("files", 0),
+                            "chunks_created": stats.get("chunks", 0),
+                            "path": str(tmp_path)})
         return {"status": "ok", **stats}
     finally:
         tmp_path.unlink(missing_ok=True)
@@ -61,6 +90,12 @@ async def ingest_path_endpoint(path: str = Form(...)):
     if not p.exists():
         return JSONResponse(status_code=404, content={"error": f"Path not found: {path}"})
     stats = ingest_path(p)
+    metrics.ingestion_files.inc(stats.get("files", 0))
+    metrics.ingestion_chunks.inc(stats.get("chunks", 0))
+    logger.info("Path ingested",
+                 extra={"files_processed": stats.get("files", 0),
+                        "chunks_created": stats.get("chunks", 0),
+                        "path": path})
     return {"status": "ok", **stats}
 
 
@@ -72,6 +107,10 @@ async def ingest_url_endpoint(
 ):
     """Ingest content from a URL."""
     stats = ingest_url(url, recursive=recursive, delay=delay)
+    metrics.ingestion_chunks.inc(stats.get("chunks", 0))
+    logger.info("URL ingested",
+                 extra={"url": url, "chunks_created": stats.get("chunks", 0),
+                        "files_processed": stats.get("pages", 0)})
     return {"status": "ok", **stats}
 
 
@@ -165,6 +204,22 @@ async def metrics_endpoint():
     return get_cache_metrics()
 
 
+@app.get("/metrics/prometheus")
+async def prometheus_metrics_endpoint():
+    """Prometheus-compatible metrics endpoint."""
+    # Update index size gauge
+    try:
+        from rtfm.redis_client import get_redis
+
+        r = get_redis()
+        info = r.ft("rtfm-docs").info()
+        metrics.index_size.set(int(info.get("num_docs", 0)))
+    except Exception:
+        pass
+
+    return PlainTextResponse(metrics.to_prometheus(), media_type="text/plain; version=0.0.4")
+
+
 @app.post("/cache/flush")
 async def flush_cache_endpoint():
     """Flush the semantic cache."""
@@ -184,7 +239,6 @@ async def health_endpoint():
     """Check health of all subsystems."""
     import httpx
 
-    from rtfm.config import settings
     from rtfm.redis_client import get_redis
 
     # Check Redis
@@ -275,6 +329,7 @@ async def clear_documents_endpoint():
     except Exception:
         pass
 
+    logger.info("Documents cleared", extra={"chunks_created": deleted})
     return {"status": "ok", "deleted_chunks": deleted}
 
 

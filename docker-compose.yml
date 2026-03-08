@@ -65,6 +65,18 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # Optional: Jaeger for trace visualization (enable with --profile tracing)
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"   # Jaeger UI
+      - "4317:4317"     # OTLP gRPC
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    profiles:
+      - tracing
+    restart: unless-stopped
+
 volumes:
   redis-data:
   ollama-data:
