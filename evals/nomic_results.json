@@ -1,0 +1,1453 @@
+{
+  "summary": {
+    "label": "",
+    "total_questions": 30,
+    "avg_keyword_score": 0.806,
+    "avg_semantic_similarity": 0.893,
+    "avg_composite_score": 0.858,
+    "refusal_rate": 0.033,
+    "cache_hit_rate": 0.0,
+    "avg_latency_ms": 4587.1,
+    "pass_rate": 0.967,
+    "category_breakdown": {
+      "Basic Git Commands": {
+        "count": 5,
+        "avg_composite": 0.924,
+        "avg_keyword": 1.0,
+        "avg_semantic": 0.874,
+        "pass_rate": 1.0,
+        "refusals": 0
+      },
+      "Branching": {
+        "count": 5,
+        "avg_composite": 0.813,
+        "avg_keyword": 0.7,
+        "avg_semantic": 0.887,
+        "pass_rate": 1.0,
+        "refusals": 0
+      },
+      "Git Internals": {
+        "count": 5,
+        "avg_composite": 0.927,
+        "avg_keyword": 0.933,
+        "avg_semantic": 0.922,
+        "pass_rate": 1.0,
+        "refusals": 0
+      },
+      "Merging": {
+        "count": 4,
+        "avg_composite": 0.906,
+        "avg_keyword": 0.875,
+        "avg_semantic": 0.926,
+        "pass_rate": 1.0,
+        "refusals": 0
+      },
+      "Rebasing": {
+        "count": 4,
+        "avg_composite": 0.79,
+        "avg_keyword": 0.625,
+        "avg_semantic": 0.9,
+        "pass_rate": 1.0,
+        "refusals": 0
+      },
+      "Remotes": {
+        "count": 4,
+        "avg_composite": 0.751,
+        "avg_keyword": 0.625,
+        "avg_semantic": 0.835,
+        "pass_rate": 0.75,
+        "refusals": 1
+      },
+      "Workflows": {
+        "count": 3,
+        "avg_composite": 0.88,
+        "avg_keyword": 0.833,
+        "avg_semantic": 0.911,
+        "pass_rate": 1.0,
+        "refusals": 0
+      }
+    }
+  },
+  "results": [
+    {
+      "question": "How do you initialize a new Git repository in an existing directory?",
+      "expected_answer": "To turn a directory into a new Git repository, you run the command git init. This command creates a .git directory where Git stores all the project's metadata and object database.",
+      "rtfm_answer": "To initialize a new Git repository in an existing directory, you first need to navigate to the directory using the appropriate command for your operating system. For Linux or macOS, you would use:\n\n```bash\n$ cd /home/user/my_project\n```\n\nFor Windows, you would use:\n\n```bash\n$ cd C:/Users/user/my_project\n```\n\nThen, you can initialize the Git repository by running:\n\n```bash\n$ git init\n```\n\nThis command creates a new subdirectory named `.git` that contains all the necessary repository files, effectively creating a Git repository skeleton in the directory. At this point, nothing in your project is tracked yet.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.878,
+      "composite_score": 0.927,
+      "conciseness_ratio": 0.292,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 11102.3,
+      "tokens_used": 2649,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Initializing a Repository in an Existing Directory**",
+          "score": 8.285547256469727,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Snapshotting**",
+          "score": 7.341610908508301,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Putting the Bare Repository on a Server**",
+          "score": 6.922533988952637,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Cloning an Existing Repository**",
+          "score": 6.154257774353027,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Plumbing**",
+          "score": 5.752945899963379,
+          "url": ""
+        }
+      ],
+      "category": "Basic Git Commands"
+    },
+    {
+      "question": "How do you get a copy of an existing Git repository from a server?",
+      "expected_answer": "You use the git clone command to receive a full copy of nearly all data the server has for that project. Unlike other version control systems, Git receives every version of every file for the history of the project by default.",
+      "rtfm_answer": "To get a copy of an existing Git repository from a server, you use the `git clone` command. For example, to clone a repository from a server with the URL `https://github.com/libgit2/libgit2`, you would run:\n\n```bash\n$ git clone https://github.com/libgit2/libgit2\n```\n\nThis command creates a new directory with the repository and initializes a local Git repository within it. You can also specify a local directory to clone into by providing the directory path as an argument:\n\n```bash\n$ git clone https://github.com/libgit2/libgit2 /path/to/local/repo\n```\n\nThis approach is useful for getting a copy of an existing repository, such as one you want to contribute to.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.84,
+      "composite_score": 0.904,
+      "conciseness_ratio": 0.34,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4458.2,
+      "tokens_used": 2660,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Putting the Bare Repository on a Server**",
+          "score": 6.78566837310791,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Snapshotting**",
+          "score": 5.948671817779541,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Cloning an Existing Repository**",
+          "score": 5.8263654708862305,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Local Protocol**",
+          "score": 5.398043155670166,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Small Setups**",
+          "score": 5.344200134277344,
+          "url": ""
+        }
+      ],
+      "category": "Basic Git Commands"
+    },
+    {
+      "question": "What command is used to check which files are in which state within your working directory?",
+      "expected_answer": "The git status command shows you which files are modified but unstaged, which are staged for the next commit, and which are untracked. It also provides hints on how to move files between these states.",
+      "rtfm_answer": "The command used to check which files are in which state within your working directory is `git status`. [Source 1]",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.879,
+      "composite_score": 0.927,
+      "conciseness_ratio": 1.754,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 3840.2,
+      "tokens_used": 2589,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 3.144469738006592,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Checking the Status of Your Files**",
+          "score": 2.3391427993774414,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**git checkout**",
+          "score": 2.1458754539489746,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Cleaning your Working Directory**",
+          "score": 1.5911974906921387,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Stashing Your Work**",
+          "score": 0.5209312438964844,
+          "url": ""
+        }
+      ],
+      "category": "Basic Git Commands"
+    },
+    {
+      "question": "How do you record staged snapshots permanently to the Git history?",
+      "expected_answer": "The git commit command takes the files exactly as they are in the staging area and stores that snapshot permanently in the Git directory. Each commit also stores metadata such as the author's name, email, and a commit message.",
+      "rtfm_answer": "To record staged snapshots permanently to the Git history, you need to commit the changes. You can do this by running the `git commit` command. This command stages all the changes in your working directory that are ready to be committed and then creates a new snapshot of your project in the Git history. For example, if you have staged changes and want to commit them, you can use `git commit -m \"Your commit message\"`. This will create a commit with the message you provide, including details about the changes made.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.891,
+      "composite_score": 0.935,
+      "conciseness_ratio": 0.436,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4296.3,
+      "tokens_used": 2722,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Removing Files**",
+          "score": 3.707075834274292,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Checking the Status of Your Files**",
+          "score": 2.2824156284332275,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Staging Modified Files**",
+          "score": 1.688889503479004,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Skipping the Staging Area**",
+          "score": 1.318894386291504,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Tracking New Files**",
+          "score": 1.2016377449035645,
+          "url": ""
+        }
+      ],
+      "category": "Basic Git Commands"
+    },
+    {
+      "question": "What is the command to stage changes for the next commit?",
+      "expected_answer": "The git add command adds content from the working directory into the staging area, also known as the index. This allows you to selectively craft what your next commit snapshot will look like.",
+      "rtfm_answer": "The command to stage changes for the next commit is `git add <file>...`. This command is used to add changes to the staging area, preparing them for the next commit. [Source 1]",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.88,
+      "composite_score": 0.928,
+      "conciseness_ratio": 1.085,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 3988.4,
+      "tokens_used": 2706,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Staging Modified Files**",
+          "score": 5.37833309173584,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Staging Modified Files**",
+          "score": 4.073757648468018,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Viewing Your Staged and Unstaged Changes**",
+          "score": 4.000741958618164,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Unstaging a Staged File**",
+          "score": 3.9940216541290283,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Removing Files**",
+          "score": 3.9268558025360107,
+          "url": ""
+        }
+      ],
+      "category": "Basic Git Commands"
+    },
+    {
+      "question": "What is the technical definition of a branch in Git?",
+      "expected_answer": "A branch in Git is simply a lightweight, movable pointer to one of the commits in your history. The default branch name created by git init is master.",
+      "rtfm_answer": "In Git, a branch is a lightweight movable pointer to one of the commits in the repository. It is essentially a simple file that contains the 40 character SHA-1 checksum of the commit it points to. This makes creating and destroying branches very cheap, as it only involves writing 41 bytes to a file (40 characters and a newline).",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.887,
+      "composite_score": 0.932,
+      "conciseness_ratio": 0.455,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4138.9,
+      "tokens_used": 2600,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Branches in a Nutshell**",
+          "score": 2.825669050216675,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Branches in a Nutshell**",
+          "score": 0.8915227651596069,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Branching and Merging**",
+          "score": -0.15514269471168518,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Other GUIs**",
+          "score": -0.30066755414009094,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Remote Branches**",
+          "score": -0.4069969058036804,
+          "url": ""
+        }
+      ],
+      "category": "Branching"
+    },
+    {
+      "question": "How do you create a new branch without switching to it?",
+      "expected_answer": "You can create a new branch pointer using the git branch command followed by the branch name. This creates a new pointer to the same commit you are currently on.",
+      "rtfm_answer": "To create a new branch without switching to it, you can use the `git switch -c` command followed by the branch name. For example, to create a branch named `new-feature` without switching to it, you would run:\n\n```\ngit switch -c new-feature\n```\n\nThis command creates the branch and immediately switches to it, but if you want to create the branch and then switch to it later, you would use:\n\n```\ngit switch -c new-feature\n```\n\nThen to switch to the newly created branch:\n\n```\ngit switch new-feature\n```",
+      "keyword_score": 0.0,
+      "semantic_similarity": 0.87,
+      "composite_score": 0.522,
+      "conciseness_ratio": 0.321,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4424.0,
+      "tokens_used": 2802,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Branching**",
+          "score": 6.083443641662598,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Other GUIs**",
+          "score": 5.70596981048584,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Branching**",
+          "score": 5.447874069213867,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Branching and Merging**",
+          "score": 4.780779838562012,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 4.7140583992004395,
+          "url": ""
+        }
+      ],
+      "category": "Branching"
+    },
+    {
+      "question": "How do you switch from your current branch to another existing branch?",
+      "expected_answer": "The git checkout command is used to switch to an existing branch. When you switch branches, Git reverts the files in your working directory to look like they did the last time you committed on that branch.",
+      "rtfm_answer": "To switch from your current branch to another existing branch, you use the command `git switch <branch-name>`. For example, to switch to the branch named `testing-branch`, you would run `git switch testing-branch`. [Source 1]",
+      "keyword_score": 0.5,
+      "semantic_similarity": 0.861,
+      "composite_score": 0.717,
+      "conciseness_ratio": 0.911,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4159.9,
+      "tokens_used": 2814,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Branching**",
+          "score": 6.999459266662598,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 4.469442367553711,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Branching and Merging**",
+          "score": 4.093133449554443,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 3.917860507965088,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Branching**",
+          "score": 3.208718776702881,
+          "url": ""
+        }
+      ],
+      "category": "Branching"
+    },
+    {
+      "question": "What is a shortcut command to create a new branch and switch to it immediately?",
+      "expected_answer": "You can use the git checkout command with the -b switch to create a new branch and switch to it at the same time. This is a very common operation used when starting work on a new topic or issue.",
+      "rtfm_answer": "The shortcut command to create a new branch and switch to it immediately is:\n\n```git switch -c new-branch```\n\nor\n\n```git checkout -b new-branch```\n\nBoth commands create a new branch named `new-branch` and switch to it. [Source 1]",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.896,
+      "composite_score": 0.938,
+      "conciseness_ratio": 0.847,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4091.5,
+      "tokens_used": 2669,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Branching**",
+          "score": 5.188459396362305,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Creating a New Branch**",
+          "score": 3.4015283584594727,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Branching**",
+          "score": 3.3460893630981445,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Other GUIs**",
+          "score": 2.3141815662384033,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**git mergetool**",
+          "score": 1.8038098812103271,
+          "url": ""
+        }
+      ],
+      "category": "Branching"
+    },
+    {
+      "question": "What does the special HEAD pointer represent in Git?",
+      "expected_answer": "In Git, HEAD is a special pointer that refers to the local branch you are currently working on. It serves as the parent of the next commit you create.",
+      "rtfm_answer": "The special HEAD pointer in Git represents the local branch you're currently on. It is a pointer to the branch you are actively working on, and it moves as you switch branches using the `git checkout` command. When you run `git checkout <branch>`, HEAD is updated to point to the commit that the branch points to. [Source 3]",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.923,
+      "composite_score": 0.954,
+      "conciseness_ratio": 0.463,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4274.7,
+      "tokens_used": 2919,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Libgit2**",
+          "score": 4.334290504455566,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Switching Branches**",
+          "score": 4.16303825378418,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Creating a New Branch**",
+          "score": 3.0553500652313232,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Tags**",
+          "score": 2.5503129959106445,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**The Three Trees**",
+          "score": 1.1118652820587158,
+          "url": ""
+        }
+      ],
+      "category": "Branching"
+    },
+    {
+      "question": "What happens during a fast-forward merge?",
+      "expected_answer": "A fast-forward merge occurs when the commit you are merging in is a direct descendant of the commit you are currently on. Git simply moves the branch pointer forward because there is no divergent work to merge together.",
+      "rtfm_answer": "During a fast-forward merge, Git simply moves the pointer forward. This occurs when the commit you are merging into is directly ahead of the commit you are merging from, meaning there is no divergent work to merge together. As a result, Git simplifies things by moving the pointer forward, and the history remains linear. Your changes are now in the snapshot of the commit pointed to by the target branch, and you can deploy the fix.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.964,
+      "composite_score": 0.978,
+      "conciseness_ratio": 0.506,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4422.3,
+      "tokens_used": 2902,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Merging**",
+          "score": 1.4112962484359741,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "Jessica's Machine",
+          "score": -0.33723944425582886,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Branching**",
+          "score": -1.3075263500213623,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "copy the new URL to your local config",
+          "score": -2.371304750442505,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Other Types of Merges**",
+          "score": -3.0684714317321777,
+          "url": ""
+        }
+      ],
+      "category": "Merging"
+    },
+    {
+      "question": "How do you merge another branch into your currently checked-out branch?",
+      "expected_answer": "To integrate changes, you use the git merge command followed by the name of the branch you wish to merge in. If the histories have diverged, Git performs a three-way merge using a common ancestor.",
+      "rtfm_answer": "To merge another branch into your currently checked-out branch, you can use the `git merge` command followed by the name of the branch you want to merge. For example, if you want to merge the `iss53` branch into the currently checked-out branch, you would run:\n\n```bash\ngit merge iss53\n```\n\nThis command will attempt to merge the changes from the `iss53` branch into your current branch. If there are conflicts, Git will prompt you to resolve them. Once resolved, you can commit the merge with:\n\n```bash\ngit commit\n```\n\nIf you want to force the merge without prompting for conflicts, you can use the `-m` option to provide a commit message:\n\n```bash\ngit merge -m \"Merge branch 'iss53'\" iss53\n```\n\nAfter the merge, you can verify the changes were applied correctly and commit the merge:\n\n```bash\ngit status\ngit commit\n```\n\nThis process integrates the changes from the `iss53` branch into your current branch, updating your local history.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.857,
+      "composite_score": 0.914,
+      "conciseness_ratio": 0.209,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 5301.2,
+      "tokens_used": 2947,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 7.279913902282715,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Branching**",
+          "score": 6.20796012878418,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**The Basic Rebase**",
+          "score": 5.996463298797607,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Branch Management**",
+          "score": 5.929391860961914,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Merge Conflicts**",
+          "score": 5.804932594299316,
+          "url": ""
+        }
+      ],
+      "category": "Merging"
+    },
+    {
+      "question": "What is unique about a merge commit compared to a normal commit?",
+      "expected_answer": "A merge commit is special because it has more than one parent. It represents a snapshot that results from a three-way merge of different development lines.",
+      "rtfm_answer": "A merge commit is special because it has more than one parent, unlike a normal commit which has only one parent.",
+      "keyword_score": 0.5,
+      "semantic_similarity": 0.919,
+      "composite_score": 0.752,
+      "conciseness_ratio": 1.384,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4010.7,
+      "tokens_used": 2689,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Merge Conflicts**",
+          "score": 0.7649996280670166,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Rebase When You Rebase**",
+          "score": 0.7183626890182495,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Rebase When You Rebase**",
+          "score": 0.10837038606405258,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Undoing Merges**",
+          "score": -0.4411919116973877,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Other Types of Merges**",
+          "score": -0.9571563005447388,
+          "url": ""
+        }
+      ],
+      "category": "Merging"
+    },
+    {
+      "question": "What occurs if you change the same part of the same file differently in two branches being merged?",
+      "expected_answer": "Git will encounter a merge conflict and will not be able to merge the branches cleanly. It adds conflict markers to the affected files and requires the user to resolve the differences manually before committing.",
+      "rtfm_answer": "If you change the same part of the same file differently in the two branches being merged, Git won't be able to merge them cleanly. This results in a merge conflict, which Git marks in the conflicted file with special markers. You need to manually resolve these conflicts by editing the files and then commit the resolved changes.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.964,
+      "composite_score": 0.979,
+      "conciseness_ratio": 0.639,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4519.1,
+      "tokens_used": 2710,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Merge Conflicts**",
+          "score": 4.290951728820801,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Other Types of Merges**",
+          "score": 3.1845715045928955,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Basic Merge Conflicts**",
+          "score": 2.8770623207092285,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Other Types of Merges**",
+          "score": 2.3213748931884766,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**The Basic Rebase**",
+          "score": 1.880542516708374,
+          "url": ""
+        }
+      ],
+      "category": "Merging"
+    },
+    {
+      "question": "What is the process of rebasing in Git?",
+      "expected_answer": "Rebasing involves taking all the changes that were committed on one branch and replaying them on top of another branch. This operation rewinds the head to a common ancestor, saves diffs as temporary patches, and applies them in order on the target branch.",
+      "rtfm_answer": "Rebasing in Git is essentially an automated cherry-pick where it determines a series of commits and then applies them one by one in the same order somewhere else. It's used to integrate changes from one branch into another, often to clean up the commit history by avoiding merge commits. For example, you can use the `--onto` option to replay changes from one branch onto another, effectively merging changes without creating a new merge commit. This process can be used to integrate client-side changes into the mainline before server-side changes are ready.",
+      "keyword_score": 0.5,
+      "semantic_similarity": 0.88,
+      "composite_score": 0.728,
+      "conciseness_ratio": 0.456,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 5022.7,
+      "tokens_used": 2686,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**git am**",
+          "score": 3.7866318225860596,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**The Perils of Rebasing**",
+          "score": 2.8818178176879883,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**The Perils of Rebasing**",
+          "score": 2.2220706939697266,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**More Interesting Rebases**",
+          "score": 1.7022911310195923,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**More Interesting Rebases**",
+          "score": 1.3304355144500732,
+          "url": ""
+        }
+      ],
+      "category": "Rebasing"
+    },
+    {
+      "question": "What is the primary risk of rebasing commits that have been pushed publicly?",
+      "expected_answer": "The golden rule of rebasing is to never rebase commits that exist outside your repository and that others may have based work on. Rebasing rewritten history that has been shared causes major confusion for collaborators who must then re-merge their own work.",
+      "rtfm_answer": "The primary risk of rebasing commits that have been pushed publicly is that it can cause conflicts and frustration for collaborators who have already based work on those commits. If you rebase such commits, your collaborators will need to re-merge their work, leading to a messy history that can be difficult to resolve. [Source 3: The Perils of Rebasing]",
+      "keyword_score": 0.5,
+      "semantic_similarity": 0.908,
+      "composite_score": 0.745,
+      "conciseness_ratio": 0.724,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4145.1,
+      "tokens_used": 2846,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Rebase When You Rebase**",
+          "score": 0.44894281029701233,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Rebase vs. Merge**",
+          "score": -0.15795056521892548,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**The Perils of Rebasing**",
+          "score": -0.2180960774421692,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Git on the Server**",
+          "score": -2.8698272705078125,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "Rebase 710f0f8..a5f4a0d onto 710f0f8",
+          "score": -3.4776856899261475,
+          "url": ""
+        }
+      ],
+      "category": "Rebasing"
+    },
+    {
+      "question": "How can you stop a rebase that is in progress and return to your original state?",
+      "expected_answer": "If a rebase becomes too complex or you decide it was a mistake, you can run git rebase --abort. This returns your repository to the exact state it was in before the rebase command was started.",
+      "rtfm_answer": "To stop a rebase that is in progress and return to your original state, you can use the `git rebase --abort` command. This will abort the rebase and your repository will be returned to the state it was in before you started the rebase.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.946,
+      "composite_score": 0.968,
+      "conciseness_ratio": 0.817,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4671.5,
+      "tokens_used": 2978,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 3.537285327911377,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "Rebase 710f0f8..a5f4a0d onto 710f0f8",
+          "score": 1.538682460784912,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**The Nuclear Option: filter-branch**",
+          "score": 1.4994622468948364,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "Rebase 710f0f8..a5f4a0d onto 710f0f8",
+          "score": 0.798862636089325,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": -0.3337891101837158,
+          "url": ""
+        }
+      ],
+      "category": "Rebasing"
+    },
+    {
+      "question": "What is one major benefit of rebasing over merging when integrating changes?",
+      "expected_answer": "Rebasing produces a cleaner, linear project history because it makes parallel work appear as if it happened in series. This is often preferred by project maintainers so they can integrate patches with a simple fast-forward.",
+      "rtfm_answer": "One major benefit of rebasing over merging when integrating changes is that it makes the history cleaner and linear, as rebasing replays changes from one line of work onto another in the order they were introduced, whereas merging takes the endpoints and merges them together.",
+      "keyword_score": 0.5,
+      "semantic_similarity": 0.865,
+      "composite_score": 0.719,
+      "conciseness_ratio": 0.808,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4300.7,
+      "tokens_used": 2763,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**The Basic Rebase**",
+          "score": 1.0919721126556396,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**More Interesting Rebases**",
+          "score": 0.8716586232185364,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**More Interesting Rebases**",
+          "score": 0.846998929977417,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Git and Subversion**",
+          "score": 0.6955705285072327,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "! /usr/bin/env ruby",
+          "score": -0.05272842198610306,
+          "url": ""
+        }
+      ],
+      "category": "Rebasing"
+    },
+    {
+      "question": "How do you register a new remote repository handle for your project?",
+      "expected_answer": "You use the git remote add command followed by a shortname and the URL of the repository. This allows you to reference that URL easily using the shortname on the command line.",
+      "rtfm_answer": "To register a new remote repository handle for your project, you can use the command `git remote add <shortname> <url>`. For example, to add a remote repository named `pb` with the URL `https://github.com/paulboone/ticgit`, you would run:\n\n```bash\n$ git remote add pb https://github.com/paulboone/ticgit\n```\n\nAfter adding the remote, you can reference it by its short name in commands like `git fetch` or `git push`.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.925,
+      "composite_score": 0.955,
+      "conciseness_ratio": 0.421,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4468.4,
+      "tokens_used": 2757,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Adding Collaborators**",
+          "score": 3.530364990234375,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Fetching and Pulling from Your Remotes**",
+          "score": 3.383185386657715,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Creating a New Repository**",
+          "score": 3.334268808364868,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Working Together**",
+          "score": 1.7538799047470093,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Local Protocol**",
+          "score": 1.2576627731323242,
+          "url": ""
+        }
+      ],
+      "category": "Remotes"
+    },
+    {
+      "question": "What is the difference between fetching and pulling from a remote?",
+      "expected_answer": "The git fetch command downloads all data from a remote project that you don't have yet but does not automatically merge it with your work. The git pull command is a combination of fetching and then automatically merging that remote data into your current branch.",
+      "rtfm_answer": "I don't have enough information in the documentation to answer that question.",
+      "keyword_score": 0.0,
+      "semantic_similarity": 0.603,
+      "composite_score": 0.362,
+      "conciseness_ratio": 2.0,
+      "is_refusal": true,
+      "cached": false,
+      "latency_ms": 3853.0,
+      "tokens_used": 2528,
+      "sources": [
+        {
+          "file": "AI Engineering.pdf",
+          "section": "**Preface**",
+          "score": -7.954132556915283,
+          "url": ""
+        },
+        {
+          "file": "AI Engineering.pdf",
+          "section": "**Preface**",
+          "score": -8.117962837219238,
+          "url": ""
+        },
+        {
+          "file": "AI Engineering.pdf",
+          "section": "**Preface**",
+          "score": -8.908515930175781,
+          "url": ""
+        },
+        {
+          "file": "AI Engineering.pdf",
+          "section": "**Preface**",
+          "score": -9.607646942138672,
+          "url": ""
+        },
+        {
+          "file": "AI Engineering.pdf",
+          "section": "**Preface**",
+          "score": -10.386734008789062,
+          "url": ""
+        }
+      ],
+      "category": "Remotes"
+    },
+    {
+      "question": "How do you push your local branch changes to a remote repository?",
+      "expected_answer": "You use the command git push <remote> <branch> to share your commits. This only works if you have write access to the server and if no one else has pushed changes since your last fetch.",
+      "rtfm_answer": "To push your local branch changes to a remote repository, you use the `git push` command. For example, to push your local branch `serverfix` to the remote branch `serverfix` on the `origin` remote, you would run:\n\n```bash\ngit push origin serverfix:serverfix\n```\n\nThis command pushes your local `serverfix` branch to the remote `serverfix` branch. If you want to push to a different branch name on the remote, you can specify the remote branch name directly, like this:\n\n```bash\ngit push origin serverfix:awesomebranch\n```\n\nThis pushes your local `serverfix` branch to the remote `awesomebranch` branch.",
+      "keyword_score": 0.5,
+      "semantic_similarity": 0.853,
+      "composite_score": 0.712,
+      "conciseness_ratio": 0.307,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4619.7,
+      "tokens_used": 2724,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**git archive**",
+          "score": 7.79276180267334,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Renaming and Removing Remotes**",
+          "score": 6.192307472229004,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Pushing to Your Remotes**",
+          "score": 6.123936653137207,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Determining What Is Introduced**",
+          "score": 5.390964508056641,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 5.36978816986084,
+          "url": ""
+        }
+      ],
+      "category": "Remotes"
+    },
+    {
+      "question": "What are remote-tracking branches?",
+      "expected_answer": "Remote-tracking branches are local references that represent the state of branches on a remote repository at the time of your last communication. They act as bookmarks to remind you where the remote branches were last seen.",
+      "rtfm_answer": "Remote-tracking branches are references to the state of remote branches. They are local references that Git moves for you whenever you do network communication to ensure they accurately represent the state of the remote repository. Think of them as bookmarks to remind you where the branches in your remote repositories were the last time you connected to them.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.959,
+      "composite_score": 0.976,
+      "conciseness_ratio": 0.618,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4316.6,
+      "tokens_used": 2638,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Remote Branches**",
+          "score": 4.833073616027832,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Tracking Branches**",
+          "score": 4.691477298736572,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Pushing**",
+          "score": 4.239622592926025,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 3.916508913040161,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Deleting Remote Branches**",
+          "score": 2.960845470428467,
+          "url": ""
+        }
+      ],
+      "category": "Remotes"
+    },
+    {
+      "question": "What are the three main sections of a Git project that files reside in?",
+      "expected_answer": "Files in a Git project exist in the working tree, the staging area (also called the index), and the Git directory. The working tree is your local sandbox, the index stores information for the next commit, and the Git directory holds the metadata and object database.",
+      "rtfm_answer": "The three main sections of a Git project that files reside in are the working tree, the staging area, and the Git directory. [Source 1]",
+      "keyword_score": 0.667,
+      "semantic_similarity": 0.914,
+      "composite_score": 0.815,
+      "conciseness_ratio": 1.97,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4014.1,
+      "tokens_used": 2574,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**The Three States**",
+          "score": 4.555872917175293,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Git Objects**",
+          "score": 0.2017786055803299,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Git Objects**",
+          "score": -0.9198372960090637,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**The Command Line**",
+          "score": -1.2851802110671997,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Nearly Every Operation Is Local**",
+          "score": -2.249030113220215,
+          "url": ""
+        }
+      ],
+      "category": "Git Internals"
+    },
+    {
+      "question": "What are the three types of objects Git stores in its object database?",
+      "expected_answer": "Git's core data store consists of blobs, trees, and commits. Blobs represent file contents, trees represent directory structures and filenames, and commits store metadata and pointers to the root trees.",
+      "rtfm_answer": "Git stores three types of objects in its object database: blobs, trees, and commits.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.923,
+      "composite_score": 0.954,
+      "conciseness_ratio": 2.0,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4128.7,
+      "tokens_used": 3149,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Object Storage**",
+          "score": 5.933249473571777,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Git Objects**",
+          "score": 4.416982173919678,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Git Objects**",
+          "score": 3.9179160594940186,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Branches in a Nutshell**",
+          "score": 3.629042625427246,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Object Storage**",
+          "score": 3.3585329055786133,
+          "url": ""
+        }
+      ],
+      "category": "Git Internals"
+    },
+    {
+      "question": "How does Git use the SHA-1 hash for data integrity?",
+      "expected_answer": "Git checksums everything before it is stored and refers to it by that 40-character hexadecimal SHA-1 hash. This makes it impossible to change file or directory contents without Git detecting the corruption or change.",
+      "rtfm_answer": "Git uses the SHA-1 hash for data integrity by storing everything in its database by the hash value of its contents. This means that every file or directory structure in Git is checksummed before being stored, and referred to by that checksum. If any changes are made to the file, Git will detect it because the SHA-1 hash of the file will change. This ensures that the contents of any file or directory cannot be altered without Git knowing about it.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.929,
+      "composite_score": 0.958,
+      "conciseness_ratio": 0.48,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4831.8,
+      "tokens_used": 3072,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Git Objects**",
+          "score": 2.655792713165283,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Branch References**",
+          "score": 2.065469264984131,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Git Objects**",
+          "score": 1.88614022731781,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**The Three States**",
+          "score": 1.8504958152770996,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Short SHA-1**",
+          "score": 1.758655071258545,
+          "url": ""
+        }
+      ],
+      "category": "Git Internals"
+    },
+    {
+      "question": "What is the purpose of the Git 'index'?",
+      "expected_answer": "The index, also known as the staging area, is a file that stores information about what will go into your next commit. It acts as a proposed next commit snapshot that Git looks at when you run the commit command.",
+      "rtfm_answer": "The Git 'index' is a file in your Git directory that stores information about what will go into your next commit. It is also referred to as the \"staging area\" in Git parlance. When you modify files and want to include those changes in your next commit, you stage those changes using commands like `git add`, which updates the index.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.942,
+      "composite_score": 0.965,
+      "conciseness_ratio": 0.639,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4520.9,
+      "tokens_used": 2865,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Committing**",
+          "score": 1.161326289176941,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Git Objects**",
+          "score": 0.903517484664917,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Git Objects**",
+          "score": -0.47727876901626587,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": -0.7985026836395264,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**The Command Line**",
+          "score": -0.8409940004348755,
+          "url": ""
+        }
+      ],
+      "category": "Git Internals"
+    },
+    {
+      "question": "What are 'plumbing' and 'porcelain' commands in Git?",
+      "expected_answer": "Porcelain commands are the user-friendly subcommands like checkout or branch that users use daily. Plumbing commands are lower-level subcommands designed to be chained together or used in scripts to perform fundamental operations.",
+      "rtfm_answer": "'Plumbing' commands in Git are low-level commands designed to be chained together for specific tasks, not meant for direct user interaction. They are used by other Git commands to perform smaller jobs. 'Porcelain' commands, on the other hand, are the user-friendly commands that provide a polished VCS interface.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.902,
+      "composite_score": 0.941,
+      "conciseness_ratio": 0.737,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4288.6,
+      "tokens_used": 2911,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Plumbing and Porcelain**",
+          "score": 4.584386825561523,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Managing Pull Requests**",
+          "score": 4.032212257385254,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 2.610785961151123,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Plumbing and Porcelain**",
+          "score": 2.2684545516967773,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Further Reading**",
+          "score": 1.3836978673934937,
+          "url": ""
+        }
+      ],
+      "category": "Git Internals"
+    },
+    {
+      "question": "Describe the Integration-Manager workflow commonly used with tools like GitHub.",
+      "expected_answer": "In this workflow, every developer has write access to their own public fork and read access to the main canonical repository. They push changes to their fork and then send a pull request to the maintainer, who tests and merges the changes into the main project.",
+      "rtfm_answer": "The Integration-Manager workflow commonly used with tools like GitHub is centered around Pull Requests. Teams use GitHub's web-based tools for communication and code review. Here's a summary:\n\n1. Fork the project to get your own copy.\n2. Create a topic branch from the master branch.\n3. Make changes and commit them.\n4. Push the changes to your forked repository.\n5. Create a Pull Request to submit changes to the original project.\n6. The project owner reviews the changes and can merge them if satisfied.\n\nThis workflow allows contributors to work independently and submit changes for review, while the project owner manages the integration of these changes. GitHub's Pull Request feature facilitates this process by providing a discussion thread and code review environment.",
+      "keyword_score": 0.5,
+      "semantic_similarity": 0.834,
+      "composite_score": 0.701,
+      "conciseness_ratio": 0.336,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4462.3,
+      "tokens_used": 2666,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 5.172348976135254,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 4.583124160766602,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Dictator and Lieutenants Workflow**",
+          "score": 3.260070323944092,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Integration-Manager Workflow**",
+          "score": 3.15507173538208,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Workflows Summary**",
+          "score": 3.143217086791992,
+          "url": ""
+        }
+      ],
+      "category": "Workflows"
+    },
+    {
+      "question": "What is a topic branch and why is it used?",
+      "expected_answer": "A topic branch is a short-lived branch created for a single particular feature or bug fix. This technique allows developers to context-switch quickly and keep work isolated in silos until it is ready for code review and merging.",
+      "rtfm_answer": "A topic branch is a short-lived branch created for a single particular feature or related work. It is used to keep changes organized and separate, making it easier to review and merge changes into the main branch when they are ready. This technique allows for quick context-switching and ensures that all changes in a branch are related to that specific topic.",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.966,
+      "composite_score": 0.979,
+      "conciseness_ratio": 0.633,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4198.1,
+      "tokens_used": 2648,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Topic Branches**",
+          "score": 1.3676693439483643,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Integrating Contributed Work**",
+          "score": 1.1719348430633545,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "",
+          "score": 0.7525348663330078,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Integrating Contributed Work**",
+          "score": 0.5365705490112305,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Working in Topic Branches**",
+          "score": 0.21010906994342804,
+          "url": ""
+        }
+      ],
+      "category": "Workflows"
+    },
+    {
+      "question": "How does the Benevolent Dictator workflow operate for very large projects?",
+      "expected_answer": "This hierarchical workflow involves 'lieutenants' who merge developers' topic branches and a 'dictator' who merges lieutenants' work into a master branch. Finally, the dictator pushes that master branch to a blessed reference repository for all others to use.",
+      "rtfm_answer": "In the Benevolent Dictator workflow for very large projects, regular developers work on their topic branches and rebase their work on top of the master branch, which is that of the reference repository to which the benevolent dictator pushes. Lieutenants merge the developers' topic branches into their master branch. The benevolent dictator then merges the lieutenants' master branches into their own master branch. Finally, the dictator pushes the master branch to the reference repository, allowing other developers to rebase on it. This workflow allows the project leader to delegate much of the work and collect large subsets of code at multiple points before integrating them. [Source 1]",
+      "keyword_score": 1.0,
+      "semantic_similarity": 0.932,
+      "composite_score": 0.959,
+      "conciseness_ratio": 0.374,
+      "is_refusal": false,
+      "cached": false,
+      "latency_ms": 4744.5,
+      "tokens_used": 2553,
+      "sources": [
+        {
+          "file": "progit.pdf",
+          "section": "**Workflows Summary**",
+          "score": 5.876372337341309,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Dictator and Lieutenants Workflow**",
+          "score": 5.308865547180176,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Working in Topic Branches**",
+          "score": 0.18837100267410278,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Integration-Manager Workflow**",
+          "score": -5.643136978149414,
+          "url": ""
+        },
+        {
+          "file": "progit.pdf",
+          "section": "**Centralized Workflow**",
+          "score": -5.925283432006836,
+          "url": ""
+        }
+      ],
+      "category": "Workflows"
+    }
+  ]
+}
