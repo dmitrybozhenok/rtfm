@@ -1,0 +1,92 @@
+[
+  {
+    "question": "What is the recipe for chocolate chip cookies?",
+    "should_refuse": true,
+    "category": "completely_off_topic",
+    "reason": "Entirely unrelated to Git or documentation"
+  },
+  {
+    "question": "How do I configure Kubernetes pods for Git?",
+    "should_refuse": true,
+    "category": "plausible_but_absent",
+    "reason": "Related to tech but not in Pro Git book"
+  },
+  {
+    "question": "What Git commands were added in version 2.45?",
+    "should_refuse": true,
+    "category": "plausible_but_absent",
+    "reason": "Specific version not covered in the documentation"
+  },
+  {
+    "question": "How do I set up Git LFS for large binary files?",
+    "should_refuse": true,
+    "category": "plausible_but_absent",
+    "reason": "Git LFS is a separate tool not covered in Pro Git"
+  },
+  {
+    "question": "What is the capital of France?",
+    "should_refuse": true,
+    "category": "completely_off_topic",
+    "reason": "General knowledge, nothing to do with docs"
+  },
+  {
+    "question": "Compare Git and Mercurial performance benchmarks.",
+    "should_refuse": true,
+    "category": "plausible_but_absent",
+    "reason": "Mercurial comparison details not in the docs"
+  },
+  {
+    "question": "How do I write a custom Git merge driver in Rust?",
+    "should_refuse": true,
+    "category": "plausible_but_absent",
+    "reason": "Custom merge drivers in Rust not covered"
+  },
+  {
+    "question": "What are the system requirements to run a Git server on Windows Server 2025?",
+    "should_refuse": true,
+    "category": "plausible_but_absent",
+    "reason": "Specific OS version requirements not in docs"
+  },
+  {
+    "question": "Explain the theory of relativity.",
+    "should_refuse": true,
+    "category": "completely_off_topic",
+    "reason": "Physics, completely unrelated"
+  },
+  {
+    "question": "How do I integrate Git with Jira for issue tracking?",
+    "should_refuse": true,
+    "category": "plausible_but_absent",
+    "reason": "Jira integration not covered in Pro Git"
+  },
+  {
+    "question": "What SQL database does Git use internally?",
+    "should_refuse": true,
+    "category": "misleading_premise",
+    "reason": "Git doesn't use SQL — tests if system pushes back on false premise"
+  },
+  {
+    "question": "How do I undo the last commit without losing changes?",
+    "should_refuse": false,
+    "category": "answerable_control",
+    "reason": "git reset --soft HEAD~1 is covered in Pro Git"
+  },
+  {
+    "question": "What is the difference between git merge and git rebase?",
+    "should_refuse": false,
+    "category": "answerable_control",
+    "reason": "Core topic covered extensively in Pro Git"
+  },
+  {
+    "question": "How do I create a lightweight tag?",
+    "should_refuse": false,
+    "category": "answerable_control",
+    "reason": "Tagging is covered in Pro Git"
+  },
+  {
+    "question": "What is the .gitignore file used for?",
+    "should_refuse": false,
+    "category": "answerable_control",
+    "reason": "Basic Git concept covered in the docs"
+  }
+]
