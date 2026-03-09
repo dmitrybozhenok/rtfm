@@ -1,5 +1,7 @@
 # RTFM For Me
 
+An implementation of [Coding Challenge #110 — RTFM For Me](https://codingchallenges.substack.com/p/coding-challenge-110-rtfm-for-me) from [Coding Challenges](https://codingchallenges.substack.com/) by John Crickett.
+
 A self-hosted, privacy-first AI documentation assistant. Ingest your documents (PDF, Markdown, plain text), and get accurate, cited answers using local LLMs — no data leaves your infrastructure.
 
 ## Features
