@@ -250,6 +250,22 @@ header h1 span { color: var(--accent); }
   cursor: pointer; font-size: 1.3rem; padding: 0 6px;
 }
 
+/* Thinking indicator */
+.thinking {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: var(--text-dim); font-size: 0.85rem;
+}
+.thinking span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--text-dim); animation: blink 1.4s infinite both;
+}
+.thinking span:nth-child(2) { animation-delay: 0.2s; }
+.thinking span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
+}
+
 /* Scrollbar */
 #chat::-webkit-scrollbar, .source-list::-webkit-scrollbar, .viewer::-webkit-scrollbar { width: 5px; }
 #chat::-webkit-scrollbar-track, .source-list::-webkit-scrollbar-track, .viewer::-webkit-scrollbar-track { background: transparent; }
@@ -633,6 +649,7 @@ async function sendQuestion() {
 
   const assistantDiv = addMessage('assistant', '');
   const bubble = getAssistantBubble(assistantDiv);
+  bubble.innerHTML = '<div class="thinking"><span></span><span></span><span></span></div>';
 
   try {
     const body = new FormData();
