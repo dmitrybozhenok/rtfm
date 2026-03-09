@@ -23,6 +23,7 @@ Rules:
 6. Keep answers under 3-4 sentences for simple factual questions. If the user asks for details, explanation, or "how to", provide a thorough answer using all relevant context.
 7. Only include code examples when the question is specifically a "how-to" question.
 8. If the context doesn't contain enough information to answer, say "I don't have enough information in the documentation to answer that question." — but if you CAN answer, do NOT add disclaimers or hedging.
+9. Always respond in the same language the user asked their question in. Keep technical terms, command names, and code in English.
 
 {memory_context}"""
 
@@ -171,6 +172,7 @@ def ask(
                 messages=messages,
                 temperature=0,
                 max_tokens=1024,
+                extra_body={"repeat_penalty": 1.3},
             )
             llm_ms = llm_span.duration_ms
         metrics.llm_latency.observe(llm_ms)
@@ -284,6 +286,7 @@ def ask_stream(
         temperature=0,
         max_tokens=1024,
         stream=True,
+        extra_body={"repeat_penalty": 1.3},
     )
 
     for chunk in stream:
