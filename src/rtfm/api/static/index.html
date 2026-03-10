@@ -4,64 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RTFM</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0d0f14;
-  --surface: #14161e;
-  --surface2: #1a1d28;
-  --surface3: #21242f;
-  --border: #2a2d3a;
-  --border-subtle: #1f2230;
-  --text: #d4d0c8;
-  --text-secondary: #8a8690;
-  --text-dim: #55525e;
-  --accent: #c8a46e;
-  --accent-muted: rgba(200, 164, 110, 0.12);
-  --accent-hover: #d9b87e;
-  --accent-glow: rgba(200, 164, 110, 0.06);
-  --user-bg: #1c1f2e;
-  --user-border: #2a2e42;
-  --success: #7ec87a;
-  --error: #d47272;
-  --warn: #c8a46e;
-  --quote-bg: #161820;
-  --quote-border: #2a2540;
-  --font-display: 'Instrument Serif', Georgia, serif;
-  --font-body: 'DM Sans', -apple-system, sans-serif;
-  --font-mono: 'DM Mono', 'Cascadia Code', monospace;
-  --radius: 8px;
-  --radius-lg: 14px;
+  --bg: #111;
+  --surface: #181818;
+  --surface2: #222;
+  --surface3: #2a2a2a;
+  --border: #303030;
+  --border-subtle: #252525;
+  --text: #ccc;
+  --text-secondary: #999;
+  --text-dim: #666;
+  --accent: #7b9;
+  --accent-muted: rgba(119, 187, 153, 0.1);
+  --accent-hover: #8dc;
+  --user-bg: #1a2030;
+  --user-border: #283040;
+  --success: #7b9;
+  --error: #c77;
+  --warn: #ca8;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --radius: 6px;
 }
 [data-theme="light"] {
-  --bg: #f4f1ec;
-  --surface: #ffffff;
-  --surface2: #f0ede6;
-  --surface3: #e8e4dd;
-  --border: #d8d4cc;
-  --border-subtle: #e8e4dd;
-  --text: #2a2520;
-  --text-secondary: #6b6560;
-  --text-dim: #a09890;
-  --accent: #9a7540;
-  --accent-muted: rgba(154, 117, 64, 0.08);
-  --accent-hover: #b08848;
-  --accent-glow: rgba(154, 117, 64, 0.04);
-  --user-bg: #eae6de;
-  --user-border: #d8d2c8;
-  --success: #4a8a48;
-  --error: #b84040;
-  --warn: #9a7540;
-  --quote-bg: #f8f5f0;
-  --quote-border: #e0dcd4;
+  --bg: #f5f5f5;
+  --surface: #fff;
+  --surface2: #f0f0f0;
+  --surface3: #e8e8e8;
+  --border: #ddd;
+  --border-subtle: #e8e8e8;
+  --text: #222;
+  --text-secondary: #666;
+  --text-dim: #999;
+  --accent: #2a7;
+  --accent-muted: rgba(34, 170, 119, 0.08);
+  --accent-hover: #1b8;
+  --user-bg: #e8f0f8;
+  --user-border: #d0d8e8;
+  --success: #2a7;
+  --error: #b44;
+  --warn: #a80;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: var(--font-body);
+  font-family: var(--font);
   background: var(--bg);
   color: var(--text);
   height: 100vh;
@@ -73,623 +62,266 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── Header ─── */
+/* Header */
 header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 20px;
-  height: 52px;
+  padding: 0 16px; height: 48px;
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface);
-  flex-shrink: 0;
-  z-index: 20;
+  background: var(--surface); flex-shrink: 0; z-index: 20;
 }
-.logo {
-  display: flex; align-items: baseline; gap: 6px;
-  text-decoration: none; color: var(--text);
-}
-.logo-mark {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-style: italic;
-  color: var(--accent);
-  letter-spacing: -0.02em;
-}
-.logo-sub {
-  font-size: 0.72rem;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: 500;
-}
+.logo { display: flex; align-items: baseline; gap: 6px; text-decoration: none; color: var(--text); }
+.logo-mark { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+.logo-sub { font-size: 0.7rem; color: var(--text-dim); }
 .header-controls { display: flex; gap: 8px; align-items: center; }
-.health-indicator {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 0.72rem; color: var(--text-dim);
-  letter-spacing: 0.03em;
-}
-.health-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--text-dim);
-}
-.health-dot.ok { background: var(--success); box-shadow: 0 0 6px rgba(126,200,122,0.4); }
+.health-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); display: inline-block; }
+.health-dot.ok { background: var(--success); }
 .health-dot.degraded { background: var(--warn); }
 .health-dot.bad { background: var(--error); }
 .btn-header {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  cursor: pointer;
-  border-radius: 6px;
-  padding: 5px 12px;
-  font-size: 0.72rem;
-  font-family: var(--font-body);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-weight: 500;
-  transition: all 0.2s;
+  background: transparent; border: 1px solid var(--border); color: var(--text-secondary);
+  cursor: pointer; border-radius: 4px; padding: 4px 10px;
+  font-size: 0.72rem; font-family: var(--font); transition: all 0.15s;
 }
-.btn-header:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
+.btn-header:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ─── Main Layout ─── */
-.main-layout {
-  display: flex; flex: 1; overflow: hidden;
-}
+/* Layout */
+.main-layout { display: flex; flex: 1; overflow: hidden; }
 
-/* ─── Sidebar ─── */
+/* Sidebar */
 .sidebar {
-  width: 280px; min-width: 200px; max-width: 50vw;
-  background: var(--surface);
-  border-right: 1px solid var(--border-subtle);
-  display: flex; flex-direction: column;
-  overflow: hidden;
-  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
+  width: 260px; min-width: 180px; max-width: 50vw;
+  background: var(--surface); border-right: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column; overflow: hidden;
+  transition: margin-left 0.2s ease; position: relative;
 }
 .sidebar.collapsed { margin-left: -100%; }
-.sidebar-resize {
-  position: absolute; top: 0; right: -3px; bottom: 0; width: 6px;
-  cursor: col-resize; z-index: 10;
-}
-.sidebar-resize:hover, .sidebar-resize.dragging {
-  background: var(--accent); opacity: 0.3;
-}
-.sidebar-section-title {
-  padding: 16px 18px 10px;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-dim);
+.sidebar-resize { position: absolute; top: 0; right: -3px; bottom: 0; width: 6px; cursor: col-resize; z-index: 10; }
+.sidebar-resize:hover, .sidebar-resize.dragging { background: var(--accent); opacity: 0.3; }
+.sidebar-title {
+  padding: 12px 14px 8px; font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim);
   display: flex; align-items: center; justify-content: space-between;
 }
-.sidebar-section-title .count {
-  font-weight: 400;
-  color: var(--text-dim);
-  font-size: 0.66rem;
-  background: var(--surface2);
-  padding: 1px 7px;
-  border-radius: 10px;
-}
+.sidebar-title .count { font-weight: 400; font-size: 0.66rem; background: var(--surface2); padding: 1px 6px; border-radius: 8px; }
 
-/* Upload area */
-.upload-area {
-  padding: 10px 14px 14px;
-  border-bottom: 1px solid var(--border-subtle);
-}
+/* Upload */
+.upload-area { padding: 8px 12px 12px; border-bottom: 1px solid var(--border-subtle); }
 .upload-zone {
-  border: 1.5px dashed var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
+  border: 1.5px dashed var(--border); border-radius: var(--radius); padding: 12px;
+  text-align: center; cursor: pointer; transition: all 0.15s; position: relative; overflow: hidden;
 }
-.upload-zone:hover, .upload-zone.dragover {
-  border-color: var(--accent);
-  background: var(--accent-muted);
-}
-.upload-zone input[type="file"] {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer;
-}
-.upload-icon {
-  font-size: 1.2rem;
-  margin-bottom: 4px;
-  color: var(--text-dim);
-}
-.upload-text {
-  font-size: 0.76rem;
-  color: var(--text-dim);
-  line-height: 1.4;
-}
+.upload-zone:hover { border-color: var(--accent); background: var(--accent-muted); }
+.upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.upload-text { font-size: 0.75rem; color: var(--text-dim); }
 .upload-text strong { color: var(--text-secondary); font-weight: 500; }
-.upload-msg {
-  font-size: 0.73rem; margin-top: 8px; text-align: center;
-  min-height: 1em;
-}
+.upload-msg { font-size: 0.72rem; margin-top: 6px; text-align: center; min-height: 1em; }
 .upload-msg.ok { color: var(--success); }
 .upload-msg.err { color: var(--error); }
 .upload-msg.busy { color: var(--warn); }
 
 /* Source list */
-.source-list {
-  flex: 1; overflow-y: auto; padding: 4px 8px;
-}
+.source-list { flex: 1; overflow-y: auto; padding: 4px 6px; }
 .source-item {
-  padding: 9px 12px;
-  border-radius: var(--radius);
-  margin-bottom: 1px;
-  cursor: pointer;
-  display: flex; align-items: flex-start; gap: 10px;
-  font-size: 0.82rem;
-  position: relative;
-  transition: background 0.15s;
+  padding: 7px 10px; border-radius: var(--radius); margin-bottom: 1px; cursor: pointer;
+  display: flex; align-items: center; gap: 8px; font-size: 0.8rem; position: relative; transition: background 0.1s;
 }
 .source-item:hover { background: var(--surface2); }
-.source-item.active {
-  background: var(--accent-muted);
-}
-.source-item.active::before {
-  content: '';
-  position: absolute; left: 0; top: 8px; bottom: 8px;
-  width: 2px; background: var(--accent); border-radius: 1px;
-}
-.source-icon {
-  width: 32px; height: 32px; border-radius: 6px;
-  background: var(--surface2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.8rem; flex-shrink: 0;
-  color: var(--text-dim);
-  border: 1px solid var(--border-subtle);
-}
-.source-item.active .source-icon {
-  background: var(--accent-muted);
-  border-color: rgba(200,164,110,0.2);
-  color: var(--accent);
-}
+.source-item.active { background: var(--accent-muted); }
 .source-info { flex: 1; overflow: hidden; min-width: 0; }
-.source-name {
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-size: 0.8rem; font-weight: 500;
-}
-.source-meta {
-  font-size: 0.68rem; color: var(--text-dim); margin-top: 1px;
-  font-variant-numeric: tabular-nums;
-}
-.source-actions {
-  display: none; position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-}
+.source-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.8rem; }
+.source-meta { font-size: 0.68rem; color: var(--text-dim); }
+.source-actions { display: none; position: absolute; right: 6px; }
 .source-item:hover .source-actions { display: flex; }
 .source-actions button {
-  background: var(--surface3); border: 1px solid var(--border);
-  color: var(--text-dim); cursor: pointer;
-  font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;
-  transition: all 0.15s;
+  background: var(--surface3); border: 1px solid var(--border); color: var(--text-dim);
+  cursor: pointer; font-size: 0.7rem; padding: 1px 5px; border-radius: 3px;
 }
 .source-actions button:hover { color: var(--error); border-color: var(--error); }
-
-/* Sidebar footer */
 .sidebar-footer {
-  padding: 10px 14px;
-  border-top: 1px solid var(--border-subtle);
+  padding: 8px 12px; border-top: 1px solid var(--border-subtle);
   display: flex; justify-content: space-between; align-items: center;
 }
-.sidebar-footer .total {
-  font-size: 0.7rem; color: var(--text-dim);
-  font-variant-numeric: tabular-nums;
-}
+.sidebar-footer .total { font-size: 0.7rem; color: var(--text-dim); }
 .btn-danger {
-  font-size: 0.7rem; color: var(--error); background: none;
-  border: 1px solid var(--border); border-radius: 5px;
-  padding: 3px 10px; cursor: pointer;
-  font-family: var(--font-body); transition: all 0.15s;
+  font-size: 0.7rem; color: var(--error); background: none; border: 1px solid var(--border);
+  border-radius: 4px; padding: 2px 8px; cursor: pointer; font-family: var(--font);
 }
-.btn-danger:hover { border-color: var(--error); background: rgba(212,114,114,0.08); }
+.btn-danger:hover { border-color: var(--error); }
 
-/* ─── Chat Area ─── */
-.chat-area {
-  flex: 1; display: flex; flex-direction: column; overflow: hidden;
-  background: var(--bg);
-}
-#chat {
-  flex: 1; overflow-y: auto; padding: 24px 20px;
-  display: flex; flex-direction: column; gap: 2px;
-}
+/* Chat area */
+.chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+#chat { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 2px; }
 
-/* Welcome */
-.welcome {
-  margin: auto; text-align: center;
-  max-width: 420px; padding: 60px 20px;
-  animation: fadeUp 0.6s ease;
-}
-.welcome-icon {
-  font-size: 2.4rem; margin-bottom: 16px;
-  opacity: 0.3;
-}
-.welcome h2 {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 1.6rem;
-  color: var(--text);
-  margin-bottom: 10px;
-  font-style: italic;
-  letter-spacing: -0.01em;
-}
-.welcome p {
-  font-size: 0.85rem;
-  color: var(--text-dim);
-  line-height: 1.6;
-}
+.welcome { margin: auto; text-align: center; max-width: 400px; padding: 40px 20px; }
+.welcome h2 { font-size: 1.1rem; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.welcome p { font-size: 0.84rem; color: var(--text-dim); line-height: 1.5; }
 
 /* Messages */
-.msg {
-  max-width: 720px; width: 100%; margin: 0 auto;
-  animation: fadeUp 0.3s ease;
-}
-.msg.user {
-  display: flex; justify-content: flex-end;
-  margin-bottom: 4px;
-}
-.msg.assistant {
-  margin-bottom: 12px;
-}
-.bubble {
-  line-height: 1.65;
-  font-size: 0.88rem;
-  word-wrap: break-word;
-}
+.msg { max-width: 700px; width: 100%; margin: 0 auto; animation: fadeIn 0.2s ease; }
+.msg.user { display: flex; justify-content: flex-end; margin-bottom: 4px; }
+.msg.assistant { margin-bottom: 10px; }
+
+.bubble { line-height: 1.6; font-size: 0.88rem; word-wrap: break-word; }
 .msg.user .bubble {
-  background: var(--user-bg);
-  border: 1px solid var(--user-border);
-  padding: 10px 16px;
-  border-radius: 16px 16px 4px 16px;
-  max-width: 75%;
-  font-size: 0.86rem;
+  background: var(--user-bg); border: 1px solid var(--user-border);
+  padding: 8px 14px; border-radius: 12px 12px 2px 12px; max-width: 75%;
 }
-.msg.assistant .bubble {
-  padding: 8px 2px;
-  max-width: 100%;
+.msg.assistant .bubble { padding: 6px 2px; }
+
+/* Rendered markdown in bubbles */
+.bubble h1, .bubble h2, .bubble h3, .bubble h4, .bubble h5, .bubble h6 {
+  font-weight: 600; color: var(--text); margin: 0.8em 0 0.3em; line-height: 1.3;
 }
-.bubble pre {
-  background: var(--surface);
-  border: 1px solid var(--border-subtle);
-  padding: 12px 14px;
-  border-radius: var(--radius);
-  overflow-x: auto;
-  margin: 8px 0;
-  font-size: 0.82rem;
-  font-family: var(--font-mono);
-}
-.bubble code {
-  font-family: var(--font-mono);
-  font-size: 0.86em;
-  background: var(--surface2);
-  padding: 1px 5px;
-  border-radius: 3px;
-}
-.bubble pre code { background: none; padding: 0; }
+.bubble h1 { font-size: 1.2rem; }
+.bubble h2 { font-size: 1.1rem; }
+.bubble h3 { font-size: 1rem; }
+.bubble h4 { font-size: 0.92rem; }
 .bubble p { margin: 4px 0; }
 .bubble p:first-child { margin-top: 0; }
 .bubble p:last-child { margin-bottom: 0; }
-.bubble h1, .bubble h2, .bubble h3,
-.bubble h4, .bubble h5, .bubble h6 {
-  font-family: var(--font-display);
-  font-weight: 400;
-  color: var(--text);
-  font-style: italic;
-  letter-spacing: -0.01em;
-  margin: 0.8em 0 0.3em;
+.bubble pre {
+  background: var(--surface); border: 1px solid var(--border-subtle);
+  padding: 10px 12px; border-radius: var(--radius); overflow-x: auto;
+  margin: 6px 0; font-size: 0.82rem; font-family: var(--font-mono);
 }
-.bubble h1 { font-size: 1.3rem; }
-.bubble h2 { font-size: 1.15rem; }
-.bubble h3 { font-size: 1.05rem; }
-.bubble h4 { font-size: 0.95rem; font-style: normal; }
-.bubble ul, .bubble ol { margin: 4px 0 4px 18px; }
+.bubble code { font-family: var(--font-mono); font-size: 0.86em; background: var(--surface2); padding: 1px 4px; border-radius: 3px; }
+.bubble pre code { background: none; padding: 0; }
+.bubble ul, .bubble ol { margin: 4px 0 4px 20px; }
 .bubble li { margin: 2px 0; }
-.bubble blockquote {
-  border-left: 3px solid var(--accent);
-  padding-left: 12px;
-  margin: 6px 0;
-  color: var(--text-secondary);
-  font-style: italic;
-}
-.bubble hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 12px 0;
-}
-.bubble strong { font-weight: 600; color: var(--text); }
+.bubble blockquote { border-left: 3px solid var(--border); padding-left: 12px; margin: 6px 0; color: var(--text-secondary); }
+.bubble hr { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+.bubble strong { font-weight: 600; }
 
-/* ─── Citation Links ─── */
+/* Citation links */
 .citations {
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border-subtle);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
+  margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--border-subtle);
+  display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
 }
-.citations-label {
-  font-size: 0.7rem;
-  color: var(--text-dim);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-weight: 600;
-  margin-right: 2px;
-}
+.citations-label { font-size: 0.7rem; color: var(--text-dim); margin-right: 2px; }
 .citation-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: var(--accent-muted);
-  border: 1px solid transparent;
-  color: var(--accent);
-  font-size: 0.74rem;
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.15s;
-  max-width: 280px;
-  overflow: hidden;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 3px;
+  background: var(--surface2); border: 1px solid var(--border-subtle);
+  color: var(--accent); font-size: 0.73rem; cursor: pointer;
+  text-decoration: none; transition: all 0.1s; max-width: 260px; overflow: hidden;
 }
-.citation-link:hover {
-  border-color: var(--accent);
-  background: rgba(200, 164, 110, 0.18);
-}
-.citation-link .cl-file {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.citation-link .cl-sep {
-  color: var(--text-dim);
-  flex-shrink: 0;
-}
-.citation-link .cl-section {
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 400;
-}
+.citation-link:hover { border-color: var(--accent); background: var(--accent-muted); }
+.citation-link .cl-file { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.citation-link .cl-sep { color: var(--text-dim); flex-shrink: 0; font-size: 0.65rem; }
+.citation-link .cl-section { color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* ─── Input Area ─── */
-.input-area {
-  padding: 12px 20px 16px;
-  background: var(--bg);
-  flex-shrink: 0;
-}
+/* Input */
+.input-area { padding: 10px 16px 14px; flex-shrink: 0; }
 .input-wrap {
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 6px 6px 6px 16px;
-  transition: border-color 0.2s;
+  max-width: 700px; margin: 0 auto; display: flex; gap: 8px; align-items: flex-end;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 4px 4px 4px 14px; transition: border-color 0.15s;
 }
-.input-wrap:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-muted);
-}
+.input-wrap:focus-within { border-color: var(--accent); }
 #question {
-  flex: 1;
-  padding: 8px 0;
-  border: none;
-  background: transparent;
-  color: var(--text);
-  font-size: 0.88rem;
-  font-family: var(--font-body);
-  resize: none;
-  min-height: 24px;
-  max-height: 120px;
-  line-height: 1.5;
+  flex: 1; padding: 7px 0; border: none; background: transparent;
+  color: var(--text); font-size: 0.88rem; font-family: var(--font);
+  resize: none; min-height: 22px; max-height: 120px; line-height: 1.5;
 }
 #question:focus { outline: none; }
 #question::placeholder { color: var(--text-dim); }
 #send {
-  padding: 8px 18px;
-  border-radius: 10px;
-  border: none;
-  background: var(--accent);
-  color: var(--bg);
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 600;
-  font-family: var(--font-body);
-  letter-spacing: 0.02em;
-  transition: all 0.15s;
-  flex-shrink: 0;
+  padding: 7px 14px; border-radius: 7px; border: none;
+  background: var(--accent); color: var(--bg); cursor: pointer;
+  font-size: 0.8rem; font-weight: 600; font-family: var(--font); transition: all 0.1s; flex-shrink: 0;
 }
 #send:hover { background: var(--accent-hover); }
-#send:disabled { opacity: 0.35; cursor: not-allowed; }
+#send:disabled { opacity: 0.3; cursor: not-allowed; }
 
-/* ─── Source Viewer Drawer ─── */
+/* Source viewer */
 .viewer {
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  flex-shrink: 0;
+  border-top: 1px solid var(--border); background: var(--surface);
+  max-height: 0; overflow: hidden; transition: max-height 0.25s ease; flex-shrink: 0;
 }
-.viewer.open { max-height: 40vh; overflow-y: auto; }
+.viewer.open { max-height: 45vh; overflow-y: auto; }
 .viewer-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 20px;
-  border-bottom: 1px solid var(--border-subtle);
-  font-size: 0.8rem; font-weight: 500;
-  position: sticky; top: 0; background: var(--surface); z-index: 5;
+  padding: 8px 16px; border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.8rem; font-weight: 500; position: sticky; top: 0; background: var(--surface); z-index: 5;
 }
-.viewer-header button {
-  background: none; border: none; color: var(--text-dim);
-  cursor: pointer; font-size: 1.1rem;
-  transition: color 0.15s;
-}
+.viewer-header button { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1rem; }
 .viewer-header button:hover { color: var(--text); }
-.viewer-content {
-  padding: 20px 28px;
-  font-size: 0.86rem;
-  line-height: 1.7;
-  max-width: 720px;
+.viewer-body {
+  padding: 16px 24px; font-size: 0.85rem; line-height: 1.7; max-width: 720px;
 }
-.viewer-content h1, .viewer-content h2, .viewer-content h3,
-.viewer-content h4, .viewer-content h5, .viewer-content h6 {
-  font-family: var(--font-display);
-  font-weight: 400;
-  color: var(--text);
-  margin: 1.4em 0 0.5em;
-  font-style: italic;
-  letter-spacing: -0.01em;
+.viewer-body h1, .viewer-body h2, .viewer-body h3,
+.viewer-body h4, .viewer-body h5, .viewer-body h6 {
+  font-weight: 600; color: var(--text); margin: 1.2em 0 0.4em; line-height: 1.3;
 }
-.viewer-content h1 { font-size: 1.5rem; }
-.viewer-content h2 { font-size: 1.25rem; }
-.viewer-content h3 { font-size: 1.1rem; }
-.viewer-content h4 { font-size: 1rem; font-style: normal; }
-.viewer-content p { margin: 0.5em 0; }
-.viewer-content pre {
-  background: var(--surface2);
-  border: 1px solid var(--border-subtle);
-  padding: 12px 14px;
-  border-radius: var(--radius);
-  overflow-x: auto;
-  margin: 8px 0;
-  font-size: 0.82rem;
-  font-family: var(--font-mono);
+.viewer-body h1 { font-size: 1.4rem; }
+.viewer-body h2 { font-size: 1.2rem; }
+.viewer-body h3 { font-size: 1.05rem; }
+.viewer-body p { margin: 0.4em 0; }
+.viewer-body pre {
+  background: var(--surface2); border: 1px solid var(--border-subtle);
+  padding: 10px 12px; border-radius: var(--radius); overflow-x: auto;
+  margin: 6px 0; font-size: 0.82rem; font-family: var(--font-mono);
 }
-.viewer-content code {
-  font-family: var(--font-mono);
-  font-size: 0.86em;
-  background: var(--surface2);
-  padding: 1px 5px;
-  border-radius: 3px;
-}
-.viewer-content pre code { background: none; padding: 0; }
-.viewer-content ul, .viewer-content ol { margin: 0.5em 0 0.5em 20px; }
-.viewer-content li { margin: 3px 0; }
-.viewer-content blockquote {
-  border-left: 3px solid var(--accent);
-  padding-left: 14px;
-  margin: 0.5em 0;
-  color: var(--text-secondary);
-  font-style: italic;
-}
-.viewer-content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 1.5em 0;
-}
-.viewer-content strong { font-weight: 600; }
-.viewer-section-anchor {
-  scroll-margin-top: 60px;
-}
-.viewer-loading {
-  color: var(--text-dim); font-style: italic;
-  font-size: 0.84rem; padding: 24px;
-  text-align: center;
-}
+.viewer-body code { font-family: var(--font-mono); font-size: 0.86em; background: var(--surface2); padding: 1px 4px; border-radius: 3px; }
+.viewer-body pre code { background: none; padding: 0; }
+.viewer-body ul, .viewer-body ol { margin: 0.4em 0 0.4em 20px; }
+.viewer-body li { margin: 2px 0; }
+.viewer-body blockquote { border-left: 3px solid var(--border); padding-left: 12px; margin: 0.5em 0; color: var(--text-secondary); }
+.viewer-body hr { border: none; border-top: 1px solid var(--border); margin: 1.2em 0; }
+.viewer-body strong { font-weight: 600; }
+.viewer-body .section-anchor { scroll-margin-top: 50px; }
+.viewer-loading { color: var(--text-dim); font-size: 0.84rem; padding: 20px; text-align: center; }
+.viewer-body .section-highlight { background: var(--accent-muted); border-radius: 3px; transition: background 1s; }
 
-/* ─── Thinking Indicator ─── */
-.thinking {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 0;
-}
-.thinking-dot {
-  width: 4px; height: 4px; border-radius: 50%;
-  background: var(--accent);
-  opacity: 0.3;
-  animation: pulse 1.4s ease-in-out infinite;
-}
+/* Thinking */
+.thinking { display: inline-flex; align-items: center; gap: 5px; padding: 4px 0; }
+.thinking-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text-dim); animation: pulse 1.4s ease-in-out infinite; }
 .thinking-dot:nth-child(2) { animation-delay: 0.15s; }
 .thinking-dot:nth-child(3) { animation-delay: 0.3s; }
-@keyframes pulse {
-  0%, 80%, 100% { opacity: 0.15; transform: scale(0.8); }
-  40% { opacity: 0.8; transform: scale(1.2); }
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes pulse { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* ─── Mobile ─── */
-.hamburger {
-  display: none; background: none; border: none; color: var(--text);
-  cursor: pointer; font-size: 1.2rem; padding: 0 4px;
-}
-.mobile-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.5); z-index: 25;
-  backdrop-filter: blur(2px);
-}
+/* Mobile */
+.hamburger { display: none; background: none; border: none; color: var(--text); cursor: pointer; font-size: 1.2rem; padding: 0 4px; }
+.mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 25; }
 .mobile-overlay.show { display: block; }
 
-/* ─── Scrollbar ─── */
+/* Scrollbar */
 #chat::-webkit-scrollbar, .source-list::-webkit-scrollbar, .viewer::-webkit-scrollbar { width: 4px; }
 #chat::-webkit-scrollbar-track, .source-list::-webkit-scrollbar-track, .viewer::-webkit-scrollbar-track { background: transparent; }
-#chat::-webkit-scrollbar-thumb, .source-list::-webkit-scrollbar-thumb, .viewer::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 2px;
-}
+#chat::-webkit-scrollbar-thumb, .source-list::-webkit-scrollbar-thumb, .viewer::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-/* ─── Drag overlay ─── */
+/* Drag overlay */
 .drag-overlay {
-  display: none; position: absolute; inset: 0;
-  background: var(--accent-muted);
-  border: 2px dashed var(--accent);
-  border-radius: var(--radius);
+  display: none; position: absolute; inset: 0; background: var(--accent-muted);
+  border: 2px dashed var(--accent); border-radius: var(--radius);
   z-index: 10; align-items: center; justify-content: center;
-  font-size: 0.85rem; color: var(--accent);
-  pointer-events: none;
-  font-style: italic;
+  font-size: 0.84rem; color: var(--accent); pointer-events: none;
 }
 .sidebar.dragover .drag-overlay { display: flex; }
 
-/* ─── Empty state ─── */
-.empty-sources {
-  padding: 30px 20px; text-align: center;
-  color: var(--text-dim); font-size: 0.8rem;
-  font-style: italic; line-height: 1.5;
-}
+.empty-sources { padding: 24px 16px; text-align: center; color: var(--text-dim); font-size: 0.8rem; line-height: 1.5; }
 
 @media (max-width: 700px) {
   .hamburger { display: block; }
-  .sidebar {
-    position: fixed; top: 0; left: 0; bottom: 0;
-    z-index: 30; margin-left: -100%;
-  }
+  .sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 30; margin-left: -100%; }
   .sidebar.open { margin-left: 0; }
-  .sidebar.collapsed { margin-left: -100%; }
   .msg.user .bubble { max-width: 90%; }
-  header { padding: 0 14px; }
-  #chat { padding: 16px 14px; }
-  .input-area { padding: 10px 14px 14px; }
+  header { padding: 0 12px; }
+  #chat { padding: 14px 12px; }
+  .input-area { padding: 8px 12px 12px; }
 }
 </style>
 </head>
 <body>
 
 <header>
-  <div style="display:flex;align-items:center;gap:10px;">
+  <div style="display:flex;align-items:center;gap:8px;">
     <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
-    <a class="logo" href="#">
-      <span class="logo-mark">RTFM</span>
-      <span class="logo-sub">for me</span>
-    </a>
+    <a class="logo" href="#"><span class="logo-mark">RTFM</span> <span class="logo-sub">for me</span></a>
   </div>
   <div class="header-controls">
-    <div class="health-indicator">
-      <span class="health-dot" id="health" title="Checking..."></span>
-    </div>
+    <span class="health-dot" id="health" title="Checking..."></span>
     <button class="btn-header" onclick="toggleTheme()">Theme</button>
   </div>
 </header>
@@ -697,57 +329,43 @@ header {
 <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
 
 <div class="main-layout">
-  <!-- Sources Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-resize" id="sidebarResize"></div>
     <div class="drag-overlay">Drop files here</div>
-
-    <div class="sidebar-section-title">
-      <span>Sources</span>
-      <span class="count" id="sourceCount"></span>
-    </div>
-
+    <div class="sidebar-title"><span>Sources</span><span class="count" id="sourceCount"></span></div>
     <div class="upload-area">
-      <div class="upload-zone" id="uploadZone">
+      <div class="upload-zone">
         <input type="file" id="ingestFile" accept=".pdf,.txt,.md" multiple onchange="doIngestFile()">
-        <div class="upload-icon">&#8593;</div>
-        <div class="upload-text"><strong>Upload files</strong><br>.pdf, .txt, .md</div>
+        <div class="upload-text"><strong>Upload files</strong> &mdash; .pdf .txt .md</div>
       </div>
       <div class="upload-msg" id="ingestMsg"></div>
     </div>
-
     <div class="source-list" id="sourcesList"></div>
-
     <div class="sidebar-footer">
       <span class="total" id="sourcesTotal"></span>
       <button class="btn-danger" onclick="clearDocuments()">Clear all</button>
     </div>
   </aside>
 
-  <!-- Chat + Viewer -->
   <div class="chat-area">
     <div id="chat">
       <div class="welcome">
-        <div class="welcome-icon">&#9998;</div>
-        <h2>What would you like to know?</h2>
-        <p>Add sources in the sidebar, then ask questions. Answers are grounded in your documents with inline citations.</p>
+        <h2>Ask about your docs</h2>
+        <p>Upload sources in the sidebar, then ask questions. Answers include citations linked to the original content.</p>
       </div>
     </div>
-
     <div class="input-area">
       <div class="input-wrap">
-        <textarea id="question" rows="1" placeholder="Ask a question about your docs..." autofocus></textarea>
+        <textarea id="question" rows="1" placeholder="Ask a question..." autofocus></textarea>
         <button id="send" onclick="sendQuestion()">Send</button>
       </div>
     </div>
-
-    <!-- Source Viewer Drawer -->
     <div class="viewer" id="viewer">
       <div class="viewer-header">
-        <span id="viewerTitle">Source Viewer</span>
+        <span id="viewerTitle">Source</span>
         <button onclick="closeViewer()">&times;</button>
       </div>
-      <div class="viewer-content" id="viewerContent"></div>
+      <div class="viewer-body" id="viewerBody"></div>
     </div>
   </div>
 </div>
@@ -759,7 +377,7 @@ localStorage.setItem('rtfm_session', sessionId);
 let busy = false;
 let activeSource = null;
 
-// ─── Theme ───
+// Theme
 function toggleTheme() {
   const t = document.documentElement.getAttribute('data-theme') === 'light' ? '' : 'light';
   document.documentElement.setAttribute('data-theme', t);
@@ -767,20 +385,16 @@ function toggleTheme() {
 }
 (function() {
   const saved = localStorage.getItem('rtfm_theme');
-  if (saved === 'light' || (!saved && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+  if (saved === 'light' || (!saved && window.matchMedia('(prefers-color-scheme: light)').matches))
     document.documentElement.setAttribute('data-theme', 'light');
-  }
 })();
 
-// ─── Mobile sidebar ───
 function toggleSidebar() {
-  const sb = document.getElementById('sidebar');
-  const ov = document.getElementById('mobileOverlay');
-  sb.classList.toggle('open');
-  ov.classList.toggle('show');
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('mobileOverlay').classList.toggle('show');
 }
 
-// ─── Health ───
+// Health
 async function checkHealth() {
   const dot = document.getElementById('health');
   try {
@@ -788,14 +402,11 @@ async function checkHealth() {
     const d = await r.json();
     dot.className = 'health-dot ' + (d.status === 'healthy' ? 'ok' : d.status === 'degraded' ? 'degraded' : 'bad');
     dot.title = `Redis: ${d.redis ? 'OK' : 'DOWN'} | Ollama: ${d.ollama ? 'OK' : 'DOWN'}`;
-  } catch {
-    dot.className = 'health-dot bad';
-    dot.title = 'API unreachable';
-  }
+  } catch { dot.className = 'health-dot bad'; dot.title = 'API unreachable'; }
 }
 checkHealth();
 
-// ─── Sources ───
+// Sources
 async function loadSources() {
   const list = document.getElementById('sourcesList');
   const total = document.getElementById('sourcesTotal');
@@ -803,23 +414,16 @@ async function loadSources() {
   try {
     const r = await fetch(API + '/sources');
     const sources = await r.json();
-    if (sources.length === 0) {
-      list.innerHTML = '<div class="empty-sources">No sources yet.<br>Upload documents to get started.</div>';
-      total.textContent = '';
-      count.textContent = '';
-      return;
+    if (!sources.length) {
+      list.innerHTML = '<div class="empty-sources">No sources yet. Upload documents to get started.</div>';
+      total.textContent = ''; count.textContent = ''; return;
     }
-    let totalChunks = 0;
-    let html = '';
+    let tc = 0, html = '';
     for (const s of sources) {
-      totalChunks += s.chunks;
-      const ext = s.source.split('.').pop().toLowerCase();
-      const iconMap = { pdf: '&#9827;', md: '&#9830;', txt: '&#9826;' };
-      const icon = iconMap[ext] || '&#9825;';
+      tc += s.chunks;
       const name = s.source.length > 35 ? '...' + s.source.slice(-32) : s.source;
-      const isActive = activeSource === s.source ? ' active' : '';
-      html += `<div class="source-item${isActive}" onclick="selectSource('${escapeAttr(s.source)}')" title="${escapeHtml(s.source)}">
-        <div class="source-icon">${icon}</div>
+      const active = activeSource === s.source ? ' active' : '';
+      html += `<div class="source-item${active}" onclick="selectSource('${escapeAttr(s.source)}')" title="${escapeHtml(s.source)}">
         <div class="source-info">
           <div class="source-name">${escapeHtml(name)}</div>
           <div class="source-meta">${s.chunks} chunks &middot; ${s.sections.length} sections</div>
@@ -830,7 +434,7 @@ async function loadSources() {
       </div>`;
     }
     list.innerHTML = html;
-    total.textContent = `${totalChunks} chunks total`;
+    total.textContent = `${tc} chunks`;
     count.textContent = sources.length;
   } catch(e) {
     list.innerHTML = '<div class="empty-sources" style="color:var(--error)">Failed to load sources</div>';
@@ -838,7 +442,7 @@ async function loadSources() {
 }
 loadSources();
 
-// ─── Source selection & viewer ───
+// Source viewer
 async function selectSource(source, section) {
   activeSource = source;
   loadSources();
@@ -848,49 +452,39 @@ async function selectSource(source, section) {
 async function openViewer(source, scrollToSection) {
   const viewer = document.getElementById('viewer');
   const title = document.getElementById('viewerTitle');
-  const content = document.getElementById('viewerContent');
+  const body = document.getElementById('viewerBody');
 
   title.textContent = source.length > 55 ? '...' + source.slice(-52) : source;
-  content.innerHTML = '<div class="viewer-loading">Loading chunks...</div>';
+  body.innerHTML = '<div class="viewer-loading">Loading...</div>';
   viewer.classList.add('open');
 
   try {
     const r = await fetch(API + '/sources/' + encodeURIComponent(source) + '/chunks');
     const chunks = await r.json();
-    if (chunks.error) {
-      content.innerHTML = `<div class="viewer-loading">${escapeHtml(chunks.error)}</div>`;
-      return;
-    }
-    // Concatenate all chunk text into one continuous document
-    let fullText = '';
-    for (const c of chunks) {
-      fullText += c.text + '\n\n';
-    }
-    content.innerHTML = renderMarkdown(fullText) || '<div class="viewer-loading">No content</div>';
+    if (chunks.error) { body.innerHTML = `<div class="viewer-loading">${escapeHtml(chunks.error)}</div>`; return; }
 
-    // Scroll to section by matching heading text
+    // Render each chunk's markdown, wrapping in a div with section data for scroll targeting
+    let html = '';
+    for (const c of chunks) {
+      const id = 'section-' + c.chunk_index;
+      const sectionAttr = c.section ? ` data-section="${escapeAttr(c.section)}"` : '';
+      html += `<div id="${id}" class="section-anchor"${sectionAttr}>${renderMarkdown(c.text)}</div>`;
+    }
+    body.innerHTML = html || '<div class="viewer-loading">No content</div>';
+
+    // Scroll to section
     if (scrollToSection) {
-      const headings = content.querySelectorAll('h1,h2,h3,h4,h5,h6');
-      let target = null;
-      for (const h of headings) {
-        if (h.textContent.trim() === scrollToSection) {
-          target = h;
-          break;
-        }
-      }
+      const target = body.querySelector(`[data-section="${CSS.escape(scrollToSection)}"]`);
       if (target) {
         setTimeout(() => {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          target.style.background = 'var(--accent-muted)';
-          target.style.padding = '2px 6px';
-          target.style.borderRadius = '4px';
-          target.style.transition = 'background 0.5s';
-          setTimeout(() => target.style.background = '', 2000);
+          target.classList.add('section-highlight');
+          setTimeout(() => target.classList.remove('section-highlight'), 2000);
         }, 100);
       }
     }
   } catch(e) {
-    content.innerHTML = `<div class="viewer-loading" style="color:var(--error)">Error: ${escapeHtml(e.message)}</div>`;
+    body.innerHTML = `<div class="viewer-loading" style="color:var(--error)">Error: ${escapeHtml(e.message)}</div>`;
   }
 }
 
@@ -900,261 +494,146 @@ function closeViewer() {
   loadSources();
 }
 
-// ─── Source actions ───
+// Source actions
 async function deleteSource(source) {
   if (!confirm(`Delete "${source}" and all its chunks?`)) return;
   try {
     const r = await fetch(API + '/sources/' + encodeURIComponent(source), { method: 'DELETE' });
     const d = await r.json();
-    if (d.status === 'ok') {
-      showIngestMsg(`Deleted ${d.deleted_chunks} chunks`, 'ok');
-      if (activeSource === source) closeViewer();
-      loadSources();
-    }
-  } catch(e) {
-    showIngestMsg('Error: ' + e.message, 'err');
-  }
+    if (d.status === 'ok') { showMsg(`Deleted ${d.deleted_chunks} chunks`, 'ok'); if (activeSource === source) closeViewer(); loadSources(); }
+  } catch(e) { showMsg('Error: ' + e.message, 'err'); }
 }
 
 async function clearDocuments() {
-  if (!confirm('Delete ALL ingested documents? This cannot be undone.')) return;
+  if (!confirm('Delete ALL documents?')) return;
   try {
     const r = await fetch(API + '/documents/clear', { method: 'POST' });
     const d = await r.json();
-    if (d.status === 'ok') {
-      showIngestMsg(`Cleared ${d.deleted_chunks} chunks`, 'ok');
-      closeViewer();
-      loadSources();
-    }
-  } catch(e) {
-    showIngestMsg('Error: ' + e.message, 'err');
-  }
+    if (d.status === 'ok') { showMsg(`Cleared ${d.deleted_chunks} chunks`, 'ok'); closeViewer(); loadSources(); }
+  } catch(e) { showMsg('Error: ' + e.message, 'err'); }
 }
 
-// ─── Ingest ───
-function showIngestMsg(text, type) {
+// Ingest
+function showMsg(text, type) {
   const msg = document.getElementById('ingestMsg');
-  msg.textContent = text;
-  msg.className = 'upload-msg ' + (type || '');
+  msg.textContent = text; msg.className = 'upload-msg ' + (type || '');
   if (type === 'ok') setTimeout(() => { msg.textContent = ''; msg.className = 'upload-msg'; }, 4000);
 }
 
 async function doIngestFile() {
   const input = document.getElementById('ingestFile');
-  const files = input.files;
-  if (!files.length) return;
-
-  showIngestMsg(`Uploading ${files.length} file(s)...`, 'busy');
-
-  let totalFiles = 0, totalChunks = 0, errors = [];
-  for (const file of files) {
+  if (!input.files.length) return;
+  showMsg(`Uploading ${input.files.length} file(s)...`, 'busy');
+  let tf = 0, tc = 0, errors = [];
+  for (const file of input.files) {
     try {
-      const body = new FormData();
-      body.append('file', file);
+      const body = new FormData(); body.append('file', file);
       const r = await fetch(API + '/ingest', { method: 'POST', body });
       const d = await r.json();
-      if (d.status === 'ok') {
-        totalFiles += (d.files || 1);
-        totalChunks += (d.chunks || 0);
-      } else {
-        errors.push(`${file.name}: ${d.error || 'failed'}`);
-      }
-    } catch(e) {
-      errors.push(`${file.name}: ${e.message}`);
-    }
+      if (d.status === 'ok') { tf += (d.files || 1); tc += (d.chunks || 0); }
+      else errors.push(`${file.name}: ${d.error || 'failed'}`);
+    } catch(e) { errors.push(`${file.name}: ${e.message}`); }
   }
-
-  if (errors.length) {
-    showIngestMsg(`${totalFiles} files, ${totalChunks} chunks. Errors: ${errors.join('; ')}`, errors.length === files.length ? 'err' : 'ok');
-  } else {
-    showIngestMsg(`${totalFiles} files, ${totalChunks} chunks ingested`, 'ok');
-  }
-  input.value = '';
-  loadSources();
+  showMsg(errors.length ? `${tf} files, ${tc} chunks. Errors: ${errors.join('; ')}` : `${tf} files, ${tc} chunks`, errors.length === input.files.length ? 'err' : 'ok');
+  input.value = ''; loadSources();
 }
 
-// ─── Drag and drop ───
+// Drag and drop
 (function() {
-  const sb = document.getElementById('sidebar');
-  let dragCounter = 0;
-  sb.addEventListener('dragenter', e => { e.preventDefault(); dragCounter++; sb.classList.add('dragover'); });
-  sb.addEventListener('dragleave', e => { e.preventDefault(); dragCounter--; if (dragCounter <= 0) { sb.classList.remove('dragover'); dragCounter = 0; } });
+  const sb = document.getElementById('sidebar'); let dc = 0;
+  sb.addEventListener('dragenter', e => { e.preventDefault(); dc++; sb.classList.add('dragover'); });
+  sb.addEventListener('dragleave', e => { e.preventDefault(); dc--; if (dc <= 0) { sb.classList.remove('dragover'); dc = 0; } });
   sb.addEventListener('dragover', e => e.preventDefault());
   sb.addEventListener('drop', async e => {
-    e.preventDefault(); sb.classList.remove('dragover'); dragCounter = 0;
-    const files = e.dataTransfer.files;
-    if (!files.length) return;
-    showIngestMsg(`Uploading ${files.length} dropped file(s)...`, 'busy');
-    let totalFiles = 0, totalChunks = 0;
+    e.preventDefault(); sb.classList.remove('dragover'); dc = 0;
+    const files = e.dataTransfer.files; if (!files.length) return;
+    showMsg(`Uploading ${files.length} file(s)...`, 'busy');
+    let tf = 0, tc = 0;
     for (const file of files) {
-      try {
-        const body = new FormData();
-        body.append('file', file);
-        const r = await fetch(API + '/ingest', { method: 'POST', body });
-        const d = await r.json();
-        if (d.status === 'ok') { totalFiles += (d.files || 1); totalChunks += (d.chunks || 0); }
-      } catch(e) {}
+      try { const body = new FormData(); body.append('file', file); const r = await fetch(API + '/ingest', { method: 'POST', body }); const d = await r.json(); if (d.status === 'ok') { tf += (d.files||1); tc += (d.chunks||0); } } catch(e) {}
     }
-    showIngestMsg(`${totalFiles} files, ${totalChunks} chunks`, 'ok');
-    loadSources();
+    showMsg(`${tf} files, ${tc} chunks`, 'ok'); loadSources();
   });
 })();
 
-// ─── Chat ───
+// Chat
 function buildCitationsHtml(sources) {
-  if (!sources || sources.length === 0) return '';
-
-  // Deduplicate by file+section
-  const seen = new Set();
-  const unique = [];
-  for (const s of sources) {
-    const key = (s.file || '') + '::' + (s.section || '');
-    if (!seen.has(key)) { seen.add(key); unique.push(s); }
-  }
-
-  let html = '<div class="citations"><span class="citations-label">Sources</span>';
+  if (!sources || !sources.length) return '';
+  const seen = new Set(), unique = [];
+  for (const s of sources) { const k = (s.file||'')+'::'+( s.section||''); if (!seen.has(k)) { seen.add(k); unique.push(s); } }
+  let html = '<div class="citations"><span class="citations-label">Sources:</span>';
   for (const s of unique) {
     const file = s.file || 'unknown';
-    const shortFile = file.split('/').pop().split('\\').pop();
-    const section = s.section || '';
-    const label = section
-      ? `<span class="cl-file">${escapeHtml(shortFile)}</span><span class="cl-sep">&rsaquo;</span><span class="cl-section">${escapeHtml(section)}</span>`
-      : `<span class="cl-file">${escapeHtml(shortFile)}</span>`;
-
-    html += `<a class="citation-link" href="#" onclick="event.preventDefault();selectSource('${escapeAttr(file)}','${escapeAttr(section)}')" title="${escapeHtml(file)}${section ? ' — ' + escapeHtml(section) : ''}">${label}</a>`;
+    const short = file.split('/').pop().split('\\').pop();
+    const sec = s.section || '';
+    const label = sec
+      ? `<span class="cl-file">${escapeHtml(short)}</span><span class="cl-sep">&rsaquo;</span><span class="cl-section">${escapeHtml(sec)}</span>`
+      : `<span class="cl-file">${escapeHtml(short)}</span>`;
+    html += `<a class="citation-link" href="#" onclick="event.preventDefault();selectSource('${escapeAttr(file)}','${escapeAttr(sec)}')" title="${escapeHtml(file)}${sec ? ' — '+escapeHtml(sec) : ''}">${label}</a>`;
   }
-  html += '</div>';
-  return html;
+  return html + '</div>';
 }
 
-function addMessage(role, content, sources, meta) {
-  const welcome = document.querySelector('.welcome');
-  if (welcome) welcome.remove();
-
+function addMessage(role, content, sources) {
+  const welcome = document.querySelector('.welcome'); if (welcome) welcome.remove();
   const chat = document.getElementById('chat');
-  const div = document.createElement('div');
-  div.className = 'msg ' + role;
-
-  let html = '<div class="bubble">';
-  html += renderMarkdown(content);
-  html += '</div>';
-
-  if (sources && sources.length > 0) {
-    html += buildCitationsHtml(sources);
-  }
-
+  const div = document.createElement('div'); div.className = 'msg ' + role;
+  let html = '<div class="bubble">' + renderMarkdown(content) + '</div>';
+  if (sources && sources.length) html += buildCitationsHtml(sources);
   div.innerHTML = html;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+  chat.appendChild(div); chat.scrollTop = chat.scrollHeight;
   return div;
-}
-
-function getAssistantBubble(msgDiv) {
-  return msgDiv.querySelector('.bubble');
 }
 
 async function sendQuestion() {
   if (busy) return;
   const input = document.getElementById('question');
-  const q = input.value.trim();
-  if (!q) return;
-
-  input.value = '';
-  input.style.height = 'auto';
-  busy = true;
-  document.getElementById('send').disabled = true;
-
+  const q = input.value.trim(); if (!q) return;
+  input.value = ''; input.style.height = 'auto';
+  busy = true; document.getElementById('send').disabled = true;
   addMessage('user', q);
-
-  const assistantDiv = addMessage('assistant', '');
-  const bubble = getAssistantBubble(assistantDiv);
+  const aDiv = addMessage('assistant', '');
+  const bubble = aDiv.querySelector('.bubble');
   bubble.innerHTML = '<div class="thinking"><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div></div>';
-
   try {
     const body = new FormData();
-    body.append('question', q);
-    body.append('session_id', sessionId);
-    body.append('stream', 'true');
-
-    if (activeSource) {
-      body.append('source_filter', activeSource);
-    }
-
+    body.append('question', q); body.append('session_id', sessionId); body.append('stream', 'true');
+    if (activeSource) body.append('source_filter', activeSource);
     const response = await fetch(API + '/chat', { method: 'POST', body });
-
-    if (!response.ok) {
-      const err = await response.text();
-      bubble.innerHTML = `<span style="color:var(--error)">Error: ${escapeHtml(err)}</span>`;
-      return;
-    }
-
+    if (!response.ok) { bubble.innerHTML = `<span style="color:var(--error)">Error: ${escapeHtml(await response.text())}</span>`; return; }
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
-    let fullText = '';
-    let buffer = '';
-    let streamSources = [];
-
+    let fullText = '', buffer = '', streamSources = [];
     while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
+      const { done, value } = await reader.read(); if (done) break;
       buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop();
-
+      const lines = buffer.split('\n'); buffer = lines.pop();
       for (const line of lines) {
-        if (line.startsWith('data:')) {
-          const raw = line.slice(5).trim();
-          if (!raw || raw === '[DONE]') continue;
-          try {
-            const parsed = JSON.parse(raw);
-            if (parsed.sources) {
-              streamSources = parsed.sources;
-            } else if (parsed.token) {
-              fullText += parsed.token;
-              bubble.innerHTML = renderMarkdown(fullText);
-            }
-          } catch {
-            fullText += raw;
-            bubble.innerHTML = renderMarkdown(fullText);
-          }
-        }
+        if (!line.startsWith('data:')) continue;
+        const raw = line.slice(5).trim(); if (!raw || raw === '[DONE]') continue;
+        try {
+          const p = JSON.parse(raw);
+          if (p.sources) streamSources = p.sources;
+          else if (p.token) { fullText += p.token; bubble.innerHTML = renderMarkdown(fullText); }
+        } catch { fullText += raw; bubble.innerHTML = renderMarkdown(fullText); }
       }
       document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
     }
-
-    if (!fullText) {
-      bubble.innerHTML = '<span style="color:var(--text-dim)">No response</span>';
-    }
-
-    // Append citation cards after streaming completes
-    if (streamSources.length > 0) {
-      const citationsHtml = buildCitationsHtml(streamSources);
-      assistantDiv.insertAdjacentHTML('beforeend', citationsHtml);
-    }
-
-  } catch(e) {
-    bubble.innerHTML = `<span style="color:var(--error)">Error: ${escapeHtml(e.message)}</span>`;
-  } finally {
-    busy = false;
-    document.getElementById('send').disabled = false;
-    input.focus();
-  }
+    if (!fullText) bubble.innerHTML = '<span style="color:var(--text-dim)">No response</span>';
+    if (streamSources.length) aDiv.insertAdjacentHTML('beforeend', buildCitationsHtml(streamSources));
+  } catch(e) { bubble.innerHTML = `<span style="color:var(--error)">Error: ${escapeHtml(e.message)}</span>`; }
+  finally { busy = false; document.getElementById('send').disabled = false; input.focus(); }
 }
 
-// ─── Keyboard ───
+// Keyboard
 document.getElementById('question').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendQuestion();
-  }
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); }
 });
 document.getElementById('question').addEventListener('input', function() {
-  this.style.height = 'auto';
-  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 
-// ─── Markdown ───
+// Markdown renderer
 function renderMarkdown(text) {
   if (!text) return '';
 
@@ -1162,194 +641,80 @@ function renderMarkdown(text) {
   const codeBlocks = [];
   let s = text.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
     codeBlocks.push(`<pre><code>${escapeHtml(code.trim())}</code></pre>`);
-    return `\x00CB${codeBlocks.length - 1}\x00`;
+    return '\x00CB' + (codeBlocks.length - 1) + '\x00';
   });
 
   // Extract inline code
-  const inlines = [];
+  const inlineCodes = [];
   s = s.replace(/`([^`]+)`/g, (_, code) => {
-    inlines.push(`<code>${escapeHtml(code)}</code>`);
-    return `\x00IC${inlines.length - 1}\x00`;
+    inlineCodes.push(`<code>${escapeHtml(code)}</code>`);
+    return '\x00IC' + (inlineCodes.length - 1) + '\x00';
   });
 
-  // Process line by line for block elements
   const lines = s.split('\n');
-  let html = '';
-  let inList = false;
-  let listType = '';
-  let inBlockquote = false;
-  let paraLines = [];
+  let html = '', inList = false, listTag = '', inBQ = false, para = [];
 
-  function flushPara() {
-    if (paraLines.length > 0) {
-      const joined = paraLines.join('<br>');
-      html += `<p>${inlineFormat(joined)}</p>`;
-      paraLines = [];
-    }
-  }
+  function flushPara() { if (para.length) { html += '<p>' + fmt(para.join('<br>')) + '</p>'; para = []; } }
+  function closeList() { if (inList) { html += '</' + listTag + '>'; inList = false; } }
+  function closeBQ() { if (inBQ) { html += '</blockquote>'; inBQ = false; } }
 
-  function closeLists() {
-    if (inList) {
-      html += listType === 'ul' ? '</ul>' : '</ol>';
-      inList = false;
-    }
-  }
+  for (const line of lines) {
+    const t = line.trim();
 
-  function closeBlockquote() {
-    if (inBlockquote) {
-      html += '</blockquote>';
-      inBlockquote = false;
-    }
-  }
+    if (t === '') { flushPara(); closeList(); closeBQ(); continue; }
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const trimmed = line.trim();
+    // Code block placeholder
+    if (/^\x00CB\d+\x00$/.test(t)) { flushPara(); closeList(); closeBQ(); html += t; continue; }
 
-    // Empty line — flush paragraph
-    if (trimmed === '') {
-      flushPara();
-      closeLists();
-      closeBlockquote();
-      continue;
-    }
+    // Heading
+    const hm = t.match(/^(#{1,6})\s+(.+)$/);
+    if (hm) { flushPara(); closeList(); closeBQ(); html += `<h${hm[1].length}>${fmt(escapeHtml(hm[2]))}</h${hm[1].length}>`; continue; }
 
-    // Code block placeholder — flush and insert
-    if (/^\x00CB\d+\x00$/.test(trimmed)) {
-      flushPara();
-      closeLists();
-      closeBlockquote();
-      html += trimmed;
-      continue;
-    }
-
-    // Headings
-    const headingMatch = trimmed.match(/^(#{1,6})\s+(.+)$/);
-    if (headingMatch) {
-      flushPara();
-      closeLists();
-      closeBlockquote();
-      const level = headingMatch[1].length;
-      html += `<h${level}>${inlineFormat(escapeHtml(headingMatch[2]))}</h${level}>`;
-      continue;
-    }
-
-    // Horizontal rule
-    if (/^[-*_]{3,}\s*$/.test(trimmed)) {
-      flushPara();
-      closeLists();
-      closeBlockquote();
-      html += '<hr>';
-      continue;
-    }
+    // HR
+    if (/^[-*_]{3,}\s*$/.test(t)) { flushPara(); closeList(); closeBQ(); html += '<hr>'; continue; }
 
     // Unordered list
-    const ulMatch = trimmed.match(/^[-*+]\s+(.+)$/);
-    if (ulMatch) {
-      flushPara();
-      closeBlockquote();
-      if (!inList || listType !== 'ul') {
-        closeLists();
-        html += '<ul>';
-        inList = true;
-        listType = 'ul';
-      }
-      html += `<li>${inlineFormat(escapeHtml(ulMatch[1]))}</li>`;
-      continue;
-    }
+    const ul = t.match(/^[-*+]\s+(.+)$/);
+    if (ul) { flushPara(); closeBQ(); if (!inList || listTag !== 'ul') { closeList(); html += '<ul>'; inList = true; listTag = 'ul'; } html += '<li>' + fmt(escapeHtml(ul[1])) + '</li>'; continue; }
 
     // Ordered list
-    const olMatch = trimmed.match(/^\d+[.)]\s+(.+)$/);
-    if (olMatch) {
-      flushPara();
-      closeBlockquote();
-      if (!inList || listType !== 'ol') {
-        closeLists();
-        html += '<ol>';
-        inList = true;
-        listType = 'ol';
-      }
-      html += `<li>${inlineFormat(escapeHtml(olMatch[1]))}</li>`;
-      continue;
-    }
+    const ol = t.match(/^\d+[.)]\s+(.+)$/);
+    if (ol) { flushPara(); closeBQ(); if (!inList || listTag !== 'ol') { closeList(); html += '<ol>'; inList = true; listTag = 'ol'; } html += '<li>' + fmt(escapeHtml(ol[1])) + '</li>'; continue; }
 
     // Blockquote
-    const bqMatch = trimmed.match(/^>\s?(.*)$/);
-    if (bqMatch) {
-      flushPara();
-      closeLists();
-      if (!inBlockquote) {
-        html += '<blockquote>';
-        inBlockquote = true;
-      }
-      html += inlineFormat(escapeHtml(bqMatch[1])) + '<br>';
-      continue;
-    }
+    const bq = t.match(/^>\s?(.*)$/);
+    if (bq) { flushPara(); closeList(); if (!inBQ) { html += '<blockquote>'; inBQ = true; } html += fmt(escapeHtml(bq[1])) + '<br>'; continue; }
 
-    // Regular paragraph line
-    closeLists();
-    closeBlockquote();
-    paraLines.push(escapeHtml(trimmed));
+    // Paragraph text
+    closeList(); closeBQ();
+    para.push(escapeHtml(t));
   }
+  flushPara(); closeList(); closeBQ();
 
-  flushPara();
-  closeLists();
-  closeBlockquote();
-
-  // Restore code blocks and inline code
+  // Restore placeholders
   html = html.replace(/\x00CB(\d+)\x00/g, (_, i) => codeBlocks[i]);
-  html = html.replace(/\x00IC(\d+)\x00/g, (_, i) => inlines[i]);
-
+  html = html.replace(/\x00IC(\d+)\x00/g, (_, i) => inlineCodes[i]);
   return html;
 }
 
-function inlineFormat(s) {
-  // Restore inline code placeholders are already in the string
+function fmt(s) {
   s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
   s = s.replace(/_(.+?)_/g, '<em>$1</em>');
   return s;
 }
 
-function escapeHtml(str) {
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
-}
+function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+function escapeAttr(str) { return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
 
-function escapeAttr(str) {
-  return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-}
-
-// ─── Sidebar resize ───
+// Sidebar resize
 (function() {
   const handle = document.getElementById('sidebarResize');
   const sidebar = document.getElementById('sidebar');
   let dragging = false;
-
-  handle.addEventListener('mousedown', e => {
-    e.preventDefault();
-    dragging = true;
-    handle.classList.add('dragging');
-    sidebar.style.transition = 'none';
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-  });
-
-  document.addEventListener('mousemove', e => {
-    if (!dragging) return;
-    const newWidth = Math.min(Math.max(e.clientX, 200), window.innerWidth * 0.5);
-    sidebar.style.width = newWidth + 'px';
-  });
-
-  document.addEventListener('mouseup', () => {
-    if (!dragging) return;
-    dragging = false;
-    handle.classList.remove('dragging');
-    sidebar.style.transition = '';
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-  });
+  handle.addEventListener('mousedown', e => { e.preventDefault(); dragging = true; handle.classList.add('dragging'); sidebar.style.transition = 'none'; document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'; });
+  document.addEventListener('mousemove', e => { if (!dragging) return; sidebar.style.width = Math.min(Math.max(e.clientX, 180), window.innerWidth * 0.5) + 'px'; });
+  document.addEventListener('mouseup', () => { if (!dragging) return; dragging = false; handle.classList.remove('dragging'); sidebar.style.transition = ''; document.body.style.cursor = ''; document.body.style.userSelect = ''; });
 })();
 </script>
 </body>
