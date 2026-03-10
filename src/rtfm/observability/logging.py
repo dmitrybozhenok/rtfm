@@ -21,6 +21,7 @@ class JSONFormatter(logging.Formatter):
         # Add extra fields passed via `extra={}`
         for key in ("question", "latency_ms", "cached", "chunks_retrieved",
                      "tokens_used", "source_files", "session_id", "model",
+                     "llm_model", "embedding_model",
                      "cache_hit", "files_processed", "chunks_created",
                      "guardrail_action", "guardrail_reason", "error",
                      "url", "method", "status_code", "path",

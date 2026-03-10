@@ -34,6 +34,8 @@ setup_logging(log_level=settings.log_level, log_format=settings.log_format)
 logger = get_logger("api")
 
 app = FastAPI(title="RTFM", version="0.1.0")
+logger.info("RTFM server starting", extra={"llm_model": settings.llm_model,
+            "embedding_model": settings.embedding_model})
 security = HTTPBasic(auto_error=False)
 
 _STATIC_DIR = Path(__file__).parent / "static"

@@ -29,8 +29,13 @@ Rules:
 
 
 def _get_client() -> OpenAI:
-    """Return an OpenAI client pointed at Ollama."""
-    return OpenAI(base_url=settings.ollama_base_url, api_key="ollama")
+    """Return an OpenAI-compatible client (Ollama, Gemini, etc.)."""
+    return OpenAI(base_url=settings.ollama_base_url, api_key=settings.llm_api_key)
+
+
+def _is_ollama() -> bool:
+    """Check if we're using a local Ollama backend."""
+    return "11434" in settings.ollama_base_url
 
 
 def _format_context(results: list[SearchResult]) -> str:
@@ -164,16 +169,13 @@ def ask(
         # Build messages
         messages = _build_messages(question, context, system, session_history)
 
-        # Call LLM via Ollama (OpenAI-compatible API)
+        # Call LLM via OpenAI-compatible API
         with trace_span("llm.call", {"model": llm_model}) as llm_span:
             client = _get_client()
-            response = client.chat.completions.create(
-                model=llm_model,
-                messages=messages,
-                temperature=0,
-                max_tokens=1024,
-                extra_body={"repeat_penalty": 1.3},
-            )
+            kwargs = dict(model=llm_model, messages=messages, temperature=0, max_tokens=1024)
+            if _is_ollama():
+                kwargs["extra_body"] = {"repeat_penalty": 1.3}
+            response = client.chat.completions.create(**kwargs)
             llm_ms = llm_span.duration_ms
         metrics.llm_latency.observe(llm_ms)
 
@@ -282,14 +284,10 @@ def ask_stream(
     full_answer = ""
     llm_start = time.time()
 
-    stream = client.chat.completions.create(
-        model=settings.llm_model,
-        messages=messages,
-        temperature=0,
-        max_tokens=1024,
-        stream=True,
-        extra_body={"repeat_penalty": 1.3},
-    )
+    kwargs = dict(model=settings.llm_model, messages=messages, temperature=0, max_tokens=1024, stream=True)
+    if _is_ollama():
+        kwargs["extra_body"] = {"repeat_penalty": 1.3}
+    stream = client.chat.completions.create(**kwargs)
 
     for chunk in stream:
         if chunk.choices and chunk.choices[0].delta.content:
@@ -320,7 +318,8 @@ def ask_stream(
     logger.info("Streaming query processed",
                 extra={"question": question, "latency_ms": round(latency, 1),
                        "cached": False, "chunks_retrieved": len(results),
-                       "source_files": [r.source_file for r in results]})
+                       "source_files": [r.source_file for r in results],
+                       "model": settings.llm_model})
 
     yield {"sources": sources}
 
