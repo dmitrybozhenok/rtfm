@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 from rtfm.config import settings
 
+_HEADING_RE = re.compile(r"^(#{1,6})\s+(.+)")
+
 
 @dataclass
 class Chunk:
@@ -12,6 +14,49 @@ class Chunk:
     chunk_index: int
     section: str
     metadata: dict
+
+
+def _is_markdown_heading(line: str) -> bool:
+    """Check if a line is a real markdown heading, not a code comment or shebang.
+
+    Filters out:
+    - Shebangs (#!/usr/bin/env, #!/bin/bash)
+    - Single-# lines where text starts lowercase (code comments)
+    - Very long lines (>100 chars) that look like sentences
+    """
+    m = _HEADING_RE.match(line)
+    if not m:
+        return False
+    level = len(m.group(1))
+    text = m.group(2).strip()
+    if not text:
+        return False
+    # Shebangs: #!/usr/bin/env, #! /usr/bin/env
+    if text.startswith("!") or text.startswith("/"):
+        return False
+    # Single # with lowercase start is almost always a code comment
+    # (real H1 headings are book/chapter titles, always capitalized)
+    if level == 1 and text[0].islower():
+        return False
+    # Single # longer than 40 chars is likely code output or git messages,
+    # not a real H1 heading (real H1s are short: book title, chapter name).
+    # Exception: "Chapter N:" pattern from structured books.
+    if level == 1 and len(text) > 40 and not text.startswith("Chapter"):
+        return False
+    # Long text is likely a sentence from a callout box or code output
+    if len(text) > 80:
+        return False
+    # Text ending with sentence punctuation (not a title)
+    # but allow "vs." pattern (e.g. "Rebase vs. Merge")
+    if text.endswith((".",":",";")) and "vs." not in text:
+        return False
+    # Git output: contains hex commit hashes (7+ hex chars)
+    if re.search(r"[0-9a-f]{7,}", text):
+        return False
+    # Starts with "This is" — git commit message templates
+    if text.startswith("This is "):
+        return False
+    return True
 
 
 def _clean_overlap(overlap_text: str) -> str:
@@ -52,6 +97,7 @@ def chunk_text(
     chunks: list[Chunk] = []
     current_text = ""
     current_section = ""
+    in_code_block = False
 
     def _finalize_chunk(text_body: str, section: str) -> None:
         """Create a chunk from accumulated text."""
@@ -75,7 +121,15 @@ def chunk_text(
         if not para:
             continue
 
-        is_heading = para.startswith("#")
+        # Track fenced code blocks (``` or ~~~) across paragraph splits
+        fence_count = len(re.findall(r"^(?:```|~~~)", para, re.MULTILINE))
+        if fence_count % 2 == 1:
+            in_code_block = not in_code_block
+
+        first_line = para.split("\n")[0]
+        is_heading = (not in_code_block
+                      and para.startswith("#")
+                      and _is_markdown_heading(first_line))
 
         # When we hit a new section heading, finalize the current chunk
         # so that previous-section content doesn't leak into the new section
