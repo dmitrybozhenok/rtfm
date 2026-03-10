@@ -243,7 +243,7 @@ def ask_stream(
     try:
         from rtfm.cache.semantic_cache import check_cache
 
-        cached_answer, _cached_sources = check_cache(question)
+        cached_answer, cached_sources = check_cache(question)
         if cached_answer is not None:
             metrics.queries_total.inc()
             metrics.cache_hits.inc()
@@ -251,7 +251,8 @@ def ask_stream(
             metrics.query_latency.observe(latency)
             logger.info("Streaming query answered from cache",
                         extra={"question": question, "latency_ms": round(latency, 1), "cached": True})
-            yield cached_answer
+            yield {"token": cached_answer}
+            yield {"sources": cached_sources or []}
             return
     except Exception:
         pass
@@ -293,12 +294,11 @@ def ask_stream(
         if chunk.choices and chunk.choices[0].delta.content:
             text = chunk.choices[0].delta.content
             full_answer += text
-            yield text
+            yield {"token": text}
 
     llm_ms = (time.time() - llm_start) * 1000
     metrics.llm_latency.observe(llm_ms)
 
-    # Cache the full answer (with sources)
     sources = [
         {"file": r.source_file, "section": r.section, "score": r.score}
         for r in results
@@ -319,6 +319,8 @@ def ask_stream(
                 extra={"question": question, "latency_ms": round(latency, 1),
                        "cached": False, "chunks_retrieved": len(results),
                        "source_files": [r.source_file for r in results]})
+
+    yield {"sources": sources}
 
 
 def _get_source_chunks(source: str) -> list[dict]:

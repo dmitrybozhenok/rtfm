@@ -464,14 +464,14 @@ async function loadSources() {
 loadSources();
 
 // Source selection
-async function selectSource(source) {
+async function selectSource(source, section) {
   activeSource = source;
   loadSources();
-  openViewer(source);
+  openViewer(source, section);
 }
 
 // Source viewer
-async function openViewer(source) {
+async function openViewer(source, scrollToSection) {
   const viewer = document.getElementById('viewer');
   const title = document.getElementById('viewerTitle');
   const content = document.getElementById('viewerContent');
@@ -490,12 +490,23 @@ async function openViewer(source) {
     let html = '';
     for (const c of chunks) {
       const sectionLabel = c.section ? c.section : `Chunk ${c.chunk_index}`;
-      html += `<div class="viewer-chunk">
+      const chunkId = 'chunk-' + c.chunk_index;
+      html += `<div class="viewer-chunk" id="${chunkId}" data-section="${escapeAttr(c.section || '')}">
         <div class="viewer-chunk-header">${escapeHtml(sectionLabel)}</div>
         <div>${escapeHtml(c.text).replace(/\n/g, '<br>')}</div>
       </div>`;
     }
     content.innerHTML = html || '<div class="viewer-loading">No content</div>';
+
+    // Scroll to matching section if requested
+    if (scrollToSection) {
+      const target = content.querySelector(`[data-section="${CSS.escape(scrollToSection)}"]`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        target.style.outline = '2px solid var(--accent)';
+        setTimeout(() => target.style.outline = '', 2000);
+      }
+    }
   } catch(e) {
     content.innerHTML = `<div class="viewer-loading" style="color:var(--error)">Error: ${escapeHtml(e.message)}</div>`;
   }
@@ -628,7 +639,7 @@ function addMessage(role, content, sources, meta) {
     for (const s of sources) {
       const label = s.file || 'unknown';
       const section = s.section ? ` \u2014 ${s.section}` : '';
-      html += `<li><a href="#" onclick="event.preventDefault();selectSource('${escapeAttr(s.file)}')" style="color:var(--accent)">${escapeHtml(label)}</a>${escapeHtml(section)}</li>`;
+      html += `<li><a href="#" onclick="event.preventDefault();selectSource('${escapeAttr(s.file)}','${escapeAttr(s.section || '')}')" style="color:var(--accent)">${escapeHtml(label)}</a>${escapeHtml(section)}</li>`;
     }
     html += '</ul></details></div>';
   }
@@ -686,6 +697,7 @@ async function sendQuestion() {
     const decoder = new TextDecoder();
     let fullText = '';
     let buffer = '';
+    let streamSources = [];
 
     while (true) {
       const { done, value } = await reader.read();
@@ -701,11 +713,16 @@ async function sendQuestion() {
           if (!raw || raw === '[DONE]') continue;
           try {
             const parsed = JSON.parse(raw);
-            fullText += parsed.token;
+            if (parsed.sources) {
+              streamSources = parsed.sources;
+            } else if (parsed.token) {
+              fullText += parsed.token;
+              bubble.innerHTML = renderMarkdown(fullText);
+            }
           } catch {
             fullText += raw;
+            bubble.innerHTML = renderMarkdown(fullText);
           }
-          bubble.innerHTML = renderMarkdown(fullText);
         }
       }
       document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
@@ -713,6 +730,15 @@ async function sendQuestion() {
 
     if (!fullText) {
       bubble.innerHTML = '<span style="color:var(--text-dim)">No response</span>';
+    } else if (streamSources.length > 0) {
+      let srcHtml = '<div class="chat-sources"><details><summary>Sources (' + streamSources.length + ')</summary><ul>';
+      for (const s of streamSources) {
+        const label = s.file || 'unknown';
+        const section = s.section ? ` \u2014 ${s.section}` : '';
+        srcHtml += `<li><a href="#" onclick="event.preventDefault();selectSource('${escapeAttr(s.file)}','${escapeAttr(s.section || '')}')" style="color:var(--accent)">${escapeHtml(label)}</a>${escapeHtml(section)}</li>`;
+      }
+      srcHtml += '</ul></details></div>';
+      bubble.innerHTML += srcHtml;
     }
 
   } catch(e) {

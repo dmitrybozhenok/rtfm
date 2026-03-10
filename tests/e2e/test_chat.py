@@ -93,6 +93,27 @@ def test_shift_enter_adds_newline(page):
     assert page.locator(".msg").count() == 0
 
 
+def test_streaming_response_shows_sources(page):
+    """Streaming response includes a collapsible sources list with citations."""
+    page.goto("/")
+
+    page.fill("#question", "What is Git?")
+    page.click("#send")
+
+    # Wait for streaming to complete (send button re-enabled)
+    page.wait_for_selector("#send:not([disabled])", timeout=60000)
+
+    # Sources section should appear inside the assistant bubble
+    sources = page.locator(".msg.assistant .chat-sources")
+    sources.wait_for(timeout=10000)
+    assert sources.count() >= 1
+
+    # Expand the details and check at least one source link
+    sources.first.locator("summary").click()
+    source_items = sources.first.locator("li")
+    assert source_items.count() >= 1
+
+
 def test_send_button_disabled_during_streaming(page):
     """Send button is disabled while waiting for a response."""
     page.goto("/")

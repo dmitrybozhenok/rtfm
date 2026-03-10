@@ -129,7 +129,8 @@ class TestStreamingEdgeCases:
                 chunks = list(ask_stream("Q?"))
 
         # Only "hello" should be yielded (None and empty are filtered out)
-        assert "hello" in chunks
+        tokens = [c["token"] for c in chunks if "token" in c]
+        assert "hello" in tokens
 
     def test_stream_cache_store_failure_silent(self, mock_cache):
         """If cache store fails after streaming, no error raised."""
@@ -141,8 +142,9 @@ class TestStreamingEdgeCases:
             with patch("rtfm.cache.semantic_cache.check_cache", return_value=(None, [])), \
                  patch("rtfm.cache.semantic_cache.store_cache", side_effect=Exception("store failed")):
                 chunks = list(ask_stream("Q?"))
+        tokens = [c["token"] for c in chunks if "token" in c]
 
-        assert chunks == ["answer"]
+        assert tokens == ["answer"]
 
     def test_stream_cache_check_failure_continues(self):
         """If cache check fails during streaming, pipeline continues."""
@@ -154,8 +156,9 @@ class TestStreamingEdgeCases:
                 _mock_llm_stream(["fallback answer"])
 
             chunks = list(ask_stream("Q?"))
+        tokens = [c["token"] for c in chunks if "token" in c]
 
-        assert chunks == ["fallback answer"]
+        assert tokens == ["fallback answer"]
 
     def test_stream_with_session_history(self, mock_cache):
         """ask_stream passes session_history to LLM."""

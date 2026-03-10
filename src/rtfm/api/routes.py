@@ -189,8 +189,9 @@ async def chat_endpoint(
                 source_filter=source_filter,
                 section_filter=section_filter,
             ):
-                full_answer += chunk
-                yield {"data": json.dumps({"token": chunk})}
+                if "token" in chunk:
+                    full_answer += chunk["token"]
+                yield {"data": json.dumps(chunk)}
 
             # Save to session after streaming completes
             add_message(session_id, "user", question)

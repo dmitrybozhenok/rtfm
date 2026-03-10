@@ -265,15 +265,19 @@ class TestAskStream:
         )
 
         chunks = list(ask_stream("Q?"))
+        tokens = [c["token"] for c in chunks if "token" in c]
+        sources = [c["sources"] for c in chunks if "sources" in c]
 
-        assert chunks == ["Hello", " world", "!"]
+        assert tokens == ["Hello", " world", "!"]
+        assert len(sources) == 1  # sources emitted at end
 
     def test_cache_hit_yields_cached_answer(self):
-        with patch("rtfm.cache.semantic_cache.check_cache", return_value=("Cached!", [])), \
+        with patch("rtfm.cache.semantic_cache.check_cache", return_value=("Cached!", [{"file": "x"}])), \
              patch("rtfm.cache.semantic_cache.store_cache"):
             chunks = list(ask_stream("cached Q"))
+        tokens = [c["token"] for c in chunks if "token" in c]
 
-        assert chunks == ["Cached!"]
+        assert tokens == ["Cached!"]
 
     def test_caches_full_answer_after_streaming(self, mock_search, mock_llm):
         mock_search.return_value = []

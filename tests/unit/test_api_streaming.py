@@ -28,9 +28,10 @@ def _chat_patches(**overrides):
 
 
 def _stream_chunks(texts):
-    """Generator that yields text chunks like ask_stream."""
+    """Generator that yields dicts like ask_stream."""
     for t in texts:
-        yield t
+        yield {"token": t}
+    yield {"sources": [{"file": "test.md", "section": "", "score": 0.9}]}
 
 
 class TestStreamingChat:
