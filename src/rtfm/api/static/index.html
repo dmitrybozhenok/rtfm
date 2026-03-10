@@ -4,79 +4,148 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RTFM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f1117;
-  --surface: #1a1b26;
-  --surface2: #24253a;
-  --border: #2f3146;
-  --text: #c0caf5;
-  --text-dim: #565f89;
-  --accent: #7aa2f7;
-  --accent-hover: #89b4fa;
-  --user-bg: #283457;
-  --success: #9ece6a;
-  --error: #f7768e;
-  --warn: #e0af68;
+  --bg: #0d0f14;
+  --surface: #14161e;
+  --surface2: #1a1d28;
+  --surface3: #21242f;
+  --border: #2a2d3a;
+  --border-subtle: #1f2230;
+  --text: #d4d0c8;
+  --text-secondary: #8a8690;
+  --text-dim: #55525e;
+  --accent: #c8a46e;
+  --accent-muted: rgba(200, 164, 110, 0.12);
+  --accent-hover: #d9b87e;
+  --accent-glow: rgba(200, 164, 110, 0.06);
+  --user-bg: #1c1f2e;
+  --user-border: #2a2e42;
+  --success: #7ec87a;
+  --error: #d47272;
+  --warn: #c8a46e;
+  --quote-bg: #161820;
+  --quote-border: #2a2540;
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+  --font-mono: 'DM Mono', 'Cascadia Code', monospace;
+  --radius: 8px;
+  --radius-lg: 14px;
 }
 [data-theme="light"] {
-  --bg: #f0f0f5;
+  --bg: #f4f1ec;
   --surface: #ffffff;
-  --surface2: #e8e8f0;
-  --border: #d0d0dd;
-  --text: #1a1b2e;
-  --text-dim: #6b6b80;
-  --accent: #4060d0;
-  --accent-hover: #5070e0;
-  --user-bg: #dde4f8;
-  --success: #40a040;
-  --error: #d03030;
-  --warn: #c08020;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: var(--bg); color: var(--text);
-  height: 100vh; display: flex; flex-direction: column;
-  overflow: hidden;
+  --surface2: #f0ede6;
+  --surface3: #e8e4dd;
+  --border: #d8d4cc;
+  --border-subtle: #e8e4dd;
+  --text: #2a2520;
+  --text-secondary: #6b6560;
+  --text-dim: #a09890;
+  --accent: #9a7540;
+  --accent-muted: rgba(154, 117, 64, 0.08);
+  --accent-hover: #b08848;
+  --accent-glow: rgba(154, 117, 64, 0.04);
+  --user-bg: #eae6de;
+  --user-border: #d8d2c8;
+  --success: #4a8a48;
+  --error: #b84040;
+  --warn: #9a7540;
+  --quote-bg: #f8f5f0;
+  --quote-border: #e0dcd4;
 }
 
-/* Header */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Header ─── */
 header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 16px; border-bottom: 1px solid var(--border);
-  background: var(--surface); flex-shrink: 0; z-index: 20;
+  padding: 0 20px;
+  height: 52px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface);
+  flex-shrink: 0;
+  z-index: 20;
 }
-header h1 { font-size: 1.1rem; font-weight: 700; }
-header h1 span { color: var(--accent); }
-.header-controls { display: flex; gap: 6px; align-items: center; }
+.logo {
+  display: flex; align-items: baseline; gap: 6px;
+  text-decoration: none; color: var(--text);
+}
+.logo-mark {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-style: italic;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+.logo-sub {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.header-controls { display: flex; gap: 8px; align-items: center; }
+.health-indicator {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.72rem; color: var(--text-dim);
+  letter-spacing: 0.03em;
+}
 .health-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--text-dim); display: inline-block;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--text-dim);
 }
-.health-dot.ok { background: var(--success); }
+.health-dot.ok { background: var(--success); box-shadow: 0 0 6px rgba(126,200,122,0.4); }
 .health-dot.degraded { background: var(--warn); }
 .health-dot.bad { background: var(--error); }
-.btn-sm {
-  background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text); cursor: pointer; border-radius: 6px;
-  padding: 4px 10px; font-size: 0.78rem;
+.btn-header {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 0.72rem;
+  font-family: var(--font-body);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all 0.2s;
 }
-.btn-sm:hover { border-color: var(--accent); }
+.btn-header:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
 
-/* Main layout */
+/* ─── Main Layout ─── */
 .main-layout {
   display: flex; flex: 1; overflow: hidden;
 }
 
-/* Sidebar */
+/* ─── Sidebar ─── */
 .sidebar {
-  width: 280px; min-width: 180px; max-width: 50vw;
+  width: 280px; min-width: 200px; max-width: 50vw;
   background: var(--surface);
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--border-subtle);
   display: flex; flex-direction: column;
   overflow: hidden;
-  transition: margin-left 0.2s;
+  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
 .sidebar.collapsed { margin-left: -100%; }
@@ -85,213 +154,484 @@ header h1 span { color: var(--accent); }
   cursor: col-resize; z-index: 10;
 }
 .sidebar-resize:hover, .sidebar-resize.dragging {
-  background: var(--accent); opacity: 0.4;
+  background: var(--accent); opacity: 0.3;
 }
-.sidebar-header {
+.sidebar-section-title {
+  padding: 16px 18px 10px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 14px; border-bottom: 1px solid var(--border);
-  font-size: 0.82rem; font-weight: 600;
 }
-.sidebar-header .count { color: var(--text-dim); font-weight: 400; }
+.sidebar-section-title .count {
+  font-weight: 400;
+  color: var(--text-dim);
+  font-size: 0.66rem;
+  background: var(--surface2);
+  padding: 1px 7px;
+  border-radius: 10px;
+}
 
-/* Add source area */
-.add-source {
-  padding: 10px 14px; border-bottom: 1px solid var(--border);
+/* Upload area */
+.upload-area {
+  padding: 10px 14px 14px;
+  border-bottom: 1px solid var(--border-subtle);
 }
-.add-row { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
-.add-row:last-child { margin-bottom: 0; }
-.add-row input[type="text"] {
-  flex: 1; min-width: 0; padding: 5px 8px; border-radius: 5px;
-  border: 1px solid var(--border); background: var(--surface2);
-  color: var(--text); font-size: 0.8rem;
+.upload-zone {
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
 }
-.add-row input[type="text"]:focus { outline: none; border-color: var(--accent); }
-.add-row input[type="file"] {
-  font-size: 0.75rem; color: var(--text-dim);
-  flex: 1; min-width: 0; overflow: hidden;
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--accent);
+  background: var(--accent-muted);
 }
-.btn-add {
-  padding: 5px 10px; border-radius: 5px; border: none;
-  background: var(--accent); color: #fff; cursor: pointer;
-  font-size: 0.78rem; white-space: nowrap; flex-shrink: 0;
+.upload-zone input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer;
 }
-.btn-add:disabled { opacity: 0.5; cursor: not-allowed; }
-.add-row label { font-size: 0.75rem; color: var(--text-dim); display: flex; align-items: center; gap: 3px; }
-.add-msg { font-size: 0.75rem; margin-top: 4px; }
-.add-msg.ok { color: var(--success); }
-.add-msg.err { color: var(--error); }
-.add-msg.busy { color: var(--warn); }
+.upload-icon {
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+  color: var(--text-dim);
+}
+.upload-text {
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+.upload-text strong { color: var(--text-secondary); font-weight: 500; }
+.upload-msg {
+  font-size: 0.73rem; margin-top: 8px; text-align: center;
+  min-height: 1em;
+}
+.upload-msg.ok { color: var(--success); }
+.upload-msg.err { color: var(--error); }
+.upload-msg.busy { color: var(--warn); }
 
 /* Source list */
 .source-list {
-  flex: 1; overflow-y: auto; padding: 6px;
+  flex: 1; overflow-y: auto; padding: 4px 8px;
 }
 .source-item {
-  padding: 8px 10px; border-radius: 6px; margin-bottom: 2px;
-  cursor: pointer; display: flex; align-items: center; gap: 8px;
-  font-size: 0.82rem; position: relative;
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  margin-bottom: 1px;
+  cursor: pointer;
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.82rem;
+  position: relative;
+  transition: background 0.15s;
 }
 .source-item:hover { background: var(--surface2); }
-.source-item.active { background: var(--surface2); border-left: 2px solid var(--accent); }
-.source-icon { font-size: 0.9rem; flex-shrink: 0; }
-.source-info { flex: 1; overflow: hidden; }
+.source-item.active {
+  background: var(--accent-muted);
+}
+.source-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 8px; bottom: 8px;
+  width: 2px; background: var(--accent); border-radius: 1px;
+}
+.source-icon {
+  width: 32px; height: 32px; border-radius: 6px;
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; flex-shrink: 0;
+  color: var(--text-dim);
+  border: 1px solid var(--border-subtle);
+}
+.source-item.active .source-icon {
+  background: var(--accent-muted);
+  border-color: rgba(200,164,110,0.2);
+  color: var(--accent);
+}
+.source-info { flex: 1; overflow: hidden; min-width: 0; }
 .source-name {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-size: 0.82rem;
+  font-size: 0.8rem; font-weight: 500;
 }
-.source-meta { font-size: 0.7rem; color: var(--text-dim); }
+.source-meta {
+  font-size: 0.68rem; color: var(--text-dim); margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+}
 .source-actions {
-  display: none; gap: 2px; position: absolute; right: 6px;
+  display: none; position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
 }
 .source-item:hover .source-actions { display: flex; }
 .source-actions button {
-  background: none; border: none; color: var(--text-dim);
-  cursor: pointer; font-size: 0.75rem; padding: 2px 4px; border-radius: 3px;
+  background: var(--surface3); border: 1px solid var(--border);
+  color: var(--text-dim); cursor: pointer;
+  font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;
+  transition: all 0.15s;
 }
-.source-actions button:hover { color: var(--text); background: var(--border); }
+.source-actions button:hover { color: var(--error); border-color: var(--error); }
 
 /* Sidebar footer */
 .sidebar-footer {
-  padding: 8px 14px; border-top: 1px solid var(--border);
-  font-size: 0.75rem; display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex; justify-content: space-between; align-items: center;
 }
-.sidebar-footer .total { color: var(--text-dim); }
-.btn-danger { color: var(--error); background: none; border: 1px solid var(--border); }
-.btn-danger:hover { border-color: var(--error); }
+.sidebar-footer .total {
+  font-size: 0.7rem; color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.btn-danger {
+  font-size: 0.7rem; color: var(--error); background: none;
+  border: 1px solid var(--border); border-radius: 5px;
+  padding: 3px 10px; cursor: pointer;
+  font-family: var(--font-body); transition: all 0.15s;
+}
+.btn-danger:hover { border-color: var(--error); background: rgba(212,114,114,0.08); }
 
-/* Chat area */
+/* ─── Chat Area ─── */
 .chat-area {
   flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  background: var(--bg);
 }
 #chat {
-  flex: 1; overflow-y: auto; padding: 16px;
-  display: flex; flex-direction: column; gap: 14px;
+  flex: 1; overflow-y: auto; padding: 24px 20px;
+  display: flex; flex-direction: column; gap: 2px;
 }
-.msg { max-width: 780px; width: 100%; margin: 0 auto; display: flex; gap: 10px; }
-.msg.user { justify-content: flex-end; }
-.bubble {
-  padding: 10px 14px; border-radius: 12px;
-  line-height: 1.55; font-size: 0.9rem;
-  max-width: 85%; word-wrap: break-word;
-}
-.msg.user .bubble { background: var(--user-bg); border-bottom-right-radius: 4px; }
-.msg.assistant .bubble { background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
-.bubble pre {
-  background: var(--bg); padding: 8px 10px; border-radius: 6px;
-  overflow-x: auto; margin: 6px 0; font-size: 0.83rem;
-}
-.bubble code { font-family: "Cascadia Code", "Fira Code", monospace; font-size: 0.88em; }
-.bubble p { margin: 5px 0; }
-.bubble p:first-child { margin-top: 0; }
-.bubble p:last-child { margin-bottom: 0; }
-
-.chat-sources {
-  margin-top: 6px; padding-top: 6px;
-  border-top: 1px solid var(--border); font-size: 0.76rem;
-}
-.chat-sources summary { cursor: pointer; color: var(--text-dim); }
-.chat-sources ul { margin: 3px 0 0 16px; color: var(--text-dim); }
-.chat-sources li { margin: 2px 0; }
-.meta { font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; }
-
-/* Input area */
-.input-area {
-  padding: 10px 16px; border-top: 1px solid var(--border);
-  background: var(--surface); flex-shrink: 0;
-}
-.input-wrap {
-  max-width: 780px; margin: 0 auto; display: flex; gap: 8px;
-}
-#question {
-  flex: 1; padding: 9px 12px; border-radius: 10px;
-  border: 1px solid var(--border); background: var(--surface2);
-  color: var(--text); font-size: 0.9rem; font-family: inherit;
-  resize: none; min-height: 42px; max-height: 120px;
-}
-#question:focus { outline: none; border-color: var(--accent); }
-#send {
-  padding: 9px 16px; border-radius: 10px; border: none;
-  background: var(--accent); color: #fff; cursor: pointer;
-  font-size: 0.9rem; font-weight: 600; align-self: flex-end;
-}
-#send:hover { background: var(--accent-hover); }
-#send:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Welcome */
 .welcome {
-  text-align: center; color: var(--text-dim); margin: auto;
-  max-width: 480px; padding: 40px 20px;
+  margin: auto; text-align: center;
+  max-width: 420px; padding: 60px 20px;
+  animation: fadeUp 0.6s ease;
 }
-.welcome h2 { color: var(--text); margin-bottom: 8px; font-size: 1.2rem; }
-.welcome p { font-size: 0.88rem; line-height: 1.5; }
+.welcome-icon {
+  font-size: 2.4rem; margin-bottom: 16px;
+  opacity: 0.3;
+}
+.welcome h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.6rem;
+  color: var(--text);
+  margin-bottom: 10px;
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+.welcome p {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
 
-/* Source viewer (bottom drawer) */
+/* Messages */
+.msg {
+  max-width: 720px; width: 100%; margin: 0 auto;
+  animation: fadeUp 0.3s ease;
+}
+.msg.user {
+  display: flex; justify-content: flex-end;
+  margin-bottom: 4px;
+}
+.msg.assistant {
+  margin-bottom: 12px;
+}
+.bubble {
+  line-height: 1.65;
+  font-size: 0.88rem;
+  word-wrap: break-word;
+}
+.msg.user .bubble {
+  background: var(--user-bg);
+  border: 1px solid var(--user-border);
+  padding: 10px 16px;
+  border-radius: 16px 16px 4px 16px;
+  max-width: 75%;
+  font-size: 0.86rem;
+}
+.msg.assistant .bubble {
+  padding: 8px 2px;
+  max-width: 100%;
+}
+.bubble pre {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  margin: 8px 0;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+}
+.bubble code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--surface2);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.bubble pre code { background: none; padding: 0; }
+.bubble p { margin: 4px 0; }
+.bubble p:first-child { margin-top: 0; }
+.bubble p:last-child { margin-bottom: 0; }
+.bubble ul, .bubble ol { margin: 4px 0 4px 18px; }
+.bubble li { margin: 2px 0; }
+.bubble strong { font-weight: 600; color: var(--text); }
+
+/* ─── Citation Bubbles ─── */
+.citations-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  overflow-x: auto;
+  padding: 2px 0 6px;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.citations-row::-webkit-scrollbar { display: none; }
+
+.citation-card {
+  flex-shrink: 0;
+  width: 220px;
+  background: var(--quote-bg);
+  border: 1px solid var(--quote-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.citation-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--accent);
+  opacity: 0.5;
+  border-radius: 0 2px 2px 0;
+  transition: opacity 0.2s;
+}
+.citation-card:hover {
+  border-color: rgba(200,164,110,0.3);
+  background: var(--surface2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.citation-card:hover::before { opacity: 1; }
+
+.citation-quote-mark {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.35;
+  margin-bottom: 2px;
+  pointer-events: none;
+}
+.citation-snippet {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+.citation-meta {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.citation-file {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.citation-section {
+  font-size: 0.66rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.citation-score {
+  position: absolute;
+  top: 8px; right: 10px;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.citation-card:hover .citation-score { opacity: 1; }
+
+/* ─── Input Area ─── */
+.input-area {
+  padding: 12px 20px 16px;
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.input-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 6px 6px 6px 16px;
+  transition: border-color 0.2s;
+}
+.input-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-muted);
+}
+#question {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  resize: none;
+  min-height: 24px;
+  max-height: 120px;
+  line-height: 1.5;
+}
+#question:focus { outline: none; }
+#question::placeholder { color: var(--text-dim); }
+#send {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: var(--bg);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  letter-spacing: 0.02em;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+#send:hover { background: var(--accent-hover); }
+#send:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ─── Source Viewer Drawer ─── */
 .viewer {
   border-top: 1px solid var(--border);
-  background: var(--surface); max-height: 0;
-  overflow: hidden; transition: max-height 0.25s ease;
+  background: var(--surface);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
 }
 .viewer.open { max-height: 40vh; overflow-y: auto; }
 .viewer-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 16px; border-bottom: 1px solid var(--border);
-  font-size: 0.82rem; font-weight: 600;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.8rem; font-weight: 500;
   position: sticky; top: 0; background: var(--surface); z-index: 5;
 }
 .viewer-header button {
   background: none; border: none; color: var(--text-dim);
-  cursor: pointer; font-size: 1rem;
+  cursor: pointer; font-size: 1.1rem;
+  transition: color 0.15s;
 }
-.viewer-content { padding: 12px 16px; }
+.viewer-header button:hover { color: var(--text); }
+.viewer-content { padding: 14px 20px; }
 .viewer-chunk {
-  margin-bottom: 12px; padding: 10px 12px;
-  background: var(--surface2); border-radius: 6px;
-  font-size: 0.84rem; line-height: 1.5;
+  margin-bottom: 10px;
+  padding: 14px 16px;
+  background: var(--surface2);
+  border-radius: var(--radius);
+  font-size: 0.84rem;
+  line-height: 1.6;
+  border: 1px solid var(--border-subtle);
 }
 .viewer-chunk-header {
-  font-size: 0.75rem; color: var(--accent);
-  margin-bottom: 4px; font-weight: 600;
+  font-size: 0.72rem;
+  color: var(--accent);
+  margin-bottom: 6px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
 }
-.viewer-loading { color: var(--text-dim); font-style: italic; font-size: 0.84rem; padding: 20px; }
+.viewer-loading {
+  color: var(--text-dim); font-style: italic;
+  font-size: 0.84rem; padding: 24px;
+  text-align: center;
+}
 
-/* Mobile hamburger */
+/* ─── Thinking Indicator ─── */
+.thinking {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 0;
+}
+.thinking-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.3;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.thinking-dot:nth-child(2) { animation-delay: 0.15s; }
+.thinking-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes pulse {
+  0%, 80%, 100% { opacity: 0.15; transform: scale(0.8); }
+  40% { opacity: 0.8; transform: scale(1.2); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Mobile ─── */
 .hamburger {
   display: none; background: none; border: none; color: var(--text);
-  cursor: pointer; font-size: 1.3rem; padding: 0 6px;
+  cursor: pointer; font-size: 1.2rem; padding: 0 4px;
 }
+.mobile-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 25;
+  backdrop-filter: blur(2px);
+}
+.mobile-overlay.show { display: block; }
 
-/* Thinking indicator */
-.thinking {
-  display: inline-flex; align-items: center; gap: 4px;
-  color: var(--text-dim); font-size: 0.85rem;
-}
-.thinking span {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--text-dim); animation: blink 1.4s infinite both;
-}
-.thinking span:nth-child(2) { animation-delay: 0.2s; }
-.thinking span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes blink {
-  0%, 80%, 100% { opacity: 0.2; }
-  40% { opacity: 1; }
-}
-
-/* Scrollbar */
-#chat::-webkit-scrollbar, .source-list::-webkit-scrollbar, .viewer::-webkit-scrollbar { width: 5px; }
+/* ─── Scrollbar ─── */
+#chat::-webkit-scrollbar, .source-list::-webkit-scrollbar, .viewer::-webkit-scrollbar { width: 4px; }
 #chat::-webkit-scrollbar-track, .source-list::-webkit-scrollbar-track, .viewer::-webkit-scrollbar-track { background: transparent; }
-#chat::-webkit-scrollbar-thumb, .source-list::-webkit-scrollbar-thumb, .viewer::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+#chat::-webkit-scrollbar-thumb, .source-list::-webkit-scrollbar-thumb, .viewer::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
 
-/* Drag overlay */
+/* ─── Drag overlay ─── */
 .drag-overlay {
   display: none; position: absolute; inset: 0;
-  background: rgba(122,162,247,0.1);
-  border: 2px dashed var(--accent); border-radius: 8px;
+  background: var(--accent-muted);
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius);
   z-index: 10; align-items: center; justify-content: center;
-  font-size: 0.9rem; color: var(--accent);
+  font-size: 0.85rem; color: var(--accent);
   pointer-events: none;
+  font-style: italic;
 }
 .sidebar.dragover .drag-overlay { display: flex; }
+
+/* ─── Empty state ─── */
+.empty-sources {
+  padding: 30px 20px; text-align: center;
+  color: var(--text-dim); font-size: 0.8rem;
+  font-style: italic; line-height: 1.5;
+}
 
 @media (max-width: 700px) {
   .hamburger { display: block; }
@@ -301,26 +641,29 @@ header h1 span { color: var(--accent); }
   }
   .sidebar.open { margin-left: 0; }
   .sidebar.collapsed { margin-left: -100%; }
-  .mobile-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.4); z-index: 25;
-  }
-  .mobile-overlay.show { display: block; }
-  .bubble { max-width: 95%; }
-  header h1 { font-size: 0.95rem; }
+  .msg.user .bubble { max-width: 90%; }
+  .citation-card { width: 180px; }
+  header { padding: 0 14px; }
+  #chat { padding: 16px 14px; }
+  .input-area { padding: 10px 14px 14px; }
 }
 </style>
 </head>
 <body>
 
 <header>
-  <div style="display:flex;align-items:center;gap:8px;">
+  <div style="display:flex;align-items:center;gap:10px;">
     <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
-    <h1><span>RTFM</span> for me</h1>
+    <a class="logo" href="#">
+      <span class="logo-mark">RTFM</span>
+      <span class="logo-sub">for me</span>
+    </a>
   </div>
   <div class="header-controls">
-    <span class="health-dot" id="health" title="Checking..."></span>
-    <button class="btn-sm" onclick="toggleTheme()">Theme</button>
+    <div class="health-indicator">
+      <span class="health-dot" id="health" title="Checking..."></span>
+    </div>
+    <button class="btn-header" onclick="toggleTheme()">Theme</button>
   </div>
 </header>
 
@@ -330,25 +673,27 @@ header h1 span { color: var(--accent); }
   <!-- Sources Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-resize" id="sidebarResize"></div>
-    <div class="drag-overlay">Drop files to ingest</div>
+    <div class="drag-overlay">Drop files here</div>
 
-    <div class="sidebar-header">
-      <span>Sources <span class="count" id="sourceCount"></span></span>
+    <div class="sidebar-section-title">
+      <span>Sources</span>
+      <span class="count" id="sourceCount"></span>
     </div>
 
-    <div class="add-source" id="addSource">
-      <div class="add-row">
-        <input type="file" id="ingestFile" accept=".pdf,.txt,.md" multiple>
-        <button class="btn-add" onclick="doIngestFile()" id="btnIngestFile">Upload</button>
+    <div class="upload-area">
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="ingestFile" accept=".pdf,.txt,.md" multiple onchange="doIngestFile()">
+        <div class="upload-icon">&#8593;</div>
+        <div class="upload-text"><strong>Upload files</strong><br>.pdf, .txt, .md</div>
       </div>
-      <div class="add-msg" id="ingestMsg"></div>
+      <div class="upload-msg" id="ingestMsg"></div>
     </div>
 
     <div class="source-list" id="sourcesList"></div>
 
     <div class="sidebar-footer">
       <span class="total" id="sourcesTotal"></span>
-      <button class="btn-sm btn-danger" onclick="clearDocuments()">Clear All</button>
+      <button class="btn-danger" onclick="clearDocuments()">Clear all</button>
     </div>
   </aside>
 
@@ -356,14 +701,15 @@ header h1 span { color: var(--accent); }
   <div class="chat-area">
     <div id="chat">
       <div class="welcome">
-        <h2>Ask me anything about your docs</h2>
-        <p>Add sources in the sidebar, then ask questions. Answers are grounded in your ingested documents with citations.</p>
+        <div class="welcome-icon">&#9998;</div>
+        <h2>What would you like to know?</h2>
+        <p>Add sources in the sidebar, then ask questions. Answers are grounded in your documents with inline citations.</p>
       </div>
     </div>
 
     <div class="input-area">
       <div class="input-wrap">
-        <textarea id="question" rows="1" placeholder="Ask a question..." autofocus></textarea>
+        <textarea id="question" rows="1" placeholder="Ask a question about your docs..." autofocus></textarea>
         <button id="send" onclick="sendQuestion()">Send</button>
       </div>
     </div>
@@ -386,7 +732,7 @@ localStorage.setItem('rtfm_session', sessionId);
 let busy = false;
 let activeSource = null;
 
-// Theme
+// ─── Theme ───
 function toggleTheme() {
   const t = document.documentElement.getAttribute('data-theme') === 'light' ? '' : 'light';
   document.documentElement.setAttribute('data-theme', t);
@@ -399,7 +745,7 @@ function toggleTheme() {
   }
 })();
 
-// Mobile sidebar
+// ─── Mobile sidebar ───
 function toggleSidebar() {
   const sb = document.getElementById('sidebar');
   const ov = document.getElementById('mobileOverlay');
@@ -407,7 +753,7 @@ function toggleSidebar() {
   ov.classList.toggle('show');
 }
 
-// Health
+// ─── Health ───
 async function checkHealth() {
   const dot = document.getElementById('health');
   try {
@@ -422,7 +768,7 @@ async function checkHealth() {
 }
 checkHealth();
 
-// Sources
+// ─── Sources ───
 async function loadSources() {
   const list = document.getElementById('sourcesList');
   const total = document.getElementById('sourcesTotal');
@@ -431,7 +777,7 @@ async function loadSources() {
     const r = await fetch(API + '/sources');
     const sources = await r.json();
     if (sources.length === 0) {
-      list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:0.82rem;font-style:italic;">No sources yet. Upload files above.</div>';
+      list.innerHTML = '<div class="empty-sources">No sources yet.<br>Upload documents to get started.</div>';
       total.textContent = '';
       count.textContent = '';
       return;
@@ -440,11 +786,13 @@ async function loadSources() {
     let html = '';
     for (const s of sources) {
       totalChunks += s.chunks;
-      const icon = '&#128196;';
-      const name = s.source.length > 40 ? '...' + s.source.slice(-37) : s.source;
+      const ext = s.source.split('.').pop().toLowerCase();
+      const iconMap = { pdf: '&#9827;', md: '&#9830;', txt: '&#9826;' };
+      const icon = iconMap[ext] || '&#9825;';
+      const name = s.source.length > 35 ? '...' + s.source.slice(-32) : s.source;
       const isActive = activeSource === s.source ? ' active' : '';
       html += `<div class="source-item${isActive}" onclick="selectSource('${escapeAttr(s.source)}')" title="${escapeHtml(s.source)}">
-        <span class="source-icon">${icon}</span>
+        <div class="source-icon">${icon}</div>
         <div class="source-info">
           <div class="source-name">${escapeHtml(name)}</div>
           <div class="source-meta">${s.chunks} chunks &middot; ${s.sections.length} sections</div>
@@ -455,28 +803,27 @@ async function loadSources() {
       </div>`;
     }
     list.innerHTML = html;
-    total.textContent = `${totalChunks} chunks`;
-    count.textContent = `(${sources.length})`;
+    total.textContent = `${totalChunks} chunks total`;
+    count.textContent = sources.length;
   } catch(e) {
-    list.innerHTML = `<div style="padding:12px;color:var(--error);font-size:0.8rem;">Failed to load sources</div>`;
+    list.innerHTML = '<div class="empty-sources" style="color:var(--error)">Failed to load sources</div>';
   }
 }
 loadSources();
 
-// Source selection
+// ─── Source selection & viewer ───
 async function selectSource(source, section) {
   activeSource = source;
   loadSources();
   openViewer(source, section);
 }
 
-// Source viewer
 async function openViewer(source, scrollToSection) {
   const viewer = document.getElementById('viewer');
   const title = document.getElementById('viewerTitle');
   const content = document.getElementById('viewerContent');
 
-  title.textContent = source.length > 60 ? '...' + source.slice(-57) : source;
+  title.textContent = source.length > 55 ? '...' + source.slice(-52) : source;
   content.innerHTML = '<div class="viewer-loading">Loading chunks...</div>';
   viewer.classList.add('open');
 
@@ -498,7 +845,6 @@ async function openViewer(source, scrollToSection) {
     }
     content.innerHTML = html || '<div class="viewer-loading">No content</div>';
 
-    // Scroll to matching section if requested
     if (scrollToSection) {
       const target = content.querySelector(`[data-section="${CSS.escape(scrollToSection)}"]`);
       if (target) {
@@ -518,9 +864,7 @@ function closeViewer() {
   loadSources();
 }
 
-// Source actions
-
-
+// ─── Source actions ───
 async function deleteSource(source) {
   if (!confirm(`Delete "${source}" and all its chunks?`)) return;
   try {
@@ -551,20 +895,19 @@ async function clearDocuments() {
   }
 }
 
-// Ingest
+// ─── Ingest ───
 function showIngestMsg(text, type) {
   const msg = document.getElementById('ingestMsg');
   msg.textContent = text;
-  msg.className = 'add-msg ' + (type || '');
-  if (type === 'ok') setTimeout(() => { msg.textContent = ''; msg.className = 'add-msg'; }, 4000);
+  msg.className = 'upload-msg ' + (type || '');
+  if (type === 'ok') setTimeout(() => { msg.textContent = ''; msg.className = 'upload-msg'; }, 4000);
 }
 
 async function doIngestFile() {
   const input = document.getElementById('ingestFile');
   const files = input.files;
   if (!files.length) return;
-  const btn = document.getElementById('btnIngestFile');
-  btn.disabled = true;
+
   showIngestMsg(`Uploading ${files.length} file(s)...`, 'busy');
 
   let totalFiles = 0, totalChunks = 0, errors = [];
@@ -588,14 +931,13 @@ async function doIngestFile() {
   if (errors.length) {
     showIngestMsg(`${totalFiles} files, ${totalChunks} chunks. Errors: ${errors.join('; ')}`, errors.length === files.length ? 'err' : 'ok');
   } else {
-    showIngestMsg(`${totalFiles} files, ${totalChunks} chunks`, 'ok');
+    showIngestMsg(`${totalFiles} files, ${totalChunks} chunks ingested`, 'ok');
   }
   input.value = '';
-  btn.disabled = false;
   loadSources();
 }
 
-// Drag and drop on sidebar
+// ─── Drag and drop ───
 (function() {
   const sb = document.getElementById('sidebar');
   let dragCounter = 0;
@@ -622,7 +964,32 @@ async function doIngestFile() {
   });
 })();
 
-// Chat
+// ─── Chat ───
+function buildCitationsHtml(sources) {
+  if (!sources || sources.length === 0) return '';
+
+  let html = '<div class="citations-row">';
+  for (const s of sources) {
+    const file = s.file || 'unknown';
+    const shortFile = file.length > 28 ? '...' + file.slice(-25) : file;
+    const section = s.section || '';
+    const snippet = s.snippet || '';
+    const score = s.score ? (s.score * 100).toFixed(0) + '%' : '';
+
+    html += `<div class="citation-card" onclick="selectSource('${escapeAttr(file)}','${escapeAttr(section)}')">
+      <div class="citation-quote-mark">&ldquo;</div>
+      <div class="citation-snippet">${escapeHtml(snippet) || '<em>No preview</em>'}</div>
+      <div class="citation-meta">
+        <div class="citation-file" title="${escapeHtml(file)}">${escapeHtml(shortFile)}</div>
+        ${section ? `<div class="citation-section">${escapeHtml(section)}</div>` : ''}
+      </div>
+      ${score ? `<div class="citation-score">${score}</div>` : ''}
+    </div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
 function addMessage(role, content, sources, meta) {
   const welcome = document.querySelector('.welcome');
   if (welcome) welcome.remove();
@@ -633,20 +1000,12 @@ function addMessage(role, content, sources, meta) {
 
   let html = '<div class="bubble">';
   html += renderMarkdown(content);
+  html += '</div>';
 
   if (sources && sources.length > 0) {
-    html += '<div class="chat-sources"><details><summary>Sources (' + sources.length + ')</summary><ul>';
-    for (const s of sources) {
-      const label = s.file || 'unknown';
-      const section = s.section ? ` \u2014 ${s.section}` : '';
-      html += `<li><a href="#" onclick="event.preventDefault();selectSource('${escapeAttr(s.file)}','${escapeAttr(s.section || '')}')" style="color:var(--accent)">${escapeHtml(label)}</a>${escapeHtml(section)}</li>`;
-    }
-    html += '</ul></details></div>';
+    html += buildCitationsHtml(sources);
   }
-  if (meta) {
-    html += `<div class="meta">${escapeHtml(meta)}</div>`;
-  }
-  html += '</div>';
+
   div.innerHTML = html;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
@@ -672,7 +1031,7 @@ async function sendQuestion() {
 
   const assistantDiv = addMessage('assistant', '');
   const bubble = getAssistantBubble(assistantDiv);
-  bubble.innerHTML = '<div class="thinking"><span></span><span></span><span></span></div>';
+  bubble.innerHTML = '<div class="thinking"><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div></div>';
 
   try {
     const body = new FormData();
@@ -680,7 +1039,6 @@ async function sendQuestion() {
     body.append('session_id', sessionId);
     body.append('stream', 'true');
 
-    // Filter by active source if selected
     if (activeSource) {
       body.append('source_filter', activeSource);
     }
@@ -730,15 +1088,12 @@ async function sendQuestion() {
 
     if (!fullText) {
       bubble.innerHTML = '<span style="color:var(--text-dim)">No response</span>';
-    } else if (streamSources.length > 0) {
-      let srcHtml = '<div class="chat-sources"><details><summary>Sources (' + streamSources.length + ')</summary><ul>';
-      for (const s of streamSources) {
-        const label = s.file || 'unknown';
-        const section = s.section ? ` \u2014 ${s.section}` : '';
-        srcHtml += `<li><a href="#" onclick="event.preventDefault();selectSource('${escapeAttr(s.file)}','${escapeAttr(s.section || '')}')" style="color:var(--accent)">${escapeHtml(label)}</a>${escapeHtml(section)}</li>`;
-      }
-      srcHtml += '</ul></details></div>';
-      bubble.innerHTML += srcHtml;
+    }
+
+    // Append citation cards after streaming completes
+    if (streamSources.length > 0) {
+      const citationsHtml = buildCitationsHtml(streamSources);
+      assistantDiv.insertAdjacentHTML('beforeend', citationsHtml);
     }
 
   } catch(e) {
@@ -750,21 +1105,19 @@ async function sendQuestion() {
   }
 }
 
-// Enter to send, Shift+Enter for newline
+// ─── Keyboard ───
 document.getElementById('question').addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
     sendQuestion();
   }
 });
-
-// Auto-resize textarea
 document.getElementById('question').addEventListener('input', function() {
   this.style.height = 'auto';
   this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 
-// Simple markdown rendering
+// ─── Markdown ───
 function renderMarkdown(text) {
   if (!text) return '';
 
@@ -805,7 +1158,7 @@ function escapeAttr(str) {
   return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
-// Sidebar resize
+// ─── Sidebar resize ───
 (function() {
   const handle = document.getElementById('sidebarResize');
   const sidebar = document.getElementById('sidebar');
@@ -822,7 +1175,7 @@ function escapeAttr(str) {
 
   document.addEventListener('mousemove', e => {
     if (!dragging) return;
-    const newWidth = Math.min(Math.max(e.clientX, 180), window.innerWidth * 0.5);
+    const newWidth = Math.min(Math.max(e.clientX, 200), window.innerWidth * 0.5);
     sidebar.style.width = newWidth + 'px';
   });
 

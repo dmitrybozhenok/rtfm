@@ -192,7 +192,8 @@ def ask(
                 pass  # Graceful degradation
 
         sources = [
-            {"file": r.source_file, "section": r.section, "score": r.score}
+            {"file": r.source_file, "section": r.section, "score": r.score,
+             "snippet": r.text[:200].strip()}
             for r in results
         ]
 
@@ -300,7 +301,8 @@ def ask_stream(
     metrics.llm_latency.observe(llm_ms)
 
     sources = [
-        {"file": r.source_file, "section": r.section, "score": r.score}
+        {"file": r.source_file, "section": r.section, "score": r.score,
+         "snippet": r.text[:200].strip()}
         for r in results
     ]
     try:
